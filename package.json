@@ -1,0 +1,29 @@
+{
+  "name": "gapfix",
+  "version": "1.0.0",
+  "description": "Fix Bitcoin HD wallet address gap limit — recover UTXOs beyond the 20-address gap",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.6.1",
+    "@scure/base": "^1.2.1",
+    "@scure/bip32": "^1.6.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19"
+  },
+  "keywords": [
+    "bitcoin",
+    "hd-wallet",
+    "gap-limit",
+    "xpub",
+    "utxo",
+    "address-gap"
+  ],
+  "license": "MIT",
+  "author": "Max Matrenitski (https://github.com/matrenitski)"
+}

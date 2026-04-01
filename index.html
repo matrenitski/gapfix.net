@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap</title>
+  <meta name="description" content="Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see." />
+  <meta name="keywords" content="bitcoin, gap limit, xpub, ypub, zpub, HD wallet, address gap, UTXO recovery" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap" />
+  <meta property="og:description" content="Find and fix Bitcoin HD wallet address gap limit issues. Free, open-source, runs entirely in your browser." />
+  <meta property="og:url" content="https://gapfix.net" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Favicon: Bitcoin "B" -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>₿</text></svg>" />
+</head>
+<body>
+
+  <!-- ======== HEADER ======== -->
+  <header>
+    <div class="container">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="16" fill="#f7931a"/>
+          <text x="7" y="23" font-size="18" font-weight="bold" fill="black" font-family="serif">₿</text>
+        </svg>
+        Gap<span class="logo-accent">Fix</span>
+      </div>
+      <nav class="header-links">
+        <a href="#tool">Scan Wallet</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ======== HERO ======== -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge">Bitcoin Tool</div>
+      <h1>Your Bitcoin might be<br /><span>hiding in plain sight</span></h1>
+      <p class="subtitle">
+        Bitcoin wallets stop scanning after 20 empty addresses in a row.
+        If funds land beyond that gap, they vanish from your balance — but they're not lost.
+        GapFix finds them and tells you exactly how to get them back.
+      </p>
+      <a href="#tool" class="btn btn-primary" style="font-size:1rem; padding: 14px 28px;">
+        Scan My Wallet →
+      </a>
+    </div>
+  </section>
+
+  <!-- ======== TOOL ======== -->
+  <section id="tool">
+    <div class="container">
+      <div class="card">
+        <h2>Scan for Gap Issues</h2>
+
+        <label class="input-label" for="xpub-input">Your Extended Public Key (xpub / ypub / zpub)</label>
+        <div class="input-row">
+          <input
+            id="xpub-input"
+            class="xpub-input"
+            type="text"
+            placeholder="xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKrhko4egpiMZbpiaQL2jkwSB1icqYh2cfDfVxdx4df189oLKnC5fSwqPfgyP3hooxujYzAu3fDVmz"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+          <button id="scan-btn" class="btn btn-primary">Scan for Gap Issues</button>
+          <button id="cancel-btn" class="btn btn-ghost">Cancel</button>
+        </div>
+
+        <p class="input-hint">
+          Paste your account-level xpub (legacy), ypub (segwit-wrapped), or zpub (native segwit).
+          This is a <strong>public key</strong> — no private keys, no seed phrases, nothing sensitive is required or transmitted.
+        </p>
+
+        <div class="security-notice">
+          <span class="icon">🔒</span>
+          <span>
+            <strong>100% client-side.</strong> Your key is never sent to any server.
+            All address derivation and scanning happens in your browser.
+            Only public addresses are queried against <a href="https://blockstream.info" target="_blank" rel="noopener">Blockstream's public API</a>.
+          </span>
+        </div>
+
+        <div id="error-msg" class="error-msg"></div>
+      </div>
+
+      <!-- Progress -->
+      <div id="progress-section" class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:0.9rem; font-weight:600;">Scanning…</span>
+          <span id="progress-pct" style="font-size:0.9rem; color:var(--orange);">0%</span>
+        </div>
+        <div class="progress-bar-outer">
+          <div id="progress-bar" class="progress-bar-inner"></div>
+        </div>
+        <div class="progress-label">
+          <span id="progress-text">Deriving addresses…</span>
+          <span>Up to 2 000 addresses (external + change)</span>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results-section">
+        <div id="results-container"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======== HOW IT WORKS ======== -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="section-heading">
+        <h2>How the Gap Limit Problem Works</h2>
+        <p>And how GapFix solves it in four steps</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Wallets use a "gap limit" of 20</h3>
+            <p>
+              Bitcoin HD wallets generate addresses sequentially from your seed or xpub.
+              To find all your funds, they scan address 0, then 1, 2, 3… but stop
+              after they see <strong>20 addresses in a row with no transactions</strong>.
+              This is the "gap limit."
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>Funds land beyond the gap</h3>
+            <p>
+              Sometimes Bitcoin is sent to an address beyond index 20 — for example
+              if you generated many receive addresses in one wallet and then imported
+              the seed into a different wallet, or if an exchange or app used a
+              non-standard derivation path. The wallet stops scanning before it ever
+              reaches those addresses.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>GapFix scans 1 000 addresses deep</h3>
+            <p>
+              Paste your xpub, ypub, or zpub (a public key — no seed phrase needed).
+              GapFix derives and checks up to 1 000 external and 1 000 change addresses
+              against the blockchain, identifying any funds sitting beyond a gap of 20.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>Dust the gap — your wallet finds everything</h3>
+            <p>
+              The fix is simple: send a tiny "dust" amount (as low as 294–546 sats,
+              roughly pennies) to each empty address inside the gap. Once those
+              addresses have a transaction, your wallet's scanner will continue
+              past them and discover the hidden funds automatically on the next rescan.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== FAQ ======== -->
+  <section id="faq">
+    <div class="container">
+      <h2>Frequently Asked Questions</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Is it safe to paste my xpub here?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          Yes. An xpub (extended <em>public</em> key) lets anyone derive your Bitcoin <strong>receive addresses</strong> — but nothing more. It cannot spend funds, cannot reveal your private keys, and cannot sign anything. GapFix also runs entirely in your browser; your key is never transmitted to any server. Even so, for maximum privacy you can run GapFix locally from the <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">source code</a> with no internet access after loading dependencies.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Where do I find my xpub / ypub / zpub?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          Most hardware and software wallets expose the account-level extended public key somewhere in their settings. Common locations:
+          <ul style="margin: 8px 0 0 20px; color: var(--text-muted);">
+            <li><strong>Electrum:</strong> Wallet → Information → Master Public Key</li>
+            <li><strong>Ledger Live:</strong> Account → Edit → Advanced → Extended public key</li>
+            <li><strong>Trezor Suite:</strong> Account → Details → Public key (XPUB)</li>
+            <li><strong>Sparrow:</strong> Settings → Keystore → Master Public Key</li>
+          </ul>
+          Paste the key that starts with <code>xpub</code>, <code>ypub</code>, or <code>zpub</code> (or testnet equivalents <code>tpub</code>, <code>upub</code>, <code>vpub</code>).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          How much should I send as dust?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          GapFix recommends the minimum non-dust amount for each address type:
+          <ul style="margin: 8px 0 0 20px; color: var(--text-muted);">
+            <li><strong>Legacy (P2PKH, starts with 1):</strong> 546 sats</li>
+            <li><strong>Segwit-wrapped (P2SH-P2WPKH, starts with 3):</strong> 546 sats</li>
+            <li><strong>Native segwit (P2WPKH / bech32, starts with bc1q):</strong> 294 sats</li>
+          </ul>
+          At current fee rates (2025), sending a batch of dust transactions typically costs a few hundred sats in fees — far less than any funds you'd recover.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Can I send dust to all the gap addresses in one transaction?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          Yes — this is the most efficient approach. Most wallets and tools support "batch send" or "send to many" functionality. GapFix's "Copy addresses" button exports the list in a tab-separated format (address + amount) that many wallets accept directly. You can also use a PSBT tool or the Bitcoin command line if you prefer.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Will this work for all wallets?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          GapFix works for any standard BIP32/BIP44/BIP49/BIP84 HD wallet. It supports xpub (legacy P2PKH), ypub (segwit-wrapped P2SH), and zpub (native segwit bech32) keys. Hardware wallets like Ledger, Trezor, Coldcard, and BitBox, as well as software wallets like Electrum, Sparrow, and Wasabi are all compatible.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          The scan is slow — why?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          GapFix checks up to 2 000 addresses (1 000 external + 1 000 change) by querying Blockstream's public API for each address. To avoid rate-limiting, it checks in batches with a short delay between them. Most scans complete in 2–5 minutes depending on your internet speed and Blockstream's response time. If you know your funds are on external addresses only, you can also check the source code and adjust the chain limit.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======== FOOTER ======== -->
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
