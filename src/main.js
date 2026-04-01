@@ -20,7 +20,6 @@ const resultsContainer = document.getElementById('results-container');
 
 // ---- State ----
 let abortController = null;
-let derivedAddressCache = null; // { hd, type } for current scan
 
 // ---- Event handlers ----
 
@@ -54,10 +53,9 @@ async function startScan() {
   setProgress(0, 'Deriving addresses…');
 
   abortController = new AbortController();
-  derivedAddressCache = parsed;
 
   try {
-    const { issues, hasIssues } = await scanWallet({
+    const { issues, hasIssues, batchErrors } = await scanWallet({
       deriveAddressFn: (chain, index) => deriveAddress(parsed.hd, chain, index, parsed.type),
       keyType: parsed.type,
       maxDepth: 1000,
@@ -65,6 +63,10 @@ async function startScan() {
       onProgress: (pct) => setProgress(pct, `Scanning addresses… ${pct}%`),
       signal: abortController.signal,
     });
+
+    if (batchErrors > 0) {
+      showError(`Warning: ${batchErrors} address lookup${batchErrors > 1 ? 's' : ''} failed (rate limit or network error). Results may be incomplete — try scanning again.`);
+    }
 
     showResults(issues, hasIssues, parsed);
   } catch (err) {

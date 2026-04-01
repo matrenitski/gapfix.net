@@ -78,6 +78,7 @@ export async function scanWallet({
   const results = { external: [], change: [] };
   const totalWork = maxDepth * chains.length;
   let doneWork = 0;
+  let batchErrors = 0;
 
   for (const chain of chains) {
     const chainKey = chain === 0 ? 'external' : 'change';
@@ -101,6 +102,10 @@ export async function scanWallet({
         doneWork++;
         if (onProgress) onProgress(Math.round((doneWork / totalWork) * 100));
 
+        if (r.error) {
+          batchErrors++;
+        }
+
         if (r.txCount > 0) {
           usedAddresses.push({ address: r.address, index: r.index, totalReceived: r.totalReceived });
           gapCount = 0;
@@ -111,17 +116,14 @@ export async function scanWallet({
 
       i += BATCH_SIZE;
 
-      // If the last BATCH_SIZE addresses were all unused, check if gap >= limit
-      // We need to continue scanning beyond the gap limit to find hidden funds,
-      // but we stop only when we've seen maxDepth or consistent empty run
-      if (gapCount >= maxDepth - i + BATCH_SIZE) break; // all remaining would be past limit
+      if (maxDepth - i < gapLimit) break;
       if (i < maxDepth) await sleep(BATCH_DELAY_MS);
     }
 
     results[chainKey] = usedAddresses;
   }
 
-  return analyzeResults(results, gapLimit);
+  return { ...analyzeResults(results, gapLimit), batchErrors };
 }
 
 /**
