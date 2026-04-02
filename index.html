@@ -189,6 +189,14 @@
           This is a <strong>public key</strong> — no private keys, no seed phrases, nothing sensitive is required or transmitted.
         </p>
 
+        <div class="scan-options">
+          <label class="scan-toggle-label">
+            <input type="checkbox" id="multi-format-toggle" />
+            <span>Also scan legacy (P2PKH) and wrapped segwit (P2SH) addresses</span>
+            <span class="scan-toggle-slow">~3× slower</span>
+          </label>
+        </div>
+
         <div class="security-notice">
           <span class="icon">🔒</span>
           <span>
@@ -212,6 +220,7 @@
         </div>
         <div class="progress-label">
           <span id="progress-text">Deriving addresses…</span>
+          <span id="extended-scan-badge" class="extended-badge" style="display:none">Extended scan — 3 formats</span>
           <span>Up to 2 000 addresses (external + change)</span>
         </div>
         <div class="progress-live">

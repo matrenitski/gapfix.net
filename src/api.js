@@ -17,7 +17,7 @@ function getBaseUrl(keyType) {
 
 /**
  * Fetch address stats from Blockstream.
- * Returns { txCount, totalReceived } or throws on failure.
+ * Returns { txCount, received, spent, balance } or throws on failure.
  */
 async function fetchAddressStats(address, baseUrl, signal) {
   const url = `${baseUrl}/address/${address}`;
@@ -27,21 +27,25 @@ async function fetchAddressStats(address, baseUrl, signal) {
   const txCount =
     (data.chain_stats?.tx_count ?? 0) +
     (data.mempool_stats?.tx_count ?? 0);
-  const totalReceived =
+  const received =
     (data.chain_stats?.funded_txo_sum ?? 0) +
     (data.mempool_stats?.funded_txo_sum ?? 0);
-  return { txCount, totalReceived };
+  const spent =
+    (data.chain_stats?.spent_txo_sum ?? 0) +
+    (data.mempool_stats?.spent_txo_sum ?? 0);
+  return { txCount, received, spent, balance: received - spent };
 }
 
 /**
- * Fetch stats for a batch of addresses in parallel.
+ * Fetch stats for a batch of address items in parallel.
+ * Each item should have at least { address }; all fields are passed through.
  */
-async function fetchBatch(addresses, baseUrl, signal) {
+async function fetchBatch(items, baseUrl, signal) {
   return Promise.all(
-    addresses.map(({ address, chain, index }) =>
-      fetchAddressStats(address, baseUrl, signal)
-        .then(stats => ({ address, chain, index, ...stats }))
-        .catch(() => ({ address, chain, index, txCount: 0, totalReceived: 0, error: true }))
+    items.map(item =>
+      fetchAddressStats(item.address, baseUrl, signal)
+        .then(stats => ({ ...item, ...stats }))
+        .catch(() => ({ ...item, txCount: 0, received: 0, spent: 0, balance: 0, error: true }))
     )
   );
 }
@@ -57,25 +61,33 @@ function sleep(ms) {
  * Scan an HD wallet for address gap issues.
  *
  * @param {Object} params
- * @param {Function} params.deriveAddressFn - (chain, index) => address string
- * @param {string} params.keyType - key type for API selection
- * @param {number} [params.maxDepth=1000] - max addresses to scan per chain
- * @param {number} [params.gapLimit=20] - standard gap limit
- * @param {Function} [params.onProgress] - progress callback (0–100)
+ * @param {Function} [params.deriveAddressFn] - legacy: (chain, index) => address string
+ * @param {Array}    [params.deriveAddressFns] - new: array of { fn, type, bip }
+ * @param {string}   params.keyType - key type for API selection
+ * @param {number}   [params.maxDepth=1000] - max addresses to scan per chain
+ * @param {number}   [params.gapLimit=20] - standard gap limit
+ * @param {Function} [params.onProgress] - progress callback
  * @param {AbortSignal} [params.signal] - abort signal
  * @returns {Promise<ScanResult>}
  */
 export async function scanWallet({
   deriveAddressFn,
+  deriveAddressFns,
   keyType,
   maxDepth = 1000,
   gapLimit = 20,
   onProgress,
   signal,
 }) {
+  // Normalize to array format
+  const formats = deriveAddressFns || (deriveAddressFn
+    ? [{ fn: deriveAddressFn, type: 'primary', bip: null }]
+    : []);
+
   const baseUrl = getBaseUrl(keyType);
   const chains = [0, 1]; // 0=external, 1=change
   const results = { external: [], change: [] };
+  const addressLog = []; // all scanned addresses
   const totalWork = maxDepth * chains.length;
   let doneWork = 0;
   let batchErrors = 0;
@@ -83,32 +95,80 @@ export async function scanWallet({
 
   for (const chain of chains) {
     const chainKey = chain === 0 ? 'external' : 'change';
-    const usedAddresses = []; // { address, index, totalReceived }
+    const chainLabel = chain === 0 ? 'external' : 'change';
+    const usedAddresses = [];
     let gapCount = 0;
 
     let i = 0;
     while (i < maxDepth) {
-      // Build batch
-      const batchAddrs = [];
+      // Build batch: BATCH_SIZE indices, all formats per index
+      const batchItems = [];
       for (let b = 0; b < BATCH_SIZE && i + b < maxDepth; b++) {
         const idx = i + b;
-        batchAddrs.push({ address: deriveAddressFn(chain, idx), chain, index: idx });
+        for (const fmt of formats) {
+          const bipPath = fmt.bip != null
+            ? `m/${fmt.bip}'/0'/0'/${chain}/${idx}`
+            : `m/${chain}/${idx}`;
+          batchItems.push({
+            address: fmt.fn(chain, idx),
+            chain,
+            index: idx,
+            addressType: fmt.type,
+            bip: fmt.bip,
+            derivationPath: bipPath,
+          });
+        }
       }
 
       if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
-      const batchResults = await fetchBatch(batchAddrs, baseUrl, signal);
+      const batchResults = await fetchBatch(batchItems, baseUrl, signal);
 
+      // Group results by index
+      const byIndex = new Map();
       for (const r of batchResults) {
+        if (!byIndex.has(r.index)) byIndex.set(r.index, []);
+        byIndex.get(r.index).push(r);
+      }
+
+      // Process each index in order
+      for (let b = 0; b < BATCH_SIZE && i + b < maxDepth; b++) {
+        const idx = i + b;
+        const indexResults = byIndex.get(idx) || [];
         doneWork++;
 
-        if (r.error) {
-          batchErrors++;
+        let hasActivity = false;
+
+        for (const r of indexResults) {
+          if (r.error) batchErrors++;
+
+          addressLog.push({
+            address: r.address,
+            chain,
+            chainLabel,
+            index: idx,
+            addressType: r.addressType,
+            bip: r.bip,
+            derivationPath: r.derivationPath,
+            txCount: r.txCount,
+            received: r.received,
+            spent: r.spent,
+            balance: r.balance,
+            error: r.error || false,
+          });
+
+          if (r.txCount > 0 && !r.error) {
+            hasActivity = true;
+            totalReceivedAll += r.received;
+            usedAddresses.push({
+              address: r.address,
+              index: idx,
+              totalReceived: r.received,
+            });
+          }
         }
 
-        if (r.txCount > 0) {
-          totalReceivedAll += r.totalReceived;
-          usedAddresses.push({ address: r.address, index: r.index, totalReceived: r.totalReceived });
+        if (hasActivity) {
           gapCount = 0;
         } else {
           gapCount++;
@@ -116,9 +176,10 @@ export async function scanWallet({
 
         if (onProgress) onProgress({
           pct: Math.round((doneWork / totalWork) * 100),
-          address: r.address,
+          address: indexResults[0]?.address || '',
           totalReceived: totalReceivedAll,
           checkedCount: doneWork,
+          currentPath: indexResults[0]?.derivationPath || '',
         });
       }
 
@@ -135,6 +196,7 @@ export async function scanWallet({
     ...analyzeResults(results, gapLimit),
     batchErrors,
     scanSummary: { totalChecked: doneWork, totalReceived: totalReceivedAll },
+    addressLog,
   };
 }
 

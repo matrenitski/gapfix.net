@@ -28,6 +28,8 @@ const progressAddr = document.getElementById('progress-addr');
 const progressChecked = document.getElementById('progress-checked');
 const progressBalance = document.getElementById('progress-balance');
 const progressBalanceVal = document.getElementById('progress-balance-val');
+const extendedBadge = document.getElementById('extended-scan-badge');
+const multiFormatToggle = document.getElementById('multi-format-toggle');
 const resultsSection = document.getElementById('results-section');
 const resultsContainer = document.getElementById('results-container');
 
@@ -63,15 +65,17 @@ async function startScan() {
     return;
   }
 
+  const multiFormat = multiFormatToggle ? multiFormatToggle.checked : false;
+
   clearError();
-  setScanning(true);
+  setScanning(true, multiFormat);
   setProgress(0, 'Deriving addresses…');
 
   abortController = new AbortController();
 
   try {
-    const { issues, hasIssues, batchErrors, scanSummary } = await scanWallet({
-      deriveAddressFn: (chain, index) => deriveAddress(parsed.hd, chain, index, parsed.type),
+    const { issues, hasIssues, batchErrors, scanSummary, addressLog } = await scanWallet({
+      deriveAddressFns: buildDeriveAddressFns(parsed, multiFormat),
       keyType: parsed.type,
       maxDepth: 1000,
       gapLimit: 20,
@@ -86,7 +90,7 @@ async function startScan() {
       showError(`Warning: ${batchErrors} address lookup${batchErrors > 1 ? 's' : ''} failed (rate limit or network error). Results may be incomplete — try scanning again.`);
     }
 
-    showResults(issues, hasIssues, parsed, scanSummary);
+    showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFormat);
   } catch (err) {
     if (err.name === 'AbortError') {
       hideProgress();
@@ -97,7 +101,7 @@ async function startScan() {
       hideResults(); // MAX-12: clear stale results on scan failure
     }
   } finally {
-    setScanning(false);
+    setScanning(false, false);
     abortController = null;
   }
 }
@@ -109,12 +113,59 @@ function cancelScan() {
   }
 }
 
+// ---- Derivation helpers ----
+
+function buildDeriveAddressFns(parsed, multiFormat) {
+  const isTestnet = ['tpub', 'upub', 'vpub'].includes(parsed.type);
+
+  const allFormats = isTestnet
+    ? [
+        { keyType: 'tpub', type: 'P2PKH', bip: 44 },
+        { keyType: 'upub', type: 'P2SH-P2WPKH', bip: 49 },
+        { keyType: 'vpub', type: 'P2WPKH', bip: 84 },
+      ]
+    : [
+        { keyType: 'xpub', type: 'P2PKH', bip: 44 },
+        { keyType: 'ypub', type: 'P2SH-P2WPKH', bip: 49 },
+        { keyType: 'zpub', type: 'P2WPKH', bip: 84 },
+      ];
+
+  const primaryFmt = allFormats.find(f => f.keyType === parsed.type) || allFormats[2];
+
+  const fns = [{
+    fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, primaryFmt.keyType),
+    type: primaryFmt.type,
+    bip: primaryFmt.bip,
+  }];
+
+  if (multiFormat) {
+    for (const fmt of allFormats) {
+      if (fmt.keyType !== primaryFmt.keyType) {
+        fns.push({
+          fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, fmt.keyType),
+          type: fmt.type,
+          bip: fmt.bip,
+        });
+      }
+    }
+  }
+
+  return fns;
+}
+
+function getBlockstreamBaseUrl(keyType) {
+  return ['tpub', 'upub', 'vpub'].includes(keyType)
+    ? 'https://blockstream.info/testnet/api'
+    : 'https://blockstream.info/api';
+}
+
 // ---- UI helpers ----
 
-function setScanning(active) {
+function setScanning(active, multiFormat) {
   scanBtn.disabled = active;
   scanBtn.textContent = active ? 'Scanning…' : 'Scan for Gap Issues';
   cancelBtn.style.display = active ? 'inline-flex' : 'none';
+  if (extendedBadge) extendedBadge.style.display = (active && multiFormat) ? 'inline-flex' : 'none';
   if (active) {
     progressSection.classList.add('visible');
     hideResults();
@@ -165,7 +216,7 @@ function hideResults() {
   resultsContainer.innerHTML = '';
 }
 
-function showResults(issues, hasIssues, parsed, scanSummary) {
+function showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFormat) {
   resultsContainer.innerHTML = '';
 
   if (!hasIssues) {
@@ -195,6 +246,16 @@ function showResults(issues, hasIssues, parsed, scanSummary) {
     for (const issue of issues) {
       resultsContainer.appendChild(renderIssue(issue, parsed));
     }
+  }
+
+  // Derivation panel
+  resultsContainer.appendChild(renderDerivationPanel(parsed, multiFormat));
+
+  // Address explorer
+  if (addressLog && addressLog.length > 0) {
+    const baseUrl = getBlockstreamBaseUrl(parsed.type);
+    const explorer = renderAddressExplorer(addressLog, baseUrl);
+    if (explorer) resultsContainer.appendChild(explorer);
   }
 
   resultsSection.classList.add('visible');
@@ -263,6 +324,230 @@ function renderIssue(issue, parsed) {
   });
 
   return el;
+}
+
+// ---- Derivation panel ----
+
+function renderDerivationPanel(parsed, multiFormat) {
+  const typeMap = {
+    xpub: { bip: 44, name: 'BIP44', addrType: 'P2PKH (legacy)', addrExample: '1…', network: 'mainnet' },
+    ypub: { bip: 49, name: 'BIP49', addrType: 'P2SH-P2WPKH (wrapped segwit)', addrExample: '3…', network: 'mainnet' },
+    zpub: { bip: 84, name: 'BIP84', addrType: 'P2WPKH (native segwit)', addrExample: 'bc1q…', network: 'mainnet' },
+    tpub: { bip: 44, name: 'BIP44', addrType: 'P2PKH (legacy)', addrExample: 'm…', network: 'testnet' },
+    upub: { bip: 49, name: 'BIP49', addrType: 'P2SH-P2WPKH (wrapped segwit)', addrExample: '2…', network: 'testnet' },
+    vpub: { bip: 84, name: 'BIP84', addrType: 'P2WPKH (native segwit)', addrExample: 'tb1q…', network: 'testnet' },
+  };
+
+  const info = typeMap[parsed.type] || typeMap.xpub;
+  const extPath = `m/${info.bip}'/0'/0'/0/N`;
+  const intPath = `m/${info.bip}'/0'/0'/1/N`;
+
+  const el = document.createElement('div');
+  el.className = 'derivation-panel';
+  el.innerHTML = `
+    <div class="derivation-panel-title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      Derivation Scheme
+    </div>
+    <div class="derivation-panel-body">
+      <div class="derivation-row">
+        <span class="derivation-label">Standard</span>
+        <span class="derivation-value">${info.name} · ${info.addrType} · <code>${info.addrExample}</code> · ${info.network}</span>
+      </div>
+      <div class="derivation-row">
+        <span class="derivation-label">External chain</span>
+        <code class="derivation-value">${extPath}</code>
+      </div>
+      <div class="derivation-row">
+        <span class="derivation-label">Change chain</span>
+        <code class="derivation-value">${intPath}</code>
+      </div>
+      ${multiFormat ? `
+      <div class="derivation-row">
+        <span class="derivation-label">Also scanned</span>
+        <span class="derivation-value">P2PKH (m/44'…), P2SH-P2WPKH (m/49'…), P2WPKH (m/84'…)</span>
+      </div>
+      ` : ''}
+      <p class="derivation-note">
+        Your <code>${parsed.type}</code> key prefix encodes the derivation standard — the address format is fixed.
+        External chain (0) = receiving addresses · Change chain (1) = wallet-internal change.
+      </p>
+    </div>
+  `;
+
+  return el;
+}
+
+// ---- Address Explorer ----
+
+function renderAddressExplorer(addressLog, baseUrl) {
+  if (addressLog.length === 0) return null;
+
+  const activeCount = addressLog.filter(a => a.txCount > 0).length;
+
+  const section = document.createElement('div');
+  section.className = 'explorer-section';
+
+  const header = document.createElement('div');
+  header.className = 'explorer-header';
+  header.innerHTML = `
+    <div class="explorer-title-row">
+      <h3>Address Explorer</h3>
+      <span class="explorer-meta">${addressLog.length.toLocaleString()} scanned · ${activeCount} with activity</span>
+    </div>
+    <label class="explorer-filter-label">
+      <input type="checkbox" class="explorer-filter-cb" />
+      <span>Active only</span>
+    </label>
+  `;
+  section.appendChild(header);
+
+  const tableWrap = document.createElement('div');
+  tableWrap.className = 'explorer-table-wrap';
+
+  const table = document.createElement('table');
+  table.className = 'explorer-table';
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Path</th>
+        <th>Address</th>
+        <th>Type</th>
+        <th>TXs</th>
+        <th>Received</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+  `;
+
+  const tbody = document.createElement('tbody');
+  table.appendChild(tbody);
+  tableWrap.appendChild(table);
+
+  const sentinel = document.createElement('div');
+  sentinel.className = 'explorer-sentinel';
+  tableWrap.appendChild(sentinel);
+
+  section.appendChild(tableWrap);
+
+  const BATCH = 50;
+  let loaded = 0;
+  let currentLog = addressLog;
+  let loading = false;
+
+  const filterCb = header.querySelector('.explorer-filter-cb');
+
+  function rebuildTable() {
+    const activeOnly = filterCb.checked;
+    currentLog = activeOnly ? addressLog.filter(a => a.txCount > 0) : addressLog;
+    tbody.innerHTML = '';
+    loaded = 0;
+    sentinel.style.display = '';
+    observer.observe(sentinel);
+    loadMore();
+  }
+
+  function loadMore() {
+    if (loading) return;
+    loading = true;
+    const slice = currentLog.slice(loaded, loaded + BATCH);
+    const fragment = document.createDocumentFragment();
+    for (const item of slice) {
+      fragment.appendChild(createAddressRow(item, baseUrl));
+    }
+    tbody.appendChild(fragment);
+    loaded += slice.length;
+    loading = false;
+    if (loaded >= currentLog.length) {
+      observer.unobserve(sentinel);
+      sentinel.style.display = 'none';
+    }
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) loadMore();
+  }, { threshold: 0.1 });
+
+  observer.observe(sentinel);
+
+  filterCb.addEventListener('change', () => {
+    rebuildTable();
+  });
+
+  loadMore(); // Initial load
+
+  return section;
+}
+
+function createAddressRow(item, baseUrl) {
+  const row = document.createElement('tr');
+  row.className = item.txCount > 0 ? 'addr-row addr-row--active' : 'addr-row';
+
+  const balanceCls = item.balance > 0 ? 'balance-pos' : item.balance < 0 ? 'balance-neg' : '';
+  // Truncate address: first 10 + last 8
+  const shortAddr = item.address.length > 22
+    ? item.address.slice(0, 10) + '…' + item.address.slice(-8)
+    : item.address;
+
+  row.innerHTML = `
+    <td class="col-index">${item.index}</td>
+    <td class="col-path mono">${item.derivationPath}</td>
+    <td class="col-addr mono" title="${item.address}">${shortAddr}</td>
+    <td class="col-type">${item.addressType}</td>
+    <td class="col-txs">${item.txCount > 0 ? item.txCount : '—'}</td>
+    <td class="col-received mono">${item.received > 0 ? item.received.toLocaleString() : '—'}</td>
+    <td class="col-balance mono ${balanceCls}">${item.balance !== 0 ? item.balance.toLocaleString() : '—'}</td>
+  `;
+
+  if (item.txCount > 0) {
+    row.classList.add('addr-row--clickable');
+    let detailRow = null;
+    let txCache = null;
+    let isExpanded = false;
+
+    row.addEventListener('click', async () => {
+      if (!detailRow) {
+        isExpanded = true;
+        detailRow = document.createElement('tr');
+        detailRow.className = 'addr-detail-row';
+        const cell = document.createElement('td');
+        cell.colSpan = 7;
+        cell.className = 'addr-detail-cell';
+        cell.innerHTML = '<span class="tx-loading">Loading transactions…</span>';
+        detailRow.appendChild(cell);
+        row.after(detailRow);
+        row.classList.add('addr-row--expanded');
+
+        try {
+          const res = await fetch(`${baseUrl}/address/${item.address}/txs`);
+          txCache = res.ok ? (await res.json()).slice(0, 25) : [];
+        } catch {
+          txCache = [];
+        }
+
+        const explorerBase = baseUrl.includes('testnet')
+          ? 'https://blockstream.info/testnet/tx/'
+          : 'https://blockstream.info/tx/';
+
+        if (txCache.length > 0) {
+          cell.innerHTML = `<div class="tx-list">${txCache.map(tx =>
+            `<a class="tx-link" href="${explorerBase}${tx.txid}" target="_blank" rel="noopener">${tx.txid}</a>`
+          ).join('')}</div>`;
+        } else {
+          cell.innerHTML = '<span class="tx-empty">No transactions found.</span>';
+        }
+      } else {
+        isExpanded = !isExpanded;
+        detailRow.style.display = isExpanded ? '' : 'none';
+        row.classList.toggle('addr-row--expanded', isExpanded);
+      }
+    });
+  }
+
+  return row;
 }
 
 // ---- FAQ accordion ----
