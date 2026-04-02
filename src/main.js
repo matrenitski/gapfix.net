@@ -2,6 +2,15 @@
  * GapFix – main application entry point.
  */
 
+// Redirect HTTP → HTTPS in production (no-op on localhost/127.0.0.1)
+if (
+  location.protocol === 'http:' &&
+  location.hostname !== 'localhost' &&
+  location.hostname !== '127.0.0.1'
+) {
+  location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+}
+
 import './style.css';
 import { parseExtendedKey, deriveAddress } from './bitcoin.js';
 import { scanWallet } from './api.js';
