@@ -38,7 +38,7 @@ npm run preview  # preview production build locally
 
 ## Security Issues
 
-If you find a security vulnerability, please **do not open a public issue**. Email the maintainer privately via GitHub's contact form or create a private security advisory.
+If you find a security vulnerability, please **do not open a public issue**. Use GitHub's [Security Advisories](https://github.com/matrenitski/gapfix.net/security/advisories/new) feature to report it privately (repo → Security tab → Report a vulnerability).
 
 ## Licensing
 

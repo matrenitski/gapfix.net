@@ -179,6 +179,8 @@ header .container {
 
 .btn:active { transform: scale(0.98); }
 
+.btn-lg { font-size: 1rem; padding: 14px 28px; }
+
 .btn-primary {
   background: var(--orange);
   color: #000;
@@ -271,7 +273,7 @@ header .container {
 
 .result-issue .detail-row:last-child { border-bottom: none; }
 .detail-label { color: var(--text-muted); }
-.detail-value { font-family: monospace; font-size: 0.8rem; color: var(--text); word-break: break-all; max-width: 60%; text-align: right; }
+.detail-value { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text); word-break: break-all; max-width: 60%; text-align: right; }
 
 .dust-list {
   margin-top: 14px;
@@ -299,7 +301,7 @@ header .container {
 }
 
 .dust-item:last-child { border-bottom: none; }
-.dust-addr { font-family: monospace; color: var(--text); flex: 1; word-break: break-all; }
+.dust-addr { font-family: 'JetBrains Mono', monospace; color: var(--text); flex: 1; word-break: break-all; }
 .dust-amount { color: var(--orange); font-weight: 600; margin-left: 12px; white-space: nowrap; }
 
 .copy-section {
@@ -354,11 +356,8 @@ header .container {
 
 #faq { padding: 48px 0; }
 
-#faq h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
+#faq .section-heading {
   margin-bottom: 32px;
-  text-align: center;
 }
 
 .faq-item {

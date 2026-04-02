@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0d0d0d"/>
+
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#1f1f1f" stroke-width="1"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#1f1f1f" stroke-width="1"/>
+
+  <!-- Orange accent bar top -->
+  <rect x="0" y="0" width="1200" height="4" fill="#f7931a"/>
+
+  <!-- Logo icon group (centered horizontally, upper area) -->
+  <!-- Three address slot blocks -->
+  <!-- Left block (dim) -->
+  <rect x="519" y="160" width="44" height="44" rx="8" fill="#1f1f1f" stroke="#2a2a2a" stroke-width="2"/>
+  <!-- Dot inside left block -->
+  <circle cx="541" cy="182" r="5" fill="#555"/>
+
+  <!-- Center block (orange, with checkmark) -->
+  <rect x="578" y="155" width="44" height="44" rx="8" fill="#f7931a"/>
+  <!-- Checkmark -->
+  <polyline points="589,177 598,186 611,169" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Right block (dim) -->
+  <rect x="637" y="160" width="44" height="44" rx="8" fill="#1f1f1f" stroke="#2a2a2a" stroke-width="2"/>
+  <!-- Dot inside right block -->
+  <circle cx="659" cy="182" r="5" fill="#555"/>
+
+  <!-- Dashes between blocks -->
+  <line x1="563" y1="182" x2="578" y2="182" stroke="#555" stroke-width="2" stroke-dasharray="3,3"/>
+  <line x1="622" y1="182" x2="637" y2="182" stroke="#555" stroke-width="2" stroke-dasharray="3,3"/>
+
+  <!-- Wordmark -->
+  <!-- "Gap" in light text -->
+  <text x="490" y="270" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="72" fill="#e8e8e8" letter-spacing="-2">Gap</text>
+  <!-- "Fix" in orange -->
+  <text x="636" y="270" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="72" fill="#f7931a" letter-spacing="-2">Fix</text>
+
+  <!-- Tagline -->
+  <text x="600" y="330" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="26" fill="#888888" text-anchor="middle">Recover Bitcoin stuck beyond the 20-address gap limit</text>
+
+  <!-- Pill badges -->
+  <!-- Badge 1 -->
+  <rect x="263" y="390" width="200" height="44" rx="22" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="363" y="418" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="18" fill="#e8e8e8" text-anchor="middle">xpub / ypub / zpub</text>
+  <!-- Badge 2 -->
+  <rect x="500" y="390" width="200" height="44" rx="22" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="600" y="418" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="18" fill="#e8e8e8" text-anchor="middle">100% client-side</text>
+  <!-- Badge 3 -->
+  <rect x="737" y="390" width="200" height="44" rx="22" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="837" y="418" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="18" fill="#e8e8e8" text-anchor="middle">Free &amp; open source</text>
+
+  <!-- URL -->
+  <text x="600" y="520" font-family="Inter, system-ui, sans-serif" font-weight="600" font-size="22" fill="#f7931a" text-anchor="middle">gapfix.net</text>
+</svg>
