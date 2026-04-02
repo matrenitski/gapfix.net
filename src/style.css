@@ -229,21 +229,83 @@ header .container {
   justify-content: space-between;
 }
 
+/* ---- Progress live stats ---- */
+
+.progress-live {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.progress-live-addr {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.progress-live-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.progress-live-value {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  word-break: break-all;
+  min-height: 1.2em;
+}
+
+.progress-live-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.progress-stat {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+}
+
+.progress-balance {
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* ---- Results ---- */
 
 #results-section { display: none; }
 #results-section.visible { display: block; }
 
 .result-ok {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   padding: 18px 24px;
   background: rgba(34, 197, 94, 0.08);
   border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: var(--radius);
   color: var(--green);
+}
+
+.result-ok-body { display: flex; flex-direction: column; gap: 8px; }
+
+.result-ok-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-weight: 600;
+}
+
+.result-ok-stats {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(34, 197, 94, 0.7);
+  padding-left: 36px;
 }
 
 .result-issue {

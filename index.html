@@ -108,6 +108,19 @@
           <span id="progress-text">Deriving addresses…</span>
           <span>Up to 2 000 addresses (external + change)</span>
         </div>
+        <div class="progress-live">
+          <div class="progress-live-addr">
+            <span class="progress-live-label">Checking</span>
+            <span id="progress-addr" class="progress-live-value">—</span>
+          </div>
+          <div class="progress-live-row">
+            <span id="progress-checked" class="progress-stat">0 checked</span>
+            <span id="progress-balance" class="progress-stat progress-balance" style="display:none">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span id="progress-balance-val">0</span> sats found
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Results -->

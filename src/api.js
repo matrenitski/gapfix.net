@@ -79,6 +79,7 @@ export async function scanWallet({
   const totalWork = maxDepth * chains.length;
   let doneWork = 0;
   let batchErrors = 0;
+  let totalReceivedAll = 0;
 
   for (const chain of chains) {
     const chainKey = chain === 0 ? 'external' : 'change';
@@ -100,18 +101,25 @@ export async function scanWallet({
 
       for (const r of batchResults) {
         doneWork++;
-        if (onProgress) onProgress(Math.round((doneWork / totalWork) * 100));
 
         if (r.error) {
           batchErrors++;
         }
 
         if (r.txCount > 0) {
+          totalReceivedAll += r.totalReceived;
           usedAddresses.push({ address: r.address, index: r.index, totalReceived: r.totalReceived });
           gapCount = 0;
         } else {
           gapCount++;
         }
+
+        if (onProgress) onProgress({
+          pct: Math.round((doneWork / totalWork) * 100),
+          address: r.address,
+          totalReceived: totalReceivedAll,
+          checkedCount: doneWork,
+        });
       }
 
       i += BATCH_SIZE;
@@ -123,7 +131,11 @@ export async function scanWallet({
     results[chainKey] = usedAddresses;
   }
 
-  return { ...analyzeResults(results, gapLimit), batchErrors };
+  return {
+    ...analyzeResults(results, gapLimit),
+    batchErrors,
+    scanSummary: { totalChecked: doneWork, totalReceived: totalReceivedAll },
+  };
 }
 
 /**

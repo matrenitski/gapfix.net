@@ -24,6 +24,10 @@ const progressSection = document.getElementById('progress-section');
 const progressBar = document.getElementById('progress-bar');
 const progressText = document.getElementById('progress-text');
 const progressPct = document.getElementById('progress-pct');
+const progressAddr = document.getElementById('progress-addr');
+const progressChecked = document.getElementById('progress-checked');
+const progressBalance = document.getElementById('progress-balance');
+const progressBalanceVal = document.getElementById('progress-balance-val');
 const resultsSection = document.getElementById('results-section');
 const resultsContainer = document.getElementById('results-container');
 
@@ -42,6 +46,8 @@ xpubInput.addEventListener('keydown', (e) => {
 // ---- Scan flow ----
 
 async function startScan() {
+  if (abortController) return; // MAX-11: prevent concurrent scans
+
   const key = xpubInput.value.trim();
   if (!key) {
     showError('Please paste your xpub, ypub, or zpub key.');
@@ -64,12 +70,15 @@ async function startScan() {
   abortController = new AbortController();
 
   try {
-    const { issues, hasIssues, batchErrors } = await scanWallet({
+    const { issues, hasIssues, batchErrors, scanSummary } = await scanWallet({
       deriveAddressFn: (chain, index) => deriveAddress(parsed.hd, chain, index, parsed.type),
       keyType: parsed.type,
       maxDepth: 1000,
       gapLimit: 20,
-      onProgress: (pct) => setProgress(pct, `Scanning addresses… ${pct}%`),
+      onProgress: ({ pct, address, totalReceived, checkedCount }) => {
+        setProgress(pct, `Scanning addresses… ${pct}%`);
+        updateLiveStats(address, totalReceived, checkedCount);
+      },
       signal: abortController.signal,
     });
 
@@ -77,7 +86,7 @@ async function startScan() {
       showError(`Warning: ${batchErrors} address lookup${batchErrors > 1 ? 's' : ''} failed (rate limit or network error). Results may be incomplete — try scanning again.`);
     }
 
-    showResults(issues, hasIssues, parsed);
+    showResults(issues, hasIssues, parsed, scanSummary);
   } catch (err) {
     if (err.name === 'AbortError') {
       hideProgress();
@@ -85,6 +94,7 @@ async function startScan() {
     } else {
       showError(`Scan failed: ${err.message}`);
       hideProgress();
+      hideResults(); // MAX-12: clear stale results on scan failure
     }
   } finally {
     setScanning(false);
@@ -108,8 +118,25 @@ function setScanning(active) {
   if (active) {
     progressSection.classList.add('visible');
     hideResults();
+    resetLiveStats();
   } else {
     progressSection.classList.remove('visible');
+  }
+}
+
+function resetLiveStats() {
+  progressAddr.textContent = '—';
+  progressChecked.textContent = '0 checked';
+  progressBalanceVal.textContent = '0';
+  progressBalance.style.display = 'none';
+}
+
+function updateLiveStats(address, totalReceived, checkedCount) {
+  progressAddr.textContent = address;
+  progressChecked.textContent = `${checkedCount.toLocaleString()} checked`;
+  if (totalReceived > 0) {
+    progressBalanceVal.textContent = totalReceived.toLocaleString();
+    progressBalance.style.display = 'inline';
   }
 }
 
@@ -138,17 +165,25 @@ function hideResults() {
   resultsContainer.innerHTML = '';
 }
 
-function showResults(issues, hasIssues, parsed) {
+function showResults(issues, hasIssues, parsed, scanSummary) {
   resultsContainer.innerHTML = '';
 
   if (!hasIssues) {
     const ok = document.createElement('div');
     ok.className = 'result-ok';
+    const statsLine = scanSummary
+      ? `<span class="result-ok-stats">Checked ${scanSummary.totalChecked.toLocaleString()} addresses · ${scanSummary.totalReceived > 0 ? scanSummary.totalReceived.toLocaleString() + ' sats total balance' : 'no balance found'}</span>`
+      : '';
     ok.innerHTML = `
-      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
-      </svg>
-      <span>No gap limit issues found! All funds are within the 20-address gap limit and should be visible to your wallet.</span>
+      <div class="result-ok-body">
+        <div class="result-ok-main">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+          </svg>
+          <span>No gap limit issues found! All funds are within the 20-address gap limit and should be visible to your wallet.</span>
+        </div>
+        ${statsLine}
+      </div>
     `;
     resultsContainer.appendChild(ok);
   } else {
