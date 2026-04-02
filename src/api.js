@@ -116,7 +116,7 @@ export async function scanWallet({
 
       i += BATCH_SIZE;
 
-      if (maxDepth - i < gapLimit) break;
+      if (gapCount >= gapLimit && maxDepth - i < gapLimit) break;
       if (i < maxDepth) await sleep(BATCH_DELAY_MS);
     }
 
