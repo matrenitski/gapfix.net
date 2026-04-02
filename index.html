@@ -48,6 +48,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
+  <!-- LLM/AI discovery (llmstxt.org) -->
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+
   <!-- Favicon -->
   <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
 </head>
@@ -233,6 +236,32 @@
 
       <div class="faq-item">
         <div class="faq-q">
+          What is the Bitcoin address gap limit?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          The Bitcoin address gap limit is a scanning rule built into HD (Hierarchical Deterministic) wallets. When scanning for your funds, the wallet checks addresses 0, 1, 2, 3… in sequence and <strong>stops after it sees 20 consecutive addresses with no transaction history</strong>. This default of 20 is defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki" target="_blank" rel="noopener">BIP-44</a>. The limit exists for performance — checking every possible address forever is impractical, and 20 empty-in-a-row is normally a safe stopping point. The problem arises when your funds legitimately sit beyond that gap.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          How do I recover Bitcoin stuck beyond the gap limit?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-a">
+          The standard recovery method is the <strong>dust fix</strong>:
+          <ol style="margin: 8px 0 0 20px; color: var(--text-muted);">
+            <li>Paste your xpub into GapFix. It scans up to 1,000 external + 1,000 change addresses and identifies which empty addresses are blocking the scanner and which addresses beyond the gap hold your funds.</li>
+            <li>Send a tiny "dust" amount — as low as 294 satoshis for bech32 addresses — to each empty gap address. This gives each one a transaction, which the wallet scanner accepts as a signal to keep going.</li>
+            <li>Rescan your wallet. It will now continue past the filled gap and discover the hidden UTXOs automatically.</li>
+          </ol>
+          No private keys needed — only your xpub (extended public key) from wallet settings.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
           Is it safe to paste my xpub here?
           <span class="icon">+</span>
         </div>
@@ -302,6 +331,17 @@
         <div class="faq-a">
           GapFix checks up to 2 000 addresses (1 000 external + 1 000 change) by querying Blockstream's public API for each address. To avoid rate-limiting, it checks in batches with a short delay between them. Most scans complete in 2–5 minutes depending on your internet speed and Blockstream's response time. If you know your funds are on external addresses only, you can also check the source code and adjust the chain limit.
         </div>
+      </div>
+
+      <div class="faq-further">
+        <h3>Further reading</h3>
+        <ul>
+          <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki" target="_blank" rel="noopener">BIP-32 — Hierarchical Deterministic Wallets</a> (the standard defining xpub key derivation)</li>
+          <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki" target="_blank" rel="noopener">BIP-44 — Multi-Account HD Wallet Structure</a> (defines the gap limit of 20)</li>
+          <li><a href="https://en.bitcoin.it/wiki/Deterministic_wallet" target="_blank" rel="noopener">Bitcoin Wiki — Deterministic wallet</a></li>
+          <li><a href="https://electrum.readthedocs.io/en/latest/faq.html#gap-limit" target="_blank" rel="noopener">Electrum documentation — Gap limit</a></li>
+          <li><a href="https://github.com/Blockstream/esplora/blob/master/API.md" target="_blank" rel="noopener">Blockstream Esplora API</a> (the blockchain data source GapFix queries)</li>
+        </ul>
       </div>
 
     </div>

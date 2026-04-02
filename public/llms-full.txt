@@ -1,0 +1,168 @@
+# GapFix — Full Documentation
+
+> GapFix is a free, open-source, browser-based tool to find and recover Bitcoin stuck beyond the HD wallet address gap limit. No private keys, no server uploads, no installation required.
+
+Homepage: https://gapfix.net
+GitHub: https://github.com/matrenitski/gapfix.net
+License: MIT
+
+---
+
+## Problem: The Bitcoin Gap Limit
+
+### What is the Bitcoin address gap limit?
+
+The Bitcoin address gap limit is a scanning heuristic used by HD (Hierarchical Deterministic) wallets. When a wallet scans for your funds, it generates addresses sequentially (index 0, 1, 2, 3…) and checks each one for transactions. When it encounters 20 consecutive addresses with no transaction history, it stops scanning and assumes all funds have been found.
+
+This limit of 20 is the default defined by BIP-44 (Bitcoin Improvement Proposal 44), though some wallets use different values (Electrum uses 5 by default, for example).
+
+**Why 20?** It's a balance between scanning thoroughness and performance. Checking every possible address from index 0 to infinity would take too long. The gap limit assumes that no legitimate use case would skip more than 20 addresses in a row.
+
+### When does the gap limit cause problems?
+
+The gap limit becomes a problem when Bitcoin ends up at an address with an index higher than 20 addresses past the last used address. This can happen in several scenarios:
+
+1. **Wallet migration**: You generated many receive addresses in Wallet A, then imported your seed phrase into Wallet B. Wallet B starts scanning from index 0 but may stop before reaching all the addresses you had generated in Wallet A.
+
+2. **Exchange or custodian deposits**: Some exchanges assign deposit addresses non-sequentially or skip indices, landing your Bitcoin beyond the gap.
+
+3. **Address generation without spending**: If you generated 30+ receive addresses in advance (for privacy, for a batch of invoices, etc.) but only received funds on address 25, wallets with a gap limit of 20 will stop at index 20 and miss index 25.
+
+4. **Non-standard derivation paths**: Some apps derive addresses from your seed using a different path than the wallet you're now using, causing the visible address range to be offset.
+
+5. **Old wallet formats**: Restoring a very old wallet (pre-2014) where address generation was less standardized.
+
+### What is a UTXO?
+
+UTXO stands for Unspent Transaction Output — the unit of Bitcoin balance. When someone sends you Bitcoin, they create a UTXO locked to your address. When you spend it, that UTXO is consumed and new UTXOs are created. Your wallet "balance" is the sum of all UTXOs locked to addresses it controls.
+
+When funds are beyond the gap limit, the UTXOs exist on the blockchain — they are not lost — but your wallet doesn't know about them because it never checked those addresses.
+
+---
+
+## Solution: How GapFix Works
+
+### Step 1 — Input your extended public key
+
+GapFix accepts an account-level extended public key:
+
+- **xpub** — legacy P2PKH addresses (start with `1`)
+- **ypub** — segwit-wrapped P2SH-P2WPKH addresses (start with `3`)
+- **zpub** — native segwit P2WPKH / bech32 addresses (start with `bc1q`)
+- **tpub / upub / vpub** — testnet equivalents of the above
+
+**What is an xpub?** An extended public key is a special public key that can derive a sequence of child public keys (and therefore Bitcoin addresses) without ever exposing the corresponding private keys. It's defined in BIP-32. Sharing your xpub allows address derivation only — it cannot spend funds.
+
+**Where to find your xpub:**
+- Electrum: Wallet → Information → Master Public Key
+- Ledger Live: Account → Edit → Advanced → Extended public key
+- Trezor Suite: Account → Details → Public key (XPUB)
+- Sparrow Wallet: Settings → Keystore → Master Public Key
+- Coldcard: Advanced → View Identity → Master XPUB
+
+### Step 2 — Address derivation (in-browser)
+
+GapFix uses the `bitcoinjs-lib` library to derive addresses client-side according to BIP-32 derivation. It derives two chains:
+
+- **External chain (m/0/*)**: Receive addresses shown to payers
+- **Internal chain (m/1/*)**: Change addresses used when spending
+
+It derives up to 1,000 addresses on each chain (2,000 total) without sending any key material to a server.
+
+### Step 3 — Blockchain scanning
+
+Each derived address is queried against the Blockstream Esplora public API (`https://blockstream.info/api`). GapFix checks:
+
+- Whether the address has any transaction history
+- The current balance (confirmed + unconfirmed UTXOs)
+
+Queries are batched with rate-limit-friendly delays to avoid hitting Blockstream's limits. Most scans complete in 2–5 minutes.
+
+### Step 4 — Gap analysis
+
+After scanning, GapFix identifies:
+
+- **Gap addresses**: Empty addresses that appear before a funded address (these are blocking the wallet scanner)
+- **Funded addresses**: Addresses with a non-zero balance (the "hidden" Bitcoin)
+- **Used addresses**: Addresses with transaction history but zero current balance
+
+The scan result shows:
+- How many gap addresses need to be filled
+- The balance sitting beyond the gap
+- A copy-ready list of gap addresses with recommended dust amounts
+
+### Step 5 — The dust fix
+
+To make your wallet discover the hidden funds, you must "fill the gap" by sending a tiny amount of Bitcoin — called "dust" — to each empty address in the gap. Once those addresses have a transaction, the wallet's scanner will continue past them on the next rescan and discover the funded addresses.
+
+**Minimum dust amounts (below these values, outputs may be pruned):**
+- Native segwit / bech32 (bc1q...): **294 satoshis**
+- Legacy P2PKH (1...): **546 satoshis**
+- Segwit-wrapped P2SH (3...): **546 satoshis**
+
+**How to send dust efficiently:**
+- Use "batch send" or "send to many" in your wallet (Electrum, Sparrow, and most hardware wallet companions support this)
+- GapFix's "Copy addresses" button exports a tab-separated list (address + amount) compatible with most batch tools
+- Advanced users can construct a PSBT or use `bitcoin-cli sendmany`
+
+After sending dust and waiting for confirmation, rescan your wallet (in Electrum: Wallet → History → right-click → Rescan). Your wallet will now discover the gap addresses have transactions, continue scanning, and show the correct balance.
+
+---
+
+## FAQ
+
+### Is it safe to paste my xpub into GapFix?
+
+Yes. An xpub is an extended *public* key — it can only derive receive addresses, not spend funds or reveal private keys. GapFix runs entirely in your browser; the key is never transmitted to any server. For maximum privacy, you can clone the source code and run GapFix offline after loading dependencies.
+
+### What if I have a ypub or zpub?
+
+GapFix supports all three key types. Paste whichever format your wallet provides. The prefix determines the address type:
+- xpub → P2PKH legacy addresses (starting with `1`)
+- ypub → P2SH-P2WPKH segwit-wrapped addresses (starting with `3`)
+- zpub → P2WPKH native segwit / bech32 addresses (starting with `bc1q`)
+
+### How many addresses does GapFix check?
+
+GapFix checks up to 1,000 external addresses and 1,000 change addresses — 2,000 total. This goes far beyond the standard gap limit of 20 and covers virtually all real-world gap scenarios.
+
+### Why is my Bitcoin not showing up even after the dust fix?
+
+1. Make sure you sent dust to *all* gap addresses (every empty address between the last used index and the funded address).
+2. Wait for the dust transactions to confirm (at least 1 confirmation).
+3. Rescan your wallet — in Electrum: Wallet → History → Rescan; in Sparrow: Wallet → UTXOs → Rescan Blockchain.
+4. If you used a non-standard derivation path, the wallet you're restoring into must use the same path.
+
+### What wallets are compatible?
+
+Any standard BIP32/BIP44/BIP49/BIP84 HD wallet:
+- Hardware: Ledger, Trezor, Coldcard, BitBox02, Foundation Passport
+- Software: Electrum, Sparrow, Wasabi, BlueWallet, Nunchuk, Specter
+- Not compatible: old-style non-HD wallets (pre-BIP32)
+
+### Can GapFix see my Bitcoin? Can it steal my funds?
+
+No. GapFix only receives your *public* extended key, from which it derives *public* addresses. It queries those addresses against Blockstream's public API (which is itself public data — anyone can look up any Bitcoin address). GapFix has no ability to construct or sign transactions.
+
+---
+
+## External References
+
+- **BIP-32** (HD Wallets): https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+- **BIP-44** (Multi-Account Hierarchy): https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+- **BIP-49** (Segwit-wrapped): https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki
+- **BIP-84** (Native Segwit): https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
+- **Bitcoin Wiki — Deterministic wallet**: https://en.bitcoin.it/wiki/Deterministic_wallet
+- **Blockstream Esplora API**: https://github.com/Blockstream/esplora/blob/master/API.md
+- **Electrum gap limit documentation**: https://electrum.readthedocs.io/en/latest/faq.html#gap-limit
+
+---
+
+## About GapFix
+
+GapFix was built by Max Matrenitski as a free, open-source utility for the Bitcoin community. It is provided as-is, without warranty. It does not store, transmit, or have access to any private keys or seed phrases. Always verify addresses before sending funds.
+
+- Website: https://gapfix.net
+- Source code: https://github.com/matrenitski/gapfix.net
+- License: MIT
+- Contributions welcome: https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md

@@ -458,6 +458,38 @@ header .container {
 
 .faq-a.open { display: block; }
 
+.faq-further {
+  border-top: 1px solid var(--border);
+  padding: 24px 0 8px;
+}
+
+.faq-further h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.faq-further ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.faq-further li { font-size: 0.88rem; }
+
+.faq-further a {
+  color: var(--orange);
+  text-decoration: none;
+}
+
+.faq-further a:hover { text-decoration: underline; }
+
 /* ---- Section headings ---- */
 
 .section-heading {

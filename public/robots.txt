@@ -2,3 +2,8 @@ User-agent: *
 Allow: /
 
 Sitemap: https://gapfix.net/sitemap.xml
+
+# LLM/AI discovery
+# See https://llmstxt.org for the llms.txt standard
+# llms.txt: https://gapfix.net/llms.txt
+# llms-full.txt: https://gapfix.net/llms-full.txt
