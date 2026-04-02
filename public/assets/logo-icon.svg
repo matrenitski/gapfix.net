@@ -1,0 +1,36 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GapFix icon">
+  <title>GapFix</title>
+  <!-- Rounded dark background -->
+  <rect width="100" height="100" rx="22" fill="#161616"/>
+
+  <!-- Left block: dim address slot -->
+  <rect x="11" y="40" width="21" height="20" rx="4" fill="#242424" stroke="#353535" stroke-width="1.2"/>
+  <!-- Small label dots on left block -->
+  <circle cx="21.5" cy="50" r="2" fill="#4a4a4a"/>
+
+  <!-- Gap connector (dashed = break in chain) -->
+  <line x1="32" y1="50" x2="38" y2="50" stroke="#383838" stroke-width="1.5" stroke-dasharray="2 1.5" stroke-linecap="round"/>
+
+  <!-- Center block: the found gap — orange, taller, glowing -->
+  <rect x="37" y="33" width="26" height="34" rx="6" fill="#f7931a"/>
+  <!-- Highlight gradient illusion -->
+  <rect x="37" y="33" width="26" height="13" rx="6" fill="rgba(255,255,255,0.14)"/>
+  <!-- Checkmark: gap found & fixed -->
+  <polyline
+    points="46,51 49.5,55.5 57,45"
+    stroke="#000"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+    opacity="0.75"
+  />
+
+  <!-- Gap connector right (orange tint = resolved) -->
+  <line x1="63" y1="50" x2="68" y2="50" stroke="#f7931a" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- Right block: dim address slot -->
+  <rect x="68" y="40" width="21" height="20" rx="4" fill="#242424" stroke="#353535" stroke-width="1.2"/>
+  <!-- Small label dots on right block -->
+  <circle cx="78.5" cy="50" r="2" fill="#4a4a4a"/>
+</svg>

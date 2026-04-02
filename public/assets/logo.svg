@@ -1,0 +1,60 @@
+<svg viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GapFix logo">
+  <title>GapFix – Bitcoin HD Wallet Gap Scanner</title>
+
+  <!-- ── Icon mark (80×80, scaled from 100×100) ── -->
+  <g transform="scale(0.8)">
+    <!-- Rounded dark background -->
+    <rect width="100" height="100" rx="22" fill="#161616"/>
+
+    <!-- Left block -->
+    <rect x="11" y="40" width="21" height="20" rx="4" fill="#242424" stroke="#353535" stroke-width="1.2"/>
+    <circle cx="21.5" cy="50" r="2" fill="#4a4a4a"/>
+
+    <!-- Dashed connector (gap) -->
+    <line x1="32" y1="50" x2="38" y2="50" stroke="#383838" stroke-width="1.5" stroke-dasharray="2 1.5" stroke-linecap="round"/>
+
+    <!-- Center orange block (fixed gap) -->
+    <rect x="37" y="33" width="26" height="34" rx="6" fill="#f7931a"/>
+    <rect x="37" y="33" width="26" height="13" rx="6" fill="rgba(255,255,255,0.14)"/>
+    <polyline
+      points="46,51 49.5,55.5 57,45"
+      stroke="#000"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+      opacity="0.75"
+    />
+
+    <!-- Connector right -->
+    <line x1="63" y1="50" x2="68" y2="50" stroke="#f7931a" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+
+    <!-- Right block -->
+    <rect x="68" y="40" width="21" height="20" rx="4" fill="#242424" stroke="#353535" stroke-width="1.2"/>
+    <circle cx="78.5" cy="50" r="2" fill="#4a4a4a"/>
+  </g>
+
+  <!-- ── Wordmark ── -->
+  <!-- "Gap" in light -->
+  <text
+    x="92"
+    y="51"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-weight="700"
+    font-size="30"
+    fill="#e8e8e8"
+    letter-spacing="-0.6"
+    dominant-baseline="middle"
+  >Gap</text>
+  <!-- "Fix" in orange -->
+  <text
+    x="158"
+    y="51"
+    font-family="Inter, system-ui, -apple-system, sans-serif"
+    font-weight="700"
+    font-size="30"
+    fill="#f7931a"
+    letter-spacing="-0.6"
+    dominant-baseline="middle"
+  >Fix</text>
+</svg>
