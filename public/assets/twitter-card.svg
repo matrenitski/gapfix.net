@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="white" stop-opacity="0"/>
+      <stop offset="100%" stop-color="black" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f7931a" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#f7931a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="675" fill="#0d0d0d"/>
+
+  <!-- Subtle radial glow center -->
+  <ellipse cx="600" cy="337" rx="500" ry="300" fill="url(#glow)"/>
+
+  <!-- Orange accent bar top -->
+  <rect x="0" y="0" width="1200" height="4" fill="#f7931a"/>
+
+  <!-- Grid lines subtle -->
+  <line x1="0" y1="337" x2="1200" y2="337" stroke="#171717" stroke-width="1"/>
+  <line x1="600" y1="0" x2="600" y2="675" stroke="#171717" stroke-width="1"/>
+
+  <!-- ── Logo icon (72×72) centered horizontally at top ── -->
+  <!-- Icon positioned at x=564, y=80 (centered at 600) -->
+  <rect x="564" y="78" width="72" height="72" rx="14.4" fill="#f7931a"/>
+  <rect x="564" y="78" width="72" height="72" rx="14.4" fill="url(#vignette)" opacity="0.18"/>
+  <!-- Left slot -->
+  <rect x="571.2" y="105.4" width="15.8" height="17.3" rx="2.9" fill="rgba(0,0,0,0.30)"/>
+  <!-- Connector dots -->
+  <circle cx="590.3" cy="114" r="1.6" fill="rgba(0,0,0,0.28)"/>
+  <circle cx="609.7" cy="114" r="1.6" fill="rgba(0,0,0,0.28)"/>
+  <!-- Center block -->
+  <rect x="592.8" y="98.9" width="14.4" height="30.2" rx="3.6" fill="rgba(0,0,0,0.72)"/>
+  <rect x="592.8" y="98.9" width="14.4" height="7.2" rx="3.6" fill="rgba(255,255,255,0.10)"/>
+  <!-- Checkmark -->
+  <polyline points="597.1,114 599.6,117.6 604.3,108.96" stroke="white" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Right slot -->
+  <rect x="613" y="105.4" width="15.8" height="17.3" rx="2.9" fill="rgba(0,0,0,0.30)"/>
+
+  <!-- Wordmark below icon -->
+  <!-- "Gap" -->
+  <text x="527" y="205" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="52" fill="#e8e8e8" letter-spacing="-1.5" text-anchor="end">Gap</text>
+  <!-- "Fix" -->
+  <text x="537" y="205" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="52" fill="#f7931a" letter-spacing="-1.5">Fix</text>
+
+  <!-- Main headline -->
+  <text x="600" y="300" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="62" fill="#e8e8e8" letter-spacing="-2" text-anchor="middle">Your Bitcoin might be</text>
+  <text x="600" y="375" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="62" fill="#f7931a" letter-spacing="-2" text-anchor="middle">hiding from you</text>
+
+  <!-- Divider -->
+  <line x1="480" y1="410" x2="720" y2="410" stroke="#2a2a2a" stroke-width="1"/>
+
+  <!-- Subtitle -->
+  <text x="600" y="453" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="400" font-size="26" fill="#888888" text-anchor="middle">The gap limit problem — and how to fix it free at</text>
+
+  <!-- URL highlight -->
+  <rect x="463" y="473" width="274" height="46" rx="23" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="600" y="502" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="24" fill="#f7931a" text-anchor="middle">gapfix.net</text>
+
+  <!-- Bottom accent bar -->
+  <rect x="0" y="671" width="1200" height="4" fill="#1f1f1f"/>
+</svg>

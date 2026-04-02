@@ -36,6 +36,32 @@ npm run preview  # preview production build locally
 4. For UI changes, include a screenshot.
 5. Target the `main` branch.
 
+## Deployment
+
+### How it works
+
+This project is deployed via **Vercel**, which automatically builds and deploys on every push to `main`. No manual steps are needed after a `git push`.
+
+A **GitHub Actions** workflow (`.github/workflows/deploy.yml`) also runs on every push and pull request. It:
+- Installs dependencies and runs `npm run build`
+- Deploys to GitHub Pages on pushes to `main` (secondary host)
+- Blocks merge if the build fails — treat a red build check as a blocker
+
+### For contributors / agents
+
+```bash
+git add <files>
+git commit -m "feat: describe your change"
+git push origin main   # triggers Vercel + GitHub Actions automatically
+```
+
+> **Agents:** always `git push` immediately after every commit. Vercel deploys on push; a commit without a push means the change is not live.
+
+### Branch strategy
+
+- **Direct push to `main`** — acceptable for small, self-contained changes.
+- **Feature branch + PR** — preferred for larger or potentially disruptive changes. The CI build check runs on the PR and must pass before merging.
+
 ## Security Issues
 
 If you find a security vulnerability, please **do not open a public issue**. Use GitHub's [Security Advisories](https://github.com/matrenitski/gapfix.net/security/advisories/new) feature to report it privately (repo → Security tab → Report a vulnerability).

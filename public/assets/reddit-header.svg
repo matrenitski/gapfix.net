@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="628" viewBox="0 0 1200 628">
+  <!-- Background -->
+  <rect width="1200" height="628" fill="#0d0d0d"/>
+
+  <!-- Orange accent bar top -->
+  <rect x="0" y="0" width="1200" height="4" fill="#f7931a"/>
+
+  <!-- Section label top-left -->
+  <text x="60" y="72" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#444" letter-spacing="2" text-anchor="start">BITCOIN ADDRESS GAP LIMIT — VISUALIZED</text>
+
+  <!-- ── Address grid diagram ── -->
+  <!-- We show 26 address blocks in a row, centered -->
+  <!-- Each block: 36px wide, 44px tall, 6px gap = 42px step -->
+  <!-- Total width for 20 normal: 20*42-6 = 834. Too wide. Let's do 26 blocks at 34px wide, 5px gap = 39px step -->
+  <!-- Total = 26*39 - 5 = 1009. Center at 600: start x = 600 - 1009/2 = 95.5 ~96 -->
+
+  <!-- Group: addresses 1-20 (normal, visible) -->
+  <!-- addr 1 -->
+  <rect x="96" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="113" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">1</text>
+  <!-- addr 2 -->
+  <rect x="135" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="152" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">2</text>
+  <!-- addr 3 -->
+  <rect x="174" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="191" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">3</text>
+  <!-- addr 4 -->
+  <rect x="213" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="230" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">4</text>
+  <!-- addr 5 -->
+  <rect x="252" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="269" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">5</text>
+  <!-- addr 6 -->
+  <rect x="291" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="308" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">6</text>
+  <!-- addr 7 -->
+  <rect x="330" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="347" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">7</text>
+  <!-- addr 8 -->
+  <rect x="369" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="386" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">8</text>
+  <!-- addr 9 -->
+  <rect x="408" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="425" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">9</text>
+  <!-- addr 10 -->
+  <rect x="447" y="150" width="34" height="44" rx="6" fill="#222" stroke="#f7931a" stroke-width="1.5"/>
+  <text x="464" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#f7931a" text-anchor="middle">10</text>
+  <!-- Bitcoin symbol inside addr 10 to indicate funded -->
+  <text x="464" y="165" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#f7931a" text-anchor="middle">₿</text>
+
+  <!-- addr 11 -->
+  <rect x="486" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="503" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">11</text>
+  <!-- addr 12 -->
+  <rect x="525" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="542" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">12</text>
+  <!-- addr 13 -->
+  <rect x="564" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="581" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">13</text>
+  <!-- addr 14 -->
+  <rect x="603" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="620" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">14</text>
+  <!-- addr 15 -->
+  <rect x="642" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="659" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">15</text>
+  <!-- addr 16 -->
+  <rect x="681" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="698" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">16</text>
+  <!-- addr 17 -->
+  <rect x="720" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="737" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">17</text>
+  <!-- addr 18 -->
+  <rect x="759" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="776" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">18</text>
+  <!-- addr 19 -->
+  <rect x="798" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="815" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">19</text>
+  <!-- addr 20 — last scanned -->
+  <rect x="837" y="150" width="34" height="44" rx="6" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+  <text x="854" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#555" text-anchor="middle">20</text>
+
+  <!-- Wallet "stopped here" label for addr 20 -->
+  <line x1="854" y1="145" x2="854" y2="120" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+  <rect x="790" y="100" width="130" height="24" rx="4" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="855" y="117" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#555" text-anchor="middle">wallet stopped here</text>
+
+  <!-- GAP zone: addresses 21-25 (greyed, faded) -->
+  <!-- GAP bracket above -->
+  <rect x="876" y="148" width="5*39-5" height="48" rx="6" fill="#111" stroke="#222" stroke-width="1" opacity="0.8"/>
+  <!-- Individual gap blocks overlaid -->
+  <!-- addr 21 -->
+  <rect x="876" y="150" width="34" height="44" rx="6" fill="#111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="893" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333" text-anchor="middle">21</text>
+  <!-- addr 22 -->
+  <rect x="915" y="150" width="34" height="44" rx="6" fill="#111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="932" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333" text-anchor="middle">22</text>
+  <!-- addr 23 -->
+  <rect x="954" y="150" width="34" height="44" rx="6" fill="#111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="971" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333" text-anchor="middle">23</text>
+  <!-- addr 24 -->
+  <rect x="993" y="150" width="34" height="44" rx="6" fill="#111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="1010" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333" text-anchor="middle">24</text>
+  <!-- addr 25 -->
+  <rect x="1032" y="150" width="34" height="44" rx="6" fill="#111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="1049" y="178" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333" text-anchor="middle">25</text>
+
+  <!-- GAP label above the greyed blocks -->
+  <line x1="876" y1="140" x2="1065" y2="140" stroke="#333" stroke-width="1"/>
+  <line x1="876" y1="135" x2="876" y2="145" stroke="#333" stroke-width="1"/>
+  <line x1="1065" y1="135" x2="1065" y2="145" stroke="#333" stroke-width="1"/>
+  <rect x="938" y="112" width="65" height="22" rx="4" fill="#161616" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="970" y="127" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="12" fill="#f7931a" text-anchor="middle" opacity="0.7">GAP</text>
+
+  <!-- addr 26 — hidden UTXO FOUND, highlighted orange -->
+  <rect x="1071" y="144" width="42" height="56" rx="8" fill="#1a0d00" stroke="#f7931a" stroke-width="2"/>
+  <text x="1092" y="183" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#f7931a" text-anchor="middle" font-weight="700">26</text>
+  <text x="1092" y="165" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#f7931a" text-anchor="middle">₿</text>
+  <!-- Glow ring around addr 26 -->
+  <rect x="1068" y="141" width="48" height="62" rx="10" fill="none" stroke="#f7931a" stroke-width="1" opacity="0.3"/>
+
+  <!-- "UTXO found here!" callout -->
+  <line x1="1092" y1="202" x2="1092" y2="228" stroke="#f7931a" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.7"/>
+  <rect x="1024" y="228" width="138" height="26" rx="6" fill="#1a0d00" stroke="#f7931a" stroke-width="1" opacity="0.9"/>
+  <text x="1093" y="246" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="13" fill="#f7931a" text-anchor="middle">UTXO found here!</text>
+
+  <!-- Caption / headline text -->
+  <text x="600" y="330" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="52" fill="#e8e8e8" letter-spacing="-1.5" text-anchor="middle">Gap limit: your wallet</text>
+  <text x="600" y="392" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="52" fill="#f7931a" letter-spacing="-1.5" text-anchor="middle">stopped looking here</text>
+
+  <!-- Sub explanation -->
+  <text x="600" y="450" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" fill="#888" text-anchor="middle">Most wallets scan only 20 consecutive empty addresses. Funded addresses beyond that gap are invisible.</text>
+
+  <!-- Divider -->
+  <line x1="100" y1="490" x2="1100" y2="490" stroke="#1f1f1f" stroke-width="1"/>
+
+  <!-- Footer: logo wordmark + URL -->
+  <!-- "Gap" wordmark -->
+  <text x="472" y="553" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="36" fill="#e8e8e8" letter-spacing="-1" text-anchor="end">Gap</text>
+  <text x="478" y="553" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="36" fill="#f7931a" letter-spacing="-1">Fix</text>
+  <!-- Separator -->
+  <line x1="560" y1="532" x2="560" y2="560" stroke="#2a2a2a" stroke-width="1"/>
+  <!-- URL -->
+  <text x="590" y="553" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="600" font-size="22" fill="#555">gapfix.net — free, open-source, client-side</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="624" width="1200" height="4" fill="#1f1f1f"/>
+</svg>
