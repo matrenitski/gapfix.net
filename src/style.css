@@ -206,6 +206,23 @@ header .container {
 #progress-section { display: none; }
 #progress-section.visible { display: block; }
 
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-header-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.progress-header-pct {
+  font-size: 0.9rem;
+  color: var(--orange);
+}
+
 .progress-bar-outer {
   height: 6px;
   background: var(--surface-2);
@@ -226,14 +243,16 @@ header .container {
   font-size: 0.82rem;
   color: var(--text-muted);
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   justify-content: space-between;
 }
 
 /* ---- Progress live stats ---- */
 
 .progress-live {
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--border);
 }
 
@@ -263,7 +282,8 @@ header .container {
 
 .progress-live-row {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 6px 16px;
   align-items: center;
 }
 
@@ -945,4 +965,36 @@ footer .container {
   .explorer-table { font-size: 0.72rem; }
   .col-path { width: 120px; }
   .col-addr { width: 140px; }
+
+  /* Progress section responsive */
+  .progress-label {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .progress-live-addr {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .progress-live-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .live-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 8px;
+  }
+
+  .live-type,
+  .live-txs {
+    grid-row: 2;
+  }
+
+  .live-bal {
+    grid-row: 2;
+    grid-column: 2;
+  }
 }
