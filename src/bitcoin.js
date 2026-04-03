@@ -1,12 +1,13 @@
 /**
  * Bitcoin HD wallet address derivation utilities.
- * Supports xpub (P2PKH), ypub (P2SH-P2WPKH), and zpub (P2WPKH / bech32).
+ * Supports xpub (P2PKH), ypub (P2SH-P2WPKH), zpub (P2WPKH / bech32), and P2TR (bech32m).
  */
 
 import { HDKey } from '@scure/bip32';
 import { sha256 } from '@noble/hashes/sha2';
 import { ripemd160 } from '@noble/hashes/ripemd160';
-import { base58check, bech32 } from '@scure/base';
+import { base58check, bech32, bech32m } from '@scure/base';
+import { secp256k1 } from '@noble/curves/secp256k1';
 
 // BIP32 version bytes for different key types
 const VERSIONS = {
@@ -65,6 +66,41 @@ function toP2WPKH(pubkey) {
 }
 
 /**
+ * BIP341 tagged hash: SHA256(SHA256(tag) || SHA256(tag) || data).
+ */
+function taggedHash(tag, data) {
+  const tagHash = sha256(new TextEncoder().encode(tag));
+  const input = new Uint8Array(tagHash.length * 2 + data.length);
+  input.set(tagHash, 0);
+  input.set(tagHash, tagHash.length);
+  input.set(data, tagHash.length * 2);
+  return sha256(input);
+}
+
+/**
+ * P2TR address (Taproot bech32m, starts with "bc1p").
+ * Implements BIP341 key-path spend with no script tree.
+ * @param {Uint8Array} pubkey - 33-byte compressed public key
+ * @param {string} hrp - 'bc' for mainnet, 'tb' for testnet
+ */
+function toP2TR(pubkey, hrp = 'bc') {
+  // x-only internal key (32-byte x-coordinate)
+  const xOnly = pubkey.slice(1);
+  // lift_x: construct point with even Y for the given x-coordinate
+  const evenPubkey = new Uint8Array(33);
+  evenPubkey[0] = 0x02;
+  evenPubkey.set(xOnly, 1);
+  const P = secp256k1.ProjectivePoint.fromHex(evenPubkey);
+  // TapTweak with empty script tree (key-path only)
+  const tweak = taggedHash('TapTweak', xOnly);
+  const tweakInt = BigInt('0x' + [...tweak].map(b => b.toString(16).padStart(2, '0')).join(''));
+  // Output key = P + tweak*G
+  const Q = P.add(secp256k1.ProjectivePoint.BASE.multiply(tweakInt));
+  const outputXOnly = Q.toRawBytes(true).slice(1);
+  return bech32m.encode(hrp, [1, ...bech32m.toWords(outputXOnly)]);
+}
+
+/**
  * Detect key type from the prefix characters.
  */
 export function detectKeyType(key) {
@@ -72,7 +108,7 @@ export function detectKeyType(key) {
   if (prefix === 'xpub' || prefix === 'tpub') return prefix;
   if (prefix === 'ypub' || prefix === 'upub') return prefix;
   if (prefix === 'zpub' || prefix === 'vpub') return prefix;
-  throw new Error(`Unrecognized key prefix: "${key.slice(0, 4)}". Expected xpub, ypub, or zpub.`);
+  throw new Error(`Unrecognized key prefix: "${key.slice(0, 4)}". Expected xpub, ypub, zpub, or testnet equivalent.`);
 }
 
 /**
@@ -91,15 +127,18 @@ export function parseExtendedKey(key) {
  * @param {HDKey} hd - The HD key (account-level xpub)
  * @param {number} chain - 0 = external, 1 = internal (change)
  * @param {number} index - Address index
- * @param {string} type - 'xpub'|'ypub'|'zpub'|'tpub'|'upub'|'vpub'
+ * @param {string} type - 'xpub'|'ypub'|'zpub'|'tpub'|'upub'|'vpub'|'p2tr'|'p2tr-test'
  * @returns {string} Bitcoin address
  */
 export function deriveAddress(hd, chain, index, type) {
   const child = hd.derive(`m/${chain}/${index}`);
   if (!child.publicKey) throw new Error(`Failed to derive key at m/${chain}/${index}`);
   const pubkey = child.publicKey;
-  const isTestnet = type === 'tpub' || type === 'upub' || type === 'vpub';
+  const isTestnet = type === 'tpub' || type === 'upub' || type === 'vpub' || type === 'p2tr-test';
 
+  if (type === 'p2tr' || type === 'p2tr-test') {
+    return toP2TR(pubkey, isTestnet ? 'tb' : 'bc');
+  }
   if (type === 'xpub' || type === 'tpub') {
     if (isTestnet) {
       // testnet P2PKH

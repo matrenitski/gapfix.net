@@ -52,7 +52,7 @@ async function startScan() {
 
   const key = xpubInput.value.trim();
   if (!key) {
-    showError('Please paste your xpub, ypub, or zpub key.');
+    showError('Please paste your xpub, ypub, zpub, or equivalent testnet key.');
     return;
   }
 
@@ -123,11 +123,13 @@ function buildDeriveAddressFns(parsed, multiFormat) {
         { keyType: 'tpub', type: 'P2PKH', bip: 44 },
         { keyType: 'upub', type: 'P2SH-P2WPKH', bip: 49 },
         { keyType: 'vpub', type: 'P2WPKH', bip: 84 },
+        { keyType: 'p2tr-test', type: 'P2TR', bip: 86 },
       ]
     : [
         { keyType: 'xpub', type: 'P2PKH', bip: 44 },
         { keyType: 'ypub', type: 'P2SH-P2WPKH', bip: 49 },
         { keyType: 'zpub', type: 'P2WPKH', bip: 84 },
+        { keyType: 'p2tr', type: 'P2TR', bip: 86 },
       ];
 
   const primaryFmt = allFormats.find(f => f.keyType === parsed.type) || allFormats[2];
@@ -154,7 +156,7 @@ function buildDeriveAddressFns(parsed, multiFormat) {
 }
 
 function getBlockstreamBaseUrl(keyType) {
-  return ['tpub', 'upub', 'vpub'].includes(keyType)
+  return ['tpub', 'upub', 'vpub', 'p2tr-test'].includes(keyType)
     ? 'https://blockstream.info/testnet/api'
     : 'https://blockstream.info/api';
 }
@@ -267,7 +269,7 @@ function renderIssue(issue, parsed) {
   const dustAddresses = issue.dustIndexes.map(
     idx => deriveAddress(parsed.hd, issue.chain === 'external' ? 0 : 1, idx, parsed.type)
   );
-  const dustAmount = parsed.type === 'zpub' || parsed.type === 'vpub' ? 294 : 546;
+  const dustAmount = parsed.type === 'zpub' || parsed.type === 'vpub' || parsed.type === 'p2tr' || parsed.type === 'p2tr-test' ? 294 : 546;
 
   const el = document.createElement('div');
   el.className = 'result-issue';
@@ -336,6 +338,8 @@ function renderDerivationPanel(parsed, multiFormat) {
     tpub: { bip: 44, name: 'BIP44', addrType: 'P2PKH (legacy)', addrExample: 'm…', network: 'testnet' },
     upub: { bip: 49, name: 'BIP49', addrType: 'P2SH-P2WPKH (wrapped segwit)', addrExample: '2…', network: 'testnet' },
     vpub: { bip: 84, name: 'BIP84', addrType: 'P2WPKH (native segwit)', addrExample: 'tb1q…', network: 'testnet' },
+    'p2tr': { bip: 86, name: 'BIP86', addrType: 'P2TR (taproot)', addrExample: 'bc1p…', network: 'mainnet' },
+    'p2tr-test': { bip: 86, name: 'BIP86', addrType: 'P2TR (taproot)', addrExample: 'tb1p…', network: 'testnet' },
   };
 
   const info = typeMap[parsed.type] || typeMap.xpub;
@@ -367,7 +371,7 @@ function renderDerivationPanel(parsed, multiFormat) {
       ${multiFormat ? `
       <div class="derivation-row">
         <span class="derivation-label">Also scanned</span>
-        <span class="derivation-value">P2PKH (m/44'…), P2SH-P2WPKH (m/49'…), P2WPKH (m/84'…)</span>
+        <span class="derivation-value">P2PKH (m/44'…), P2SH-P2WPKH (m/49'…), P2WPKH (m/84'…), P2TR (m/86'…)</span>
       </div>
       ` : ''}
       <p class="derivation-note">

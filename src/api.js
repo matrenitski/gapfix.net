@@ -10,7 +10,7 @@ const BATCH_SIZE = 10;      // concurrent requests per batch
 const BATCH_DELAY_MS = 300; // ms between batches to respect rate limits
 
 function getBaseUrl(keyType) {
-  return (keyType === 'tpub' || keyType === 'upub' || keyType === 'vpub')
+  return (keyType === 'tpub' || keyType === 'upub' || keyType === 'vpub' || keyType === 'p2tr-test')
     ? TESTNET_API
     : MAINNET_API;
 }
