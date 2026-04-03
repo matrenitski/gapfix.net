@@ -29,7 +29,6 @@ const progressChecked = document.getElementById('progress-checked');
 const progressBalance = document.getElementById('progress-balance');
 const progressBalanceVal = document.getElementById('progress-balance-val');
 const extendedBadge = document.getElementById('extended-scan-badge');
-const multiFormatToggle = document.getElementById('multi-format-toggle');
 const resultsSection = document.getElementById('results-section');
 const resultsContainer = document.getElementById('results-container');
 
@@ -65,17 +64,15 @@ async function startScan() {
     return;
   }
 
-  const multiFormat = multiFormatToggle ? multiFormatToggle.checked : false;
-
   clearError();
-  setScanning(true, multiFormat);
+  setScanning(true);
   setProgress(0, 'Deriving addresses…');
 
   abortController = new AbortController();
 
   try {
     const { issues, hasIssues, batchErrors, scanSummary, addressLog } = await scanWallet({
-      deriveAddressFns: buildDeriveAddressFns(parsed, multiFormat),
+      deriveAddressFns: buildDeriveAddressFns(parsed),
       keyType: parsed.type,
       maxDepth: 1000,
       gapLimit: 20,
@@ -90,7 +87,7 @@ async function startScan() {
       showError(`Warning: ${batchErrors} address lookup${batchErrors > 1 ? 's' : ''} failed (rate limit or network error). Results may be incomplete — try scanning again.`);
     }
 
-    showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFormat);
+    showResults(issues, hasIssues, parsed, scanSummary, addressLog);
   } catch (err) {
     if (err.name === 'AbortError') {
       hideProgress();
@@ -101,7 +98,7 @@ async function startScan() {
       hideResults(); // MAX-12: clear stale results on scan failure
     }
   } finally {
-    setScanning(false, false);
+    setScanning(false);
     abortController = null;
   }
 }
@@ -115,7 +112,7 @@ function cancelScan() {
 
 // ---- Derivation helpers ----
 
-function buildDeriveAddressFns(parsed, multiFormat) {
+function buildDeriveAddressFns(parsed) {
   const isTestnet = ['tpub', 'upub', 'vpub'].includes(parsed.type);
 
   const allFormats = isTestnet
@@ -132,27 +129,11 @@ function buildDeriveAddressFns(parsed, multiFormat) {
         { keyType: 'p2tr', type: 'P2TR', bip: 86 },
       ];
 
-  const primaryFmt = allFormats.find(f => f.keyType === parsed.type) || allFormats[2];
-
-  const fns = [{
-    fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, primaryFmt.keyType),
-    type: primaryFmt.type,
-    bip: primaryFmt.bip,
-  }];
-
-  if (multiFormat) {
-    for (const fmt of allFormats) {
-      if (fmt.keyType !== primaryFmt.keyType) {
-        fns.push({
-          fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, fmt.keyType),
-          type: fmt.type,
-          bip: fmt.bip,
-        });
-      }
-    }
-  }
-
-  return fns;
+  return allFormats.map(fmt => ({
+    fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, fmt.keyType),
+    type: fmt.type,
+    bip: fmt.bip,
+  }));
 }
 
 function getBlockstreamBaseUrl(keyType) {
@@ -163,11 +144,11 @@ function getBlockstreamBaseUrl(keyType) {
 
 // ---- UI helpers ----
 
-function setScanning(active, multiFormat) {
+function setScanning(active) {
   scanBtn.disabled = active;
   scanBtn.textContent = active ? 'Scanning…' : 'Scan for Gap Issues';
   cancelBtn.style.display = active ? 'inline-flex' : 'none';
-  if (extendedBadge) extendedBadge.style.display = (active && multiFormat) ? 'inline-flex' : 'none';
+  if (extendedBadge) extendedBadge.style.display = active ? 'inline-flex' : 'none';
   if (active) {
     progressSection.classList.add('visible');
     hideResults();
@@ -218,7 +199,7 @@ function hideResults() {
   resultsContainer.innerHTML = '';
 }
 
-function showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFormat) {
+function showResults(issues, hasIssues, parsed, scanSummary, addressLog) {
   resultsContainer.innerHTML = '';
 
   if (!hasIssues) {
@@ -251,7 +232,7 @@ function showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFo
   }
 
   // Derivation panel
-  resultsContainer.appendChild(renderDerivationPanel(parsed, multiFormat));
+  resultsContainer.appendChild(renderDerivationPanel(parsed));
 
   // Address explorer
   if (addressLog && addressLog.length > 0) {
@@ -330,7 +311,7 @@ function renderIssue(issue, parsed) {
 
 // ---- Derivation panel ----
 
-function renderDerivationPanel(parsed, multiFormat) {
+function renderDerivationPanel(parsed) {
   const typeMap = {
     xpub: { bip: 44, name: 'BIP44', addrType: 'P2PKH (legacy)', addrExample: '1…', network: 'mainnet' },
     ypub: { bip: 49, name: 'BIP49', addrType: 'P2SH-P2WPKH (wrapped segwit)', addrExample: '3…', network: 'mainnet' },
@@ -368,14 +349,12 @@ function renderDerivationPanel(parsed, multiFormat) {
         <span class="derivation-label">Change chain</span>
         <code class="derivation-value">${intPath}</code>
       </div>
-      ${multiFormat ? `
       <div class="derivation-row">
-        <span class="derivation-label">Also scanned</span>
+        <span class="derivation-label">All formats scanned</span>
         <span class="derivation-value">P2PKH (m/44'…), P2SH-P2WPKH (m/49'…), P2WPKH (m/84'…), P2TR (m/86'…)</span>
       </div>
-      ` : ''}
       <p class="derivation-note">
-        Your <code>${parsed.type}</code> key prefix encodes the derivation standard — the address format is fixed.
+        GapFix checks all four address formats from your key in a single pass — legacy, wrapped segwit, native segwit, and Taproot.
         External chain (0) = receiving addresses · Change chain (1) = wallet-internal change.
       </p>
     </div>

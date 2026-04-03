@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap</title>
-  <meta name="description" content="Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see." />
-  <meta name="keywords" content="bitcoin, gap limit, xpub, ypub, zpub, HD wallet, address gap, UTXO recovery" />
+  <meta name="description" content="Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Scans all address formats including Taproot (bc1p). Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see." />
+  <meta name="keywords" content="bitcoin, gap limit, xpub, ypub, zpub, taproot, bc1p, P2TR, HD wallet, address gap, UTXO recovery, BIP86" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap" />
@@ -31,7 +31,7 @@
     "@type": "WebApplication",
     "name": "GapFix",
     "url": "https://gapfix.net",
-    "description": "Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see.",
+    "description": "Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Scans all address formats including Taproot (bc1p / P2TR). Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see.",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires a modern web browser with JavaScript enabled",
@@ -86,7 +86,7 @@
         "name": "How much should I send as dust?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "GapFix recommends the minimum non-dust amount for each address type: Legacy (P2PKH, starts with 1): 546 sats. Segwit-wrapped (P2SH-P2WPKH, starts with 3): 546 sats. Native segwit (P2WPKH / bech32, starts with bc1q): 294 sats. At typical fee rates, sending a batch of dust transactions costs a few hundred sats in fees — far less than any funds you'd recover."
+          "text": "GapFix recommends the minimum non-dust amount for each address type: Legacy (P2PKH, starts with 1): 546 sats. Segwit-wrapped (P2SH-P2WPKH, starts with 3): 546 sats. Native segwit (P2WPKH / bech32, starts with bc1q): 294 sats. Taproot (P2TR, starts with bc1p): 294 sats. At typical fee rates, sending a batch of dust transactions costs a few hundred sats in fees — far less than any funds you'd recover."
         }
       },
       {
@@ -102,7 +102,7 @@
         "name": "Will this work for all wallets?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "GapFix works for any standard BIP32/BIP44/BIP49/BIP84 HD wallet. It supports xpub (legacy P2PKH), ypub (segwit-wrapped P2SH), and zpub (native segwit bech32) keys. Hardware wallets like Ledger, Trezor, Coldcard, and BitBox, as well as software wallets like Electrum, Sparrow, and Wasabi are all compatible."
+          "text": "GapFix works for any standard BIP32/BIP44/BIP49/BIP84/BIP86 HD wallet. It supports xpub (legacy P2PKH), ypub (segwit-wrapped P2SH), zpub (native segwit bech32), and Taproot (P2TR / bc1p) address scanning. All four formats are scanned automatically from a single key. Hardware wallets like Ledger, Trezor, Coldcard, and BitBox, as well as software wallets like Electrum, Sparrow, and Wasabi are all compatible."
         }
       },
       {
@@ -168,7 +168,7 @@
       <div class="card">
         <h2>Scan for Gap Issues</h2>
 
-        <label class="input-label" for="xpub-input">Your Extended Public Key (xpub / ypub / zpub)</label>
+        <label class="input-label" for="xpub-input">Your Extended Public Key (xpub / ypub / zpub / any BIP32 key)</label>
         <div class="input-row">
           <input
             id="xpub-input"
@@ -185,17 +185,10 @@
         </div>
 
         <p class="input-hint">
-          Paste your account-level xpub (legacy), ypub (segwit-wrapped), or zpub (native segwit).
-          This is a <strong>public key</strong> — no private keys, no seed phrases, nothing sensitive is required or transmitted.
+          Paste your account-level xpub (legacy), ypub (segwit-wrapped), zpub (native segwit), or any BIP32 extended public key.
+          GapFix automatically scans <strong>all four address formats</strong> — P2PKH, P2SH-P2WPKH, P2WPKH, and Taproot (P2TR / bc1p) — so no funds can be missed.
+          This is a <strong>public key</strong> — no private keys, no seed phrases required or transmitted.
         </p>
-
-        <div class="scan-options">
-          <label class="scan-toggle-label">
-            <input type="checkbox" id="multi-format-toggle" />
-            <span>Also scan legacy (P2PKH) and wrapped segwit (P2SH) addresses</span>
-            <span class="scan-toggle-slow">~3× slower</span>
-          </label>
-        </div>
 
         <div class="security-notice">
           <span class="icon">🔒</span>
@@ -220,8 +213,8 @@
         </div>
         <div class="progress-label">
           <span id="progress-text">Deriving addresses…</span>
-          <span id="extended-scan-badge" class="extended-badge" style="display:none">Extended scan — 3 formats</span>
-          <span>Up to 2 000 addresses (external + change)</span>
+          <span id="extended-scan-badge" class="extended-badge" style="display:none">4 formats: P2PKH · P2SH · P2WPKH · P2TR</span>
+          <span>1 000+ addresses beyond last active, per chain</span>
         </div>
         <div class="progress-live">
           <div class="progress-live-addr">
@@ -285,11 +278,12 @@
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-content">
-            <h3>GapFix scans 1 000 addresses deep</h3>
+            <h3>GapFix scans deep — all address formats</h3>
             <p>
               Paste your xpub, ypub, or zpub (a public key — no seed phrase needed).
-              GapFix derives and checks up to 1 000 external and 1 000 change addresses
-              against the blockchain, identifying any funds sitting beyond a gap of 20.
+              GapFix checks all four address types — legacy (P2PKH), wrapped segwit (P2SH-P2WPKH),
+              native segwit (P2WPKH), and Taproot (P2TR / bc1p) — scanning at least 1 000 addresses
+              beyond the last active one on each chain, so nothing gets missed.
             </p>
           </div>
         </div>
@@ -382,6 +376,7 @@
             <li><strong>Legacy (P2PKH, starts with 1):</strong> 546 sats</li>
             <li><strong>Segwit-wrapped (P2SH-P2WPKH, starts with 3):</strong> 546 sats</li>
             <li><strong>Native segwit (P2WPKH / bech32, starts with bc1q):</strong> 294 sats</li>
+            <li><strong>Taproot (P2TR, starts with bc1p):</strong> 294 sats</li>
           </ul>
           At typical fee rates, sending a batch of dust transactions costs a few hundred sats in fees — far less than any funds you'd recover.
         </div>
@@ -403,7 +398,7 @@
           <span class="icon">+</span>
         </div>
         <div class="faq-a">
-          GapFix works for any standard BIP32/BIP44/BIP49/BIP84 HD wallet. It supports xpub (legacy P2PKH), ypub (segwit-wrapped P2SH), and zpub (native segwit bech32) keys. Hardware wallets like Ledger, Trezor, Coldcard, and BitBox, as well as software wallets like Electrum, Sparrow, and Wasabi are all compatible.
+          GapFix works for any standard BIP32/BIP44/BIP49/BIP84/BIP86 HD wallet. It supports xpub (legacy P2PKH), ypub (segwit-wrapped P2SH), zpub (native segwit bech32), and Taproot (P2TR / bc1p) address scanning. Hardware wallets like Ledger, Trezor, Coldcard, and BitBox, as well as software wallets like Electrum, Sparrow, and Wasabi are all compatible. All four address formats are scanned automatically from a single key.
         </div>
       </div>
 
