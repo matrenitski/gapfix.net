@@ -195,6 +195,7 @@ export async function scanWallet({
             totalReceived: totalReceivedAll,
             checkedCount: doneWork,
             currentPath: indexResults[0]?.derivationPath || '',
+            recentEntries: indexResults,
           });
         }
       }

@@ -29,6 +29,7 @@ const progressChecked = document.getElementById('progress-checked');
 const progressBalance = document.getElementById('progress-balance');
 const progressBalanceVal = document.getElementById('progress-balance-val');
 const extendedBadge = document.getElementById('extended-scan-badge');
+const progressLiveTable = document.getElementById('progress-live-table');
 const resultsSection = document.getElementById('results-section');
 const resultsContainer = document.getElementById('results-container');
 
@@ -76,9 +77,9 @@ async function startScan() {
       keyType: parsed.type,
       maxDepth: 1000,
       gapLimit: 20,
-      onProgress: ({ pct, address, totalReceived, checkedCount }) => {
+      onProgress: ({ pct, address, totalReceived, checkedCount, recentEntries }) => {
         setProgress(pct, `Scanning addresses… ${pct}%`);
-        updateLiveStats(address, totalReceived, checkedCount);
+        updateLiveStats(address, totalReceived, checkedCount, recentEntries);
       },
       signal: abortController.signal,
     });
@@ -129,6 +130,13 @@ function buildDeriveAddressFns(parsed) {
         { keyType: 'p2tr', type: 'P2TR', bip: 86 },
       ];
 
+  // Put user's key type first so progress display shows their native address format
+  const primaryIdx = allFormats.findIndex(f => f.keyType === parsed.type);
+  if (primaryIdx > 0) {
+    const [primary] = allFormats.splice(primaryIdx, 1);
+    allFormats.unshift(primary);
+  }
+
   return allFormats.map(fmt => ({
     fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, fmt.keyType),
     type: fmt.type,
@@ -163,14 +171,29 @@ function resetLiveStats() {
   progressChecked.textContent = '0 checked';
   progressBalanceVal.textContent = '0';
   progressBalance.style.display = 'none';
+  if (progressLiveTable) progressLiveTable.innerHTML = '';
 }
 
-function updateLiveStats(address, totalReceived, checkedCount) {
+function updateLiveStats(address, totalReceived, checkedCount, recentEntries) {
   progressAddr.textContent = address;
   progressChecked.textContent = `${checkedCount.toLocaleString()} checked`;
   if (totalReceived > 0) {
     progressBalanceVal.textContent = totalReceived.toLocaleString();
     progressBalance.style.display = 'inline';
+  }
+  if (progressLiveTable && recentEntries && recentEntries.length > 0) {
+    progressLiveTable.innerHTML = recentEntries.map(e => {
+      const active = e.txCount > 0 && !e.error;
+      const addrShort = e.address.length > 20
+        ? e.address.slice(0, 10) + '…' + e.address.slice(-8)
+        : e.address;
+      return `<div class="live-row${active ? ' live-row-active' : ''}">
+        <span class="live-addr">${addrShort}</span>
+        <span class="live-type">${e.addressType}</span>
+        <span class="live-txs">${active ? e.txCount + ' tx' : '—'}</span>
+        <span class="live-bal">${active && e.balance > 0 ? e.balance.toLocaleString() + ' sats' : active ? '0 sats' : ''}</span>
+      </div>`;
+    }).join('');
   }
 }
 
