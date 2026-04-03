@@ -109,10 +109,10 @@ export async function postTweet(text) {
     await composeArea.pressSequentially(text, { delay: 40 });
     await randomDelay(1000, 2000);
 
-    // Click the modal Post button
+    // Click the modal Post button (force to bypass overlay intercept)
     const postButton = page.locator('[data-testid="tweetButton"]').first();
     await postButton.waitFor({ timeout: 5000 });
-    await postButton.click();
+    await postButton.click({ force: true });
     await randomDelay(3000, 5000);
 
     // Navigate to profile and grab the latest tweet URL
