@@ -223,7 +223,7 @@ function showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFo
     const ok = document.createElement('div');
     ok.className = 'result-ok';
     const statsLine = scanSummary
-      ? `<span class="result-ok-stats">Checked ${scanSummary.totalChecked.toLocaleString()} addresses · ${scanSummary.totalReceived > 0 ? scanSummary.totalReceived.toLocaleString() + ' sats total balance' : 'no balance found'}</span>`
+      ? `<span class="result-ok-stats">Checked ${scanSummary.totalChecked.toLocaleString()} addresses · ${(scanSummary.activeAddressCount || 0).toLocaleString()} with activity · ${scanSummary.totalReceived.toLocaleString()} sats received · ${(scanSummary.totalSent || 0).toLocaleString()} sats sent · ${(scanSummary.totalBalance || 0).toLocaleString()} sats balance</span>`
       : '';
     ok.innerHTML = `
       <div class="result-ok-body">

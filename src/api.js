@@ -88,22 +88,33 @@ export async function scanWallet({
   const chains = [0, 1]; // 0=external, 1=change
   const results = { external: [], change: [] };
   const addressLog = []; // all scanned addresses
-  const totalWork = maxDepth * chains.length;
   let doneWork = 0;
   let batchErrors = 0;
   let totalReceivedAll = 0;
+  let totalSpentAll = 0;
+  let activeAddressCount = 0;
 
-  for (const chain of chains) {
+  for (let chainIdx = 0; chainIdx < chains.length; chainIdx++) {
+    const chain = chains[chainIdx];
     const chainKey = chain === 0 ? 'external' : 'change';
     const chainLabel = chain === 0 ? 'external' : 'change';
     const usedAddresses = [];
-    let gapCount = 0;
+    let lastUsedIndex = -1;
+
+    // Dynamic depth: at least maxDepth, or lastUsedIndex + 1000 rounded up to next 1000 boundary
+    const effectiveDepth = () =>
+      lastUsedIndex < 0
+        ? maxDepth
+        : Math.max(Math.ceil((lastUsedIndex + 1000) / 1000) * 1000, maxDepth);
 
     let i = 0;
-    while (i < maxDepth) {
+    while (i < effectiveDepth()) {
+      // Capture depth at batch start so building and processing use the same bound
+      const currentDepth = effectiveDepth();
+
       // Build batch: BATCH_SIZE indices, all formats per index
       const batchItems = [];
-      for (let b = 0; b < BATCH_SIZE && i + b < maxDepth; b++) {
+      for (let b = 0; b < BATCH_SIZE && i + b < currentDepth; b++) {
         const idx = i + b;
         for (const fmt of formats) {
           const bipPath = fmt.bip != null
@@ -132,7 +143,7 @@ export async function scanWallet({
       }
 
       // Process each index in order
-      for (let b = 0; b < BATCH_SIZE && i + b < maxDepth; b++) {
+      for (let b = 0; b < BATCH_SIZE && i + b < currentDepth; b++) {
         const idx = i + b;
         const indexResults = byIndex.get(idx) || [];
         doneWork++;
@@ -160,6 +171,7 @@ export async function scanWallet({
           if (r.txCount > 0 && !r.error) {
             hasActivity = true;
             totalReceivedAll += r.received;
+            totalSpentAll += r.spent;
             usedAddresses.push({
               address: r.address,
               index: idx,
@@ -169,24 +181,27 @@ export async function scanWallet({
         }
 
         if (hasActivity) {
-          gapCount = 0;
-        } else {
-          gapCount++;
+          lastUsedIndex = Math.max(lastUsedIndex, idx);
+          activeAddressCount++;
         }
 
-        if (onProgress) onProgress({
-          pct: Math.round((doneWork / totalWork) * 100),
-          address: indexResults[0]?.address || '',
-          totalReceived: totalReceivedAll,
-          checkedCount: doneWork,
-          currentPath: indexResults[0]?.derivationPath || '',
-        });
+        if (onProgress) {
+          const depth = effectiveDepth();
+          const chainProgress = Math.min(i + BATCH_SIZE, depth) / depth;
+          const overallProgress = (chainIdx + chainProgress) / chains.length;
+          onProgress({
+            pct: Math.min(99, Math.round(overallProgress * 100)),
+            address: indexResults[0]?.address || '',
+            totalReceived: totalReceivedAll,
+            checkedCount: doneWork,
+            currentPath: indexResults[0]?.derivationPath || '',
+          });
+        }
       }
 
       i += BATCH_SIZE;
 
-      if (gapCount >= gapLimit && maxDepth - i < gapLimit) break;
-      if (i < maxDepth) await sleep(BATCH_DELAY_MS);
+      if (i < effectiveDepth()) await sleep(BATCH_DELAY_MS);
     }
 
     results[chainKey] = usedAddresses;
@@ -195,7 +210,13 @@ export async function scanWallet({
   return {
     ...analyzeResults(results, gapLimit),
     batchErrors,
-    scanSummary: { totalChecked: doneWork, totalReceived: totalReceivedAll },
+    scanSummary: {
+      totalChecked: doneWork,
+      totalReceived: totalReceivedAll,
+      totalSent: totalSpentAll,
+      totalBalance: totalReceivedAll - totalSpentAll,
+      activeAddressCount,
+    },
     addressLog,
   };
 }
