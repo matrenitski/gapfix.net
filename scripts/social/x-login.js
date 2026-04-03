@@ -1,93 +1,78 @@
 /**
- * X.com login script — run this ONCE manually to establish a session.
- * Launches a visible browser, logs in, saves cookies.
- * Subsequent automation scripts use the saved session (no re-login needed).
+ * X.com manual login helper — opens a browser, waits for board to log in,
+ * then saves the session cookies for headless automation.
+ *
+ * X's bot detection blocks automated credential entry.
+ * This script handles that by letting a human do the login once.
  *
  * Usage:
  *   node scripts/social/x-login.js
  *
- * Requires in .env:
- *   X_USERNAME=bitcoin_gap_fix
- *   X_EMAIL=max@gapfix.net
- *   X_PASSWORD=your_password_here
+ * 1. A Chrome window opens at x.com/login
+ * 2. Board types credentials and completes any captcha
+ * 3. Once logged in (home page loads), script auto-saves the session
+ * 4. Window closes — future scripts run headlessly
  */
 
-import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { getContext, saveSession, sleep, randomDelay } from './session.js';
+import { getContext, closeContext, sleep } from './session.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Load .env manually (no dotenv dep needed)
-function loadEnv() {
-  const envPath = join(__dirname, '../../.env');
-  const lines = readFileSync(envPath, 'utf8').split('\n');
-  const env = {};
-  for (const line of lines) {
-    const match = line.match(/^([^#=]+)=(.*)$/);
-    if (match) env[match[1].trim()] = match[2].trim();
-  }
-  return env;
-}
-
 async function login() {
-  const env = loadEnv();
-  const username = env.X_USERNAME || 'bitcoin_gap_fix';
-  const email = env.X_EMAIL || 'max@gapfix.net';
-  const password = env.X_PASSWORD;
+  console.log('[x-login] Opening browser for manual login...');
+  console.log('[x-login] Please log in to X.com in the browser window that opens.');
+  console.log('[x-login] The window will close automatically once you\'re logged in.\n');
 
-  if (!password) {
-    console.error('ERROR: X_PASSWORD not set in .env');
-    process.exit(1);
-  }
-
-  console.log('[x-login] Launching browser (visible)...');
-  const { browser, context, page } = await getContext('x', { headless: false });
+  const ctx = await getContext('x', { headless: false });
+  const { context, page } = ctx;
 
   try {
-    await page.goto('https://x.com/login', { waitUntil: 'networkidle' });
-    await randomDelay(1000, 2000);
+    await page.goto('https://x.com/login', { waitUntil: 'load', timeout: 30000 });
 
-    // Enter username/email
-    const usernameInput = page.locator('input[autocomplete="username"]');
-    await usernameInput.waitFor({ timeout: 15000 });
-    await usernameInput.fill(email);
-    await randomDelay(500, 1000);
+    console.log('[x-login] Browser is open. Log in manually now...');
+    console.log('[x-login] Waiting up to 5 minutes for successful login...\n');
 
-    await page.keyboard.press('Enter');
-    await randomDelay(1500, 2500);
+    // Wait until the URL is no longer the login flow
+    await page.waitForURL(
+      url => {
+        const s = url.toString();
+        return !s.includes('/i/flow') && !s.includes('/login');
+      },
+      { timeout: 300000 }
+    );
 
-    // X sometimes asks for username after email — handle it
-    const maybeUsernameVerify = page.locator('input[data-testid="ocfEnterTextTextInput"]');
-    if (await maybeUsernameVerify.isVisible({ timeout: 3000 }).catch(() => false)) {
-      console.log('[x-login] Username verification step detected');
-      await maybeUsernameVerify.fill(username);
-      await page.keyboard.press('Enter');
-      await randomDelay(1000, 2000);
+    await sleep(2000);
+
+    // Verify the correct account is logged in
+    console.log('[x-login] Verifying account...');
+    await page.goto('https://x.com/settings/account', { waitUntil: 'domcontentloaded', timeout: 15000 });
+    await sleep(2000);
+
+    const pageContent = await page.content();
+    const expectedUsername = 'bitcoin_gap_fix';
+
+    if (!pageContent.includes(expectedUsername)) {
+      console.error(`[x-login] WRONG ACCOUNT DETECTED!`);
+      console.error(`[x-login] Expected @${expectedUsername} but a different account is logged in.`);
+      console.error(`[x-login] Please log OUT of all X accounts in this browser, then run this script again and log in as max@gapfix.net`);
+      await page.goto('https://x.com/logout', { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
+      await sleep(2000);
+      throw new Error(`Wrong account — expected @${expectedUsername}`);
     }
 
-    // Enter password
-    const passwordInput = page.locator('input[name="password"]');
-    await passwordInput.waitFor({ timeout: 15000 });
-    await passwordInput.fill(password);
-    await randomDelay(500, 1000);
+    console.log(`[x-login] Correct account (@${expectedUsername}) confirmed!`);
+    console.log('[x-login] Session saved. Browser closing...');
 
-    await page.keyboard.press('Enter');
-    await randomDelay(3000, 5000);
+    // Give a moment for session to fully establish
+    await sleep(2000);
 
-    // Wait for home feed
-    await page.waitForURL('**/home', { timeout: 30000 });
-    console.log('[x-login] Logged in successfully!');
-
-    await saveSession('x', context);
   } catch (err) {
-    console.error('[x-login] Login failed:', err.message);
-    console.log('[x-login] Current URL:', page.url());
-    // Keep browser open so user can inspect
-    await sleep(10000);
+    console.error('[x-login] Timed out or error:', err.message);
+    console.error('[x-login] Please try running the script again.');
   } finally {
-    await browser.close();
+    await closeContext(ctx);
   }
 }
 
