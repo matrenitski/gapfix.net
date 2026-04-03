@@ -1,6 +1,6 @@
 # GapFix — Full Documentation
 
-> GapFix is a free, open-source, browser-based tool to find and recover Bitcoin stuck beyond the HD wallet address gap limit. No private keys, no server uploads, no installation required.
+> Bitcoin wallet showing 0 balance after restore? It's the address gap limit. GapFix is a free, open-source, browser-based tool that scans 1,000+ addresses across all four formats (Legacy, SegWit, Wrapped SegWit, Taproot) to find and recover Bitcoin hidden beyond the gap. No private keys, no server uploads, no installation required.
 
 Homepage: https://gapfix.net
 GitHub: https://github.com/matrenitski/gapfix.net
@@ -49,6 +49,7 @@ GapFix accepts an account-level extended public key:
 - **xpub** — legacy P2PKH addresses (start with `1`)
 - **ypub** — segwit-wrapped P2SH-P2WPKH addresses (start with `3`)
 - **zpub** — native segwit P2WPKH / bech32 addresses (start with `bc1q`)
+- **Taproot / P2TR** — BIP86 Taproot addresses (start with `bc1p`) — scanned automatically from any key type
 - **tpub / upub / vpub** — testnet equivalents of the above
 
 **What is an xpub?** An extended public key is a special public key that can derive a sequence of child public keys (and therefore Bitcoin addresses) without ever exposing the corresponding private keys. It's defined in BIP-32. Sharing your xpub allows address derivation only — it cannot spend funds.
@@ -97,6 +98,7 @@ To make your wallet discover the hidden funds, you must "fill the gap" by sendin
 
 **Minimum dust amounts (below these values, outputs may be pruned):**
 - Native segwit / bech32 (bc1q...): **294 satoshis**
+- Taproot / P2TR (bc1p...): **294 satoshis**
 - Legacy P2PKH (1...): **546 satoshis**
 - Segwit-wrapped P2SH (3...): **546 satoshis**
 
@@ -117,10 +119,12 @@ Yes. An xpub is an extended *public* key — it can only derive receive addresse
 
 ### What if I have a ypub or zpub?
 
-GapFix supports all three key types. Paste whichever format your wallet provides. The prefix determines the address type:
+GapFix supports all key types. Paste whichever format your wallet provides. The prefix determines the address type:
 - xpub → P2PKH legacy addresses (starting with `1`)
 - ypub → P2SH-P2WPKH segwit-wrapped addresses (starting with `3`)
 - zpub → P2WPKH native segwit / bech32 addresses (starting with `bc1q`)
+
+Regardless of which key you paste, GapFix automatically scans all four address formats including Taproot (P2TR / bc1p / BIP86), so no funds can be missed.
 
 ### How many addresses does GapFix check?
 
@@ -135,7 +139,7 @@ GapFix checks up to 1,000 external addresses and 1,000 change addresses — 2,00
 
 ### What wallets are compatible?
 
-Any standard BIP32/BIP44/BIP49/BIP84 HD wallet:
+Any standard BIP32/BIP44/BIP49/BIP84/BIP86 HD wallet:
 - Hardware: Ledger, Trezor, Coldcard, BitBox02, Foundation Passport
 - Software: Electrum, Sparrow, Wasabi, BlueWallet, Nunchuk, Specter
 - Not compatible: old-style non-HD wallets (pre-BIP32)
@@ -152,6 +156,7 @@ No. GapFix only receives your *public* extended key, from which it derives *publ
 - **BIP-44** (Multi-Account Hierarchy): https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 - **BIP-49** (Segwit-wrapped): https://github.com/bitcoin/bips/blob/master/bip-0049.mediawiki
 - **BIP-84** (Native Segwit): https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
+- **BIP-86** (Taproot): https://github.com/bitcoin/bips/blob/master/bip-0086.mediawiki
 - **Bitcoin Wiki — Deterministic wallet**: https://en.bitcoin.it/wiki/Deterministic_wallet
 - **Blockstream Esplora API**: https://github.com/Blockstream/esplora/blob/master/API.md
 - **Electrum gap limit documentation**: https://electrum.readthedocs.io/en/latest/faq.html#gap-limit

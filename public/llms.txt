@@ -1,6 +1,6 @@
 # GapFix
 
-> Free, open-source Bitcoin HD wallet gap limit recovery tool. Paste your xpub/ypub/zpub to find and fix Bitcoin stuck beyond the 20-address gap limit — no private keys required, runs entirely in your browser.
+> Bitcoin wallet showing 0 balance after restore? It's the address gap limit. GapFix is a free, open-source tool that scans 1,000+ addresses across all formats (Legacy, SegWit, Taproot) to find Bitcoin hidden beyond the 20-address gap. No private keys required, runs entirely in your browser.
 
 ## What is GapFix?
 
@@ -9,7 +9,7 @@ GapFix (gapfix.net) solves the Bitcoin address gap limit problem. Bitcoin HD wal
 ## Key Concepts
 
 - **Bitcoin gap limit**: The default limit of 20 consecutive empty addresses that HD wallets scan before stopping. Defined in BIP-44.
-- **xpub / ypub / zpub**: Extended public keys for legacy (P2PKH), segwit-wrapped (P2SH-P2WPKH), and native segwit (P2WPKH/bech32) wallets respectively.
+- **xpub / ypub / zpub**: Extended public keys for legacy (P2PKH), segwit-wrapped (P2SH-P2WPKH), and native segwit (P2WPKH/bech32) wallets respectively. GapFix also scans Taproot (P2TR / bc1p / BIP86) addresses automatically.
 - **UTXO recovery**: Unspent transaction outputs that exist on-chain but are invisible to the wallet because they sit beyond the gap limit.
 - **Dust fix**: Send a small amount (294–546 satoshis) to empty addresses inside the gap so the wallet scanner continues past them and discovers the hidden funds.
 
@@ -31,9 +31,9 @@ GapFix (gapfix.net) solves the Bitcoin address gap limit problem. Bitcoin HD wal
 
 ## Technical Details
 
-- Supports BIP32, BIP44, BIP49, BIP84 HD wallets
+- Supports BIP32, BIP44, BIP49, BIP84, BIP86 HD wallets (all four address formats scanned automatically)
 - Compatible with Ledger, Trezor, Coldcard, BitBox, Electrum, Sparrow, Wasabi
-- Minimum dust amounts: 294 sats (bech32/bc1q), 546 sats (legacy/P2PKH, segwit-wrapped/P2SH)
+- Minimum dust amounts: 294 sats (bech32/bc1q and Taproot/bc1p), 546 sats (legacy/P2PKH, segwit-wrapped/P2SH)
 - All computation is client-side; only public addresses are queried externally
 - Open source: https://github.com/matrenitski/gapfix.net
 
