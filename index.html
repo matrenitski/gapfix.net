@@ -3,25 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap</title>
-  <meta name="description" content="Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Scans all address formats including Taproot (bc1p). Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see." />
-  <meta name="keywords" content="bitcoin, gap limit, xpub, ypub, zpub, taproot, bc1p, P2TR, HD wallet, address gap, UTXO recovery, BIP86" />
+  <title>GapFix – Fix Bitcoin Wallet Showing 0 Balance | Address Gap Limit Recovery</title>
+  <meta name="description" content="Bitcoin wallet showing 0 after restore? It's the address gap limit. GapFix scans 1,000+ addresses across all formats (Legacy, SegWit, Taproot) to find hidden funds. Works with Electrum, Ledger, Trezor, Sparrow. Free, open-source, runs in your browser." />
+  <meta name="keywords" content="bitcoin wallet shows 0 balance, bitcoin gap limit, bitcoin address gap limit fix, bitcoin wallet not showing funds, electrum gap limit, ledger missing balance, trezor wallet recovery, xpub scan, ypub, zpub, taproot, HD wallet, UTXO recovery, bitcoin dust fix, BIP-44 gap limit" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap" />
-  <meta property="og:description" content="Find and fix Bitcoin HD wallet address gap limit issues. Free, open-source, runs entirely in your browser." />
-  <meta property="og:url" content="https://gapfix.net" />
+  <meta property="og:title" content="GapFix – Fix Bitcoin Wallet Showing 0 Balance After Restore" />
+  <meta property="og:description" content="Bitcoin wallet showing 0 after restore? It's the gap limit. GapFix scans 1,000+ addresses to find hidden funds. Free, open-source, works with Electrum, Ledger, Trezor, Sparrow." />
+  <meta property="og:url" content="https://gapfix.net/" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:image" content="https://gapfix.net/assets/og-image.svg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="GapFix — Bitcoin address gap limit recovery tool" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="GapFix – Recover Bitcoin Stuck Beyond the 20-Address Gap" />
-  <meta name="twitter:description" content="Find and fix Bitcoin HD wallet address gap limit issues. Free, open-source, runs entirely in your browser." />
+  <meta name="twitter:title" content="GapFix – Fix Bitcoin Wallet Showing 0 Balance After Restore" />
+  <meta name="twitter:description" content="Bitcoin wallet showing 0 after restore? It's the gap limit. GapFix scans 1,000+ addresses to find hidden funds. Free, open-source." />
   <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.svg" />
+  <meta name="twitter:image:alt" content="GapFix — Bitcoin address gap limit recovery tool" />
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://gapfix.net" />
+  <link rel="canonical" href="https://gapfix.net/" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
   <!-- JSON-LD Structured Data -->
@@ -31,7 +37,7 @@
     "@type": "WebApplication",
     "name": "GapFix",
     "url": "https://gapfix.net",
-    "description": "Free, open-source tool to find and fix Bitcoin HD wallet address gap limit issues. Scans all address formats including Taproot (bc1p / P2TR). Paste your xpub/ypub/zpub and recover UTXOs your wallet can't see.",
+    "description": "Bitcoin wallet showing 0 balance after restore? It's the address gap limit. GapFix scans 1,000+ addresses across Legacy, SegWit, and Taproot formats to find hidden funds. Works with Electrum, Ledger, Trezor, Sparrow. Free, open-source, client-side.",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Any",
     "browserRequirements": "Requires a modern web browser with JavaScript enabled",
@@ -117,6 +123,67 @@
   }
   </script>
 
+  <!-- HowTo Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Fix Bitcoin Wallet Showing 0 Balance (Gap Limit Recovery)",
+    "description": "Fix the Bitcoin address gap limit problem that causes HD wallets to show 0 balance after restore. Works with Electrum, Ledger, Trezor, Sparrow, and other BIP-44 wallets.",
+    "totalTime": "PT10M",
+    "tool": [
+      {
+        "@type": "HowToTool",
+        "name": "GapFix (gapfix.net)"
+      },
+      {
+        "@type": "HowToTool",
+        "name": "Your Bitcoin wallet's extended public key (xpub, ypub, or zpub)"
+      }
+    ],
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "name": "Understand the gap limit",
+        "text": "Bitcoin HD wallets generate addresses sequentially from your seed or xpub. They scan address 0, 1, 2, 3... but stop after seeing 20 addresses in a row with no transactions. This is the gap limit defined in BIP-44."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "name": "Identify funds beyond the gap",
+        "text": "Sometimes Bitcoin is sent to an address beyond index 20 — for example if you generated many receive addresses in one wallet and then imported the seed into a different wallet. The wallet stops scanning before reaching those addresses."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "name": "Scan with GapFix",
+        "text": "Paste your xpub, ypub, or zpub into GapFix. It checks all four address types (Legacy P2PKH, Wrapped SegWit P2SH, Native SegWit P2WPKH, and Taproot P2TR) scanning at least 1,000 addresses beyond the last active one."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 4,
+        "name": "Dust the gap addresses",
+        "text": "Send a tiny dust amount (294-546 sats) to each empty address inside the gap. Once those addresses have a transaction, your wallet's scanner will continue past them and discover the hidden funds on the next rescan."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Organization Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "GapFix",
+    "url": "https://gapfix.net",
+    "logo": "https://gapfix.net/assets/logo-icon.svg",
+    "sameAs": [
+      "https://github.com/matrenitski/gapfix.net"
+    ]
+  }
+  </script>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -150,11 +217,11 @@
   <section class="hero">
     <div class="container">
       <div class="badge">Bitcoin Tool</div>
-      <h1>Your Bitcoin might be<br /><span>hiding in plain sight</span></h1>
+      <h1>Bitcoin wallet showing 0 balance?<br /><span>Your funds are hiding in plain sight</span></h1>
       <p class="subtitle">
-        Bitcoin wallets stop scanning after 20 empty addresses in a row.
-        If funds land beyond that gap, they vanish from your balance — but they're not lost.
-        GapFix finds them and tells you exactly how to get them back.
+        Bitcoin HD wallets (Electrum, Ledger, Trezor, Sparrow) stop scanning after 20 empty addresses in a row — the <strong>gap limit</strong>.
+        If funds land beyond that gap, they vanish from your balance — but they're still on-chain.
+        GapFix scans 1,000+ addresses to find them and tells you exactly how to get them back.
       </p>
       <a href="#tool" class="btn btn-primary btn-lg">
         Scan My Wallet →
