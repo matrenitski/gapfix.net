@@ -32,6 +32,7 @@ const extendedBadge = document.getElementById('extended-scan-badge');
 const progressLiveTable = document.getElementById('progress-live-table');
 const resultsSection = document.getElementById('results-section');
 const resultsContainer = document.getElementById('results-container');
+const multiFormatToggle = document.getElementById('multi-format-toggle');
 
 // ---- State ----
 let abortController = null;
@@ -72,8 +73,9 @@ async function startScan() {
   abortController = new AbortController();
 
   try {
+    const isMultiFormat = multiFormatToggle?.checked || false;
     const { issues, hasIssues, batchErrors, scanSummary, addressLog } = await scanWallet({
-      deriveAddressFns: buildDeriveAddressFns(parsed),
+      deriveAddressFns: buildDeriveAddressFns(parsed, isMultiFormat),
       keyType: parsed.type,
       maxDepth: 1000,
       gapLimit: 20,
@@ -88,7 +90,7 @@ async function startScan() {
       showError(`Warning: ${batchErrors} address lookup${batchErrors > 1 ? 's' : ''} failed (rate limit or network error). Results may be incomplete — try scanning again.`);
     }
 
-    showResults(issues, hasIssues, parsed, scanSummary, addressLog);
+    showResults(issues, hasIssues, parsed, scanSummary, addressLog, isMultiFormat);
   } catch (err) {
     if (err.name === 'AbortError') {
       hideProgress();
@@ -113,7 +115,7 @@ function cancelScan() {
 
 // ---- Derivation helpers ----
 
-function buildDeriveAddressFns(parsed) {
+function buildDeriveAddressFns(parsed, multiFormat = false) {
   const isTestnet = ['tpub', 'upub', 'vpub'].includes(parsed.type);
 
   const allFormats = isTestnet
@@ -137,7 +139,10 @@ function buildDeriveAddressFns(parsed) {
     allFormats.unshift(primary);
   }
 
-  return allFormats.map(fmt => ({
+  // If multi-format is off, only scan the native format for this key type
+  const formats = multiFormat ? allFormats : [allFormats[0]];
+
+  return formats.map(fmt => ({
     fn: (chain, idx) => deriveAddress(parsed.hd, chain, idx, fmt.keyType),
     type: fmt.type,
     bip: fmt.bip,
@@ -156,7 +161,7 @@ function setScanning(active) {
   scanBtn.disabled = active;
   scanBtn.textContent = active ? 'Scanning…' : 'Scan for Gap Issues';
   cancelBtn.style.display = active ? 'inline-flex' : 'none';
-  if (extendedBadge) extendedBadge.style.display = active ? 'inline-flex' : 'none';
+  if (extendedBadge) extendedBadge.style.display = (active && multiFormatToggle?.checked) ? 'inline-flex' : 'none';
   if (active) {
     progressSection.classList.add('visible');
     hideResults();
@@ -222,7 +227,7 @@ function hideResults() {
   resultsContainer.innerHTML = '';
 }
 
-function showResults(issues, hasIssues, parsed, scanSummary, addressLog) {
+function showResults(issues, hasIssues, parsed, scanSummary, addressLog, multiFormat = false) {
   resultsContainer.innerHTML = '';
 
   if (!hasIssues) {
@@ -255,7 +260,7 @@ function showResults(issues, hasIssues, parsed, scanSummary, addressLog) {
   }
 
   // Derivation panel
-  resultsContainer.appendChild(renderDerivationPanel(parsed));
+  resultsContainer.appendChild(renderDerivationPanel(parsed, multiFormat));
 
   // Address explorer
   if (addressLog && addressLog.length > 0) {
@@ -334,7 +339,7 @@ function renderIssue(issue, parsed) {
 
 // ---- Derivation panel ----
 
-function renderDerivationPanel(parsed) {
+function renderDerivationPanel(parsed, multiFormat = false) {
   const typeMap = {
     xpub: { bip: 44, name: 'BIP44', addrType: 'P2PKH (legacy)', addrExample: '1…', network: 'mainnet' },
     ypub: { bip: 49, name: 'BIP49', addrType: 'P2SH-P2WPKH (wrapped segwit)', addrExample: '3…', network: 'mainnet' },
@@ -372,12 +377,16 @@ function renderDerivationPanel(parsed) {
         <span class="derivation-label">Change chain</span>
         <code class="derivation-value">${intPath}</code>
       </div>
+      ${multiFormat ? `
       <div class="derivation-row">
-        <span class="derivation-label">All formats scanned</span>
+        <span class="derivation-label">Formats scanned</span>
         <span class="derivation-value">P2PKH (m/44'…), P2SH-P2WPKH (m/49'…), P2WPKH (m/84'…), P2TR (m/86'…)</span>
-      </div>
+      </div>` : ''}
       <p class="derivation-note">
-        GapFix checks all four address formats from your key in a single pass — legacy, wrapped segwit, native segwit, and Taproot.
+        ${multiFormat
+          ? 'Scanned all 4 address formats: P2PKH (legacy), P2SH-P2WPKH (wrapped segwit), P2WPKH (native segwit), P2TR (Taproot). Your key type (<code>' + parsed.type + '</code>) locks derivation to one master public key — each format is derived from the same root.'
+          : 'Scanned the native format for your <code>' + parsed.type + '</code> key. Enable "Also scan legacy &amp; wrapped segwit" before scanning to check all four address formats in a single pass.'
+        }
         External chain (0) = receiving addresses · Change chain (1) = wallet-internal change.
       </p>
     </div>
