@@ -6,13 +6,14 @@
  *   REDDIT_PASSWORD=<secret> node scripts/social/reddit-signup.js
  *
  * Outputs credentials to .env.reddit (gitignored).
- * Prints EMAIL_VERIFICATION_REQUIRED if email confirmation is needed.
+ * Handles the OTP email verification step interactively (prompts for 6-digit code).
  */
 
 import { getContext, closeContext, randomDelay, sleep, humanType } from './session.js';
-import { writeFileSync, existsSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import * as readline from 'readline';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = join(__dirname, '../..');
@@ -27,7 +28,14 @@ function getPassword() {
   return pw;
 }
 
-async function fillSignupForm(page, username, email, password) {
+function promptLine(msg) {
+  return new Promise(resolve => {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    rl.question(msg, answer => { rl.close(); resolve(answer.trim()); });
+  });
+}
+
+async function fillSignupForm(page, email, password) {
   console.log('[reddit-signup] Navigating to signup page...');
   await page.goto('https://www.reddit.com/register/', { waitUntil: 'domcontentloaded', timeout: 30000 });
   await randomDelay(2000, 3000);
@@ -35,11 +43,18 @@ async function fillSignupForm(page, username, email, password) {
   // Step 1: email
   const emailInput = page.locator('input[name="email"]');
   if (await emailInput.isVisible({ timeout: 8000 }).catch(() => false)) {
-    await emailInput.fill(email);
-    await randomDelay(500, 1000);
-    const continueBtn = page.locator('button[type="submit"]').first();
-    await continueBtn.click();
-    await randomDelay(1500, 2500);
+    await emailInput.click();
+    await randomDelay(300, 500);
+    // Use evaluate + keyboard to trigger React onChange properly
+    await emailInput.evaluate((el, val) => {
+      const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      nativeValueSetter.call(el, val);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    }, email);
+    await randomDelay(1000, 1500);
+    await emailInput.press('Enter');
+    await randomDelay(2000, 3000);
     console.log('[reddit-signup] Email submitted');
   } else {
     console.log('[reddit-signup] Email step not found — may have redirected to combined form');
@@ -47,18 +62,48 @@ async function fillSignupForm(page, username, email, password) {
 
   await page.screenshot({ path: 'scripts/social/.debug-reddit-after-email.png' }).catch(() => {});
 
+  // Step 1b: OTP verification — Reddit now sends a 6-digit code to the email
+  const otpStep = await page.locator('text=Verify your email').or(page.locator('text=6-digit code')).isVisible({ timeout: 5000 }).catch(() => false);
+  if (otpStep) {
+    console.log('\n[reddit-signup] EMAIL OTP REQUIRED');
+    console.log('[reddit-signup] Reddit sent a 6-digit code to max@gapfix.net.');
+    const otpCode = await promptLine('Enter the 6-digit OTP code from max@gapfix.net inbox: ');
+    if (!otpCode || otpCode.length < 4) {
+      throw new Error('No OTP code provided — cannot continue signup');
+    }
+    // Find the OTP input and enter the code
+    const otpInput = page.locator('input[name="otp"]').or(page.locator('input[placeholder*="code"]')).or(page.locator('input[inputmode="numeric"]')).first();
+    await otpInput.waitFor({ state: 'visible', timeout: 10000 });
+    await otpInput.fill(otpCode);
+    await randomDelay(500, 1000);
+    await otpInput.press('Enter');
+    await randomDelay(2000, 3000);
+    console.log('[reddit-signup] OTP code submitted');
+    await page.screenshot({ path: 'scripts/social/.debug-reddit-after-otp.png' }).catch(() => {});
+  }
+
   // Step 2: username + password
   const usernameInput = page.locator('input[name="username"]');
-  await usernameInput.waitFor({ state: 'visible', timeout: 15000 });
+  // Try waiting for username input
+  const usernameAttached = await usernameInput.waitFor({ state: 'attached', timeout: 15000 }).then(() => true).catch(() => false);
+  if (!usernameAttached) {
+    const bodyText = await page.evaluate(() => document.body.innerText.substring(0, 300)).catch(() => '');
+    throw new Error(`Username step not reached. Page: ${bodyText}`);
+  }
+  await usernameInput.scrollIntoViewIfNeeded().catch(() => {});
+  await randomDelay(1000, 2000);
 
   // Try username candidates until one is accepted
   let chosenUsername = null;
   for (const candidate of USERNAME_CANDIDATES) {
-    await usernameInput.fill('');
-    await humanType(page, candidate, 80);
-    await randomDelay(1000, 1500);
+    await usernameInput.evaluate((el, val) => {
+      const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      nativeValueSetter.call(el, val);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    }, candidate);
+    await randomDelay(1200, 1800);
 
-    // Check if username is available (Reddit shows error text inline)
     const unavailableMsg = page.locator('text=That username is already taken').first();
     const errorMsg = page.locator('text=Username not available').first();
     if (
@@ -79,9 +124,14 @@ async function fillSignupForm(page, username, email, password) {
 
   // Fill password
   const passwordInput = page.locator('input[name="password"]');
-  await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
-  await passwordInput.fill('');
-  await humanType(page, password, 80);
+  await passwordInput.waitFor({ state: 'attached', timeout: 10000 });
+  await passwordInput.scrollIntoViewIfNeeded().catch(() => {});
+  await passwordInput.evaluate((el, val) => {
+    const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeValueSetter.call(el, val);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }, password);
   await randomDelay(500, 1000);
 
   await page.screenshot({ path: 'scripts/social/.debug-reddit-before-submit.png' }).catch(() => {});
@@ -90,16 +140,12 @@ async function fillSignupForm(page, username, email, password) {
   const captchaFrame = page.frameLocator('iframe[title*="reCAPTCHA"]').first();
   const captchaVisible = await captchaFrame.locator('.recaptcha-checkbox').isVisible({ timeout: 3000 }).catch(() => false);
   if (captchaVisible) {
-    console.log('\n[reddit-signup] CAPTCHA detected. Manual action required:');
-    console.log('  1. The browser window should be open (re-run with headless=false if needed)');
-    console.log('  2. Complete the reCAPTCHA in the browser');
-    console.log('  3. Press ENTER here to continue after completing CAPTCHA');
-    await waitForEnter();
+    console.log('\n[reddit-signup] CAPTCHA detected. Complete it in the browser window, then press ENTER.');
+    await promptLine('Press ENTER after completing the CAPTCHA... ');
   }
 
-  // Submit
-  const signupBtn = page.locator('button[type="submit"]').first();
-  await signupBtn.click();
+  // Submit via Enter on password field
+  await passwordInput.press('Enter');
   await randomDelay(3000, 5000);
 
   await page.screenshot({ path: 'scripts/social/.debug-reddit-after-submit.png' }).catch(() => {});
@@ -107,24 +153,16 @@ async function fillSignupForm(page, username, email, password) {
   return chosenUsername;
 }
 
-function waitForEnter() {
-  return new Promise(resolve => {
-    process.stdin.setEncoding('utf8');
-    process.stdin.once('data', () => resolve());
-    process.stdout.write('\nPress ENTER after completing the CAPTCHA... ');
-  });
-}
-
 async function signup() {
   const password = getPassword();
 
   console.log('[reddit-signup] Starting Reddit signup flow...');
-  const ctx = await getContext('reddit', { headless: false }); // headless:false so board can handle CAPTCHA
+  const ctx = await getContext('reddit', { headless: false });
   const { page } = ctx;
 
   let username = null;
   try {
-    username = await fillSignupForm(page, USERNAME_CANDIDATES[0], EMAIL, password);
+    username = await fillSignupForm(page, EMAIL, password);
 
     // Post-submit: check for email verification prompt
     const currentUrl = page.url().toString();
