@@ -10,6 +10,7 @@
  */
 
 import { getContext, closeContext, randomDelay, sleep, humanType } from './session.js';
+import { promptAndWait } from '../telegram-wait-reply.mjs';
 import { randomBytes } from 'crypto';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -96,13 +97,18 @@ async function signup() {
 
     await page.screenshot({ path: 'scripts/social/.debug-bt-before-captcha.png' }).catch(() => {});
 
-    // Bitcointalk uses a visual CAPTCHA — pause for manual input
-    const captchaImg = page.locator('img#captcha').or(page.locator('img[src*="captcha"]')).first();
-    if (await captchaImg.isVisible({ timeout: 5000 }).catch(() => false)) {
-      console.log('\n[bitcointalk-signup] CAPTCHA detected. Manual action required:');
-      console.log('  1. Look at the browser window for the CAPTCHA image');
-      console.log('  2. Type the CAPTCHA text into the CAPTCHA input field in the browser');
-      await waitForEnter('Complete the CAPTCHA in the browser, then press ENTER.');
+    // Bitcointalk uses a visual CAPTCHA — always notify via Telegram since CAPTCHA is required
+    // (Detection by any CAPTCHA-related input or the known verification section)
+    const hasCaptcha = await page.locator('input[name="verificationcode"], input[id*="captcha"], img[id="captcha"], table:has(td:has-text("Visual verification"))').first()
+      .waitFor({ state: 'attached', timeout: 5000 }).then(() => true).catch(() => false);
+    if (hasCaptcha) {
+      console.log('\n[bitcointalk-signup] CAPTCHA detected. Notifying board via Telegram…');
+      await promptAndWait(
+        'Bitcointalk signup CAPTCHA — a browser window is open on your screen. Please:\n' +
+        '1. Look at the CAPTCHA image in the browser\n' +
+        '2. Type the CAPTCHA code into the verification field\n' +
+        '3. Reply here with "done" when complete'
+      );
     }
 
     await page.screenshot({ path: 'scripts/social/.debug-bt-before-submit.png' }).catch(() => {});

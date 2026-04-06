@@ -22,6 +22,52 @@ const EMAIL = 'max@gapfix.net';
 const USERNAME_CANDIDATES = ['bitcoin_gap_fix', 'gapfixnet', 'btc_gap_fix', 'gap_fix_btc'];
 const ENV_OUT = join(ROOT_DIR, '.env.reddit');
 
+/**
+ * Detects and handles the Reddit OTP "Verify your email" step.
+ * Uses locator.waitFor() — NOT page.waitForSelector() — to work with Playwright text selectors.
+ */
+async function handleOtpIfPresent(page, promptFn) {
+  // Check if OTP input is present in DOM (use 'attached' — Reddit renders it hidden via CSS)
+  const otpInput = page.locator('input[placeholder="Verification code"]');
+  const otpPresent = await otpInput.waitFor({ state: 'attached', timeout: 12000 }).then(() => true).catch(() => false);
+  if (!otpPresent) {
+    // Also try by inputmode=numeric as fallback
+    const otpAlt = page.locator('input[inputmode="numeric"]');
+    const altPresent = await otpAlt.waitFor({ state: 'attached', timeout: 3000 }).then(() => true).catch(() => false);
+    if (!altPresent) {
+      console.log('[reddit-signup] No OTP step detected — proceeding');
+      return;
+    }
+  }
+  console.log('\n[reddit-signup] EMAIL OTP REQUIRED');
+  console.log('[reddit-signup] Requesting OTP from board via Telegram…');
+  const otpCode = await promptFn('Reddit signup OTP required — please reply with the 6-digit code from max@gapfix.net inbox');
+  if (!otpCode || otpCode.replace(/\D/g, '').length < 4) {
+    throw new Error('No OTP code provided — cannot continue signup');
+  }
+  const digits = otpCode.replace(/\D/g, '');
+  // Use JS evaluate to fill — bypasses CSS visibility constraints
+  await page.evaluate((val) => {
+    const input = document.querySelector('input[placeholder="Verification code"]') ||
+                  document.querySelector('input[inputmode="numeric"]');
+    if (!input) return;
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    setter.call(input, val);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.focus();
+  }, digits);
+  await randomDelay(500, 1000);
+  // Click Continue button
+  await page.evaluate(() => {
+    const btn = [...document.querySelectorAll('button')].find(b => /continue/i.test(b.textContent));
+    if (btn) btn.click();
+  });
+  await randomDelay(2000, 3000);
+  console.log('[reddit-signup] OTP code submitted');
+  await page.screenshot({ path: 'scripts/social/.debug-reddit-after-otp.png' }).catch(() => {});
+}
+
 function getPassword() {
   const pw = process.env.REDDIT_PASSWORD;
   if (!pw) throw new Error('REDDIT_PASSWORD env var is required');
@@ -63,41 +109,18 @@ async function fillSignupForm(page, email, password) {
   await page.screenshot({ path: 'scripts/social/.debug-reddit-after-email.png' }).catch(() => {});
 
   // Step 1b: OTP verification — Reddit sends a 6-digit code to the email
-  // Use waitForSelector with long timeout to handle page transition timing
-  const otpStep = await page.waitForSelector(
-    'text=Verify your email, text=Verification code, input[placeholder*="code"], input[inputmode="numeric"]',
-    { state: 'visible', timeout: 12000 }
-  ).then(() => true).catch(() => false);
+  // Use locator.waitFor() — NOT page.waitForSelector() — to properly handle Playwright text selectors
+  await handleOtpIfPresent(page, promptAndWait);
 
-  if (otpStep) {
-    console.log('\n[reddit-signup] EMAIL OTP REQUIRED');
-    console.log('[reddit-signup] Requesting OTP from board via Telegram…');
-    const otpCode = await promptAndWait('Engineer here: signing up for Reddit (to promote gapfix.net). Reddit sent a 6-digit verification code to max@gapfix.net — please check that inbox and reply here with the code.');
-    if (!otpCode || otpCode.length < 4) {
-      throw new Error('No OTP code provided — cannot continue signup');
-    }
-    // Find the OTP input and enter the code
-    const otpInput = page.locator('input[placeholder*="code"], input[inputmode="numeric"], input[name="otp"]').first();
-    await otpInput.waitFor({ state: 'visible', timeout: 10000 });
-    await otpInput.fill(otpCode.replace(/\D/g, '')); // digits only
-    await randomDelay(500, 1000);
-    // Click Continue after OTP entry
-    const otpContinueBtn = page.locator('button:has-text("Continue"), button[type="submit"]').first();
-    if (await otpContinueBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await otpContinueBtn.click();
-    } else {
-      await otpInput.press('Enter');
-    }
-    await randomDelay(2000, 3000);
-    console.log('[reddit-signup] OTP code submitted');
-    await page.screenshot({ path: 'scripts/social/.debug-reddit-after-otp.png' }).catch(() => {});
-  }
-
-  // Step 2: username + password
+  // Step 2: username + password — wait for VISIBLE username input (not just attached)
   const usernameInput = page.locator('input[name="username"]');
-  // Try waiting for username input
-  const usernameAttached = await usernameInput.waitFor({ state: 'attached', timeout: 15000 }).then(() => true).catch(() => false);
-  if (!usernameAttached) {
+  const usernameVisible = await usernameInput.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
+  if (!usernameVisible) {
+    // Check if we're still on OTP page (got stuck)
+    const stillOtp = await page.locator('input[placeholder="Verification code"]').isVisible({ timeout: 2000 }).catch(() => false);
+    if (stillOtp) {
+      throw new Error('Stuck on OTP page — verification code was not accepted');
+    }
     const bodyText = await page.evaluate(() => document.body.innerText.substring(0, 300)).catch(() => '');
     throw new Error(`Username step not reached. Page: ${bodyText}`);
   }
@@ -175,17 +198,11 @@ async function signup() {
   try {
     username = await fillSignupForm(page, EMAIL, password);
 
-    // Post-submit: check for email verification prompt
-    const currentUrl = page.url().toString();
-    const emailVerifyPrompt =
-      await page.locator('text=Verify your email').isVisible({ timeout: 5000 }).catch(() => false) ||
-      await page.locator('text=check your email').isVisible({ timeout: 1000 }).catch(() => false) ||
-      currentUrl.includes('verification');
+    // Post-submit: Reddit may show OTP page again after account creation
+    await handleOtpIfPresent(page, promptAndWait);
 
-    if (emailVerifyPrompt) {
-      console.log('\nEMAIL_VERIFICATION_REQUIRED');
-      console.log('[reddit-signup] Check max@gapfix.net inbox for a verification link from Reddit.');
-    }
+    // Check final state
+    const currentUrl = page.url().toString();
 
     // Save credentials
     const envContent = `REDDIT_USERNAME=${username}\nREDDIT_EMAIL=${EMAIL}\nREDDIT_PASSWORD=${password}\n`;
@@ -195,7 +212,7 @@ async function signup() {
     const success = currentUrl.includes('reddit.com') && !currentUrl.includes('register');
     console.log(`[reddit-signup] ${success ? 'Account created successfully!' : 'Signup may have encountered an issue — check screenshot.'}`);
     console.log(`[reddit-signup] Username: ${username}`);
-    return { success, username, emailVerificationRequired: emailVerifyPrompt };
+    return { success, username };
   } catch (err) {
     console.error('[reddit-signup] Failed:', err.message);
     await page.screenshot({ path: 'scripts/social/.debug-reddit-fail.png' }).catch(() => {});
