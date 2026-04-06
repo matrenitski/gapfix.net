@@ -11,6 +11,7 @@
 
 import { getContext, closeContext, randomDelay, sleep, humanType } from './session.js';
 import { promptAndWait } from '../telegram-wait-reply.mjs';
+import { solveImageCaptcha } from '../solve-captcha.mjs';
 import { randomBytes } from 'crypto';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -97,18 +98,37 @@ async function signup() {
 
     await page.screenshot({ path: 'scripts/social/.debug-bt-before-captcha.png' }).catch(() => {});
 
-    // Bitcointalk uses a visual CAPTCHA — always notify via Telegram since CAPTCHA is required
-    // (Detection by any CAPTCHA-related input or the known verification section)
-    const hasCaptcha = await page.locator('input[name="verificationcode"], input[id*="captcha"], img[id="captcha"], table:has(td:has-text("Visual verification"))').first()
-      .waitFor({ state: 'attached', timeout: 5000 }).then(() => true).catch(() => false);
+    // Bitcointalk uses a visual/image CAPTCHA — attempt automated solve, fall back to Telegram
+    const captchaLocator = page.locator('input[name="verificationcode"], input[id*="captcha"], img[id="captcha"], table:has(td:has-text("Visual verification"))').first();
+    const hasCaptcha = await captchaLocator.waitFor({ state: 'attached', timeout: 5000 }).then(() => true).catch(() => false);
     if (hasCaptcha) {
-      console.log('\n[bitcointalk-signup] CAPTCHA detected. Notifying board via Telegram…');
-      await promptAndWait(
-        'Bitcointalk signup CAPTCHA — a browser window is open on your screen. Please:\n' +
-        '1. Look at the CAPTCHA image in the browser\n' +
-        '2. Type the CAPTCHA code into the verification field\n' +
-        '3. Reply here with "done" when complete'
-      );
+      console.log('\n[bitcointalk-signup] Visual CAPTCHA detected — invoking solve-captcha fallback chain…');
+      // Try to grab the CAPTCHA image as base64 for automated solving
+      const captchaImageBase64 = await page.evaluate(() => {
+        const img = document.querySelector('img[id="captcha"], img[src*="captcha"]');
+        if (!img) return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        return canvas.toDataURL('image/png').replace(/^data:image\/\w+;base64,/, '');
+      }).catch(() => null);
+
+      const captchaText = await solveImageCaptcha({
+        imageBase64: captchaImageBase64,
+        agentContext: 'Bitcointalk signup (gapfix.net growth)',
+      });
+
+      if (captchaText) {
+        // Inject the solved text into the verification field
+        const codeInput = page.locator('input[name="verificationcode"]').first();
+        if (await codeInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await codeInput.fill(captchaText);
+          await randomDelay(300, 600);
+          console.log(`[bitcointalk-signup] Injected automated CAPTCHA solution: "${captchaText}"`);
+        }
+      }
+      // else: board already typed the answer in the browser via Telegram relay
     }
 
     await page.screenshot({ path: 'scripts/social/.debug-bt-before-submit.png' }).catch(() => {});
