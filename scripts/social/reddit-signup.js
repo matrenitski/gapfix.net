@@ -53,23 +53,41 @@ async function fillSignupForm(page, email, password) {
     console.log('[reddit-signup] Email step not found — may have redirected to combined form');
   }
 
+  // Also try clicking the Continue button explicitly (Reddit UI sometimes needs it)
+  const continueBtn = page.locator('button:has-text("Continue"), button[type="submit"]').first();
+  if (await continueBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await continueBtn.click();
+    await randomDelay(1500, 2500);
+  }
+
   await page.screenshot({ path: 'scripts/social/.debug-reddit-after-email.png' }).catch(() => {});
 
-  // Step 1b: OTP verification — Reddit now sends a 6-digit code to the email
-  const otpStep = await page.locator('text=Verify your email').or(page.locator('text=6-digit code')).isVisible({ timeout: 5000 }).catch(() => false);
+  // Step 1b: OTP verification — Reddit sends a 6-digit code to the email
+  // Use waitForSelector with long timeout to handle page transition timing
+  const otpStep = await page.waitForSelector(
+    'text=Verify your email, text=Verification code, input[placeholder*="code"], input[inputmode="numeric"]',
+    { state: 'visible', timeout: 12000 }
+  ).then(() => true).catch(() => false);
+
   if (otpStep) {
     console.log('\n[reddit-signup] EMAIL OTP REQUIRED');
     console.log('[reddit-signup] Requesting OTP from board via Telegram…');
-    const otpCode = await promptAndWait('Reddit OTP required — please reply with the 6-digit code from max@gapfix.net inbox');
+    const otpCode = await promptAndWait('Engineer here: signing up for Reddit (to promote gapfix.net). Reddit sent a 6-digit verification code to max@gapfix.net — please check that inbox and reply here with the code.');
     if (!otpCode || otpCode.length < 4) {
       throw new Error('No OTP code provided — cannot continue signup');
     }
     // Find the OTP input and enter the code
-    const otpInput = page.locator('input[name="otp"]').or(page.locator('input[placeholder*="code"]')).or(page.locator('input[inputmode="numeric"]')).first();
+    const otpInput = page.locator('input[placeholder*="code"], input[inputmode="numeric"], input[name="otp"]').first();
     await otpInput.waitFor({ state: 'visible', timeout: 10000 });
-    await otpInput.fill(otpCode);
+    await otpInput.fill(otpCode.replace(/\D/g, '')); // digits only
     await randomDelay(500, 1000);
-    await otpInput.press('Enter');
+    // Click Continue after OTP entry
+    const otpContinueBtn = page.locator('button:has-text("Continue"), button[type="submit"]').first();
+    if (await otpContinueBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await otpContinueBtn.click();
+    } else {
+      await otpInput.press('Enter');
+    }
     await randomDelay(2000, 3000);
     console.log('[reddit-signup] OTP code submitted');
     await page.screenshot({ path: 'scripts/social/.debug-reddit-after-otp.png' }).catch(() => {});
@@ -134,7 +152,7 @@ async function fillSignupForm(page, email, password) {
   const captchaVisible = await captchaFrame.locator('.recaptcha-checkbox').isVisible({ timeout: 3000 }).catch(() => false);
   if (captchaVisible) {
     console.log('\n[reddit-signup] CAPTCHA detected. Notifying board via Telegram…');
-    await promptAndWait('Reddit CAPTCHA detected — please solve it in the browser window, then reply "done"');
+    await promptAndWait('Engineer here: signing up for Reddit (to promote gapfix.net). A CAPTCHA has appeared that requires a human to solve. Please open the browser window and complete the CAPTCHA, then reply "done" here.');
   }
 
   // Submit via Enter on password field
