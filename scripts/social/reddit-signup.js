@@ -13,7 +13,7 @@ import { getContext, closeContext, randomDelay, sleep, humanType } from './sessi
 import { writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import * as readline from 'readline';
+import { promptAndWait } from '../telegram-wait-reply.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = join(__dirname, '../..');
@@ -26,13 +26,6 @@ function getPassword() {
   const pw = process.env.REDDIT_PASSWORD;
   if (!pw) throw new Error('REDDIT_PASSWORD env var is required');
   return pw;
-}
-
-function promptLine(msg) {
-  return new Promise(resolve => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    rl.question(msg, answer => { rl.close(); resolve(answer.trim()); });
-  });
 }
 
 async function fillSignupForm(page, email, password) {
@@ -66,8 +59,8 @@ async function fillSignupForm(page, email, password) {
   const otpStep = await page.locator('text=Verify your email').or(page.locator('text=6-digit code')).isVisible({ timeout: 5000 }).catch(() => false);
   if (otpStep) {
     console.log('\n[reddit-signup] EMAIL OTP REQUIRED');
-    console.log('[reddit-signup] Reddit sent a 6-digit code to max@gapfix.net.');
-    const otpCode = await promptLine('Enter the 6-digit OTP code from max@gapfix.net inbox: ');
+    console.log('[reddit-signup] Requesting OTP from board via Telegram…');
+    const otpCode = await promptAndWait('Reddit OTP required — please reply with the 6-digit code from max@gapfix.net inbox');
     if (!otpCode || otpCode.length < 4) {
       throw new Error('No OTP code provided — cannot continue signup');
     }
@@ -140,8 +133,8 @@ async function fillSignupForm(page, email, password) {
   const captchaFrame = page.frameLocator('iframe[title*="reCAPTCHA"]').first();
   const captchaVisible = await captchaFrame.locator('.recaptcha-checkbox').isVisible({ timeout: 3000 }).catch(() => false);
   if (captchaVisible) {
-    console.log('\n[reddit-signup] CAPTCHA detected. Complete it in the browser window, then press ENTER.');
-    await promptLine('Press ENTER after completing the CAPTCHA... ');
+    console.log('\n[reddit-signup] CAPTCHA detected. Notifying board via Telegram…');
+    await promptAndWait('Reddit CAPTCHA detected — please solve it in the browser window, then reply "done"');
   }
 
   // Submit via Enter on password field
