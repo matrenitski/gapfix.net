@@ -19,6 +19,7 @@
 
 import { Solver } from '@2captcha/captcha-solver';
 import { promptAndWait } from './telegram-wait-reply.mjs';
+import { waitForCloudflare } from './social/session.js';
 
 const CAPTCHA_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes for Telegram fallback
 
@@ -65,6 +66,44 @@ export async function solveCaptcha({ pageUrl, siteKey, agentContext }) {
     `[solve-captcha] MANUAL ACTION REQUIRED: Open the browser window, solve the CAPTCHA on ${pageUrl}, then re-run the script.`,
   );
   return null;
+}
+
+/**
+ * Handle a Cloudflare Turnstile challenge with a 2-step fallback chain:
+ *   1. Wait for auto-resolve (works in non-headless mode with a seasoned profile)
+ *   2. Telegram relay — board completes the challenge in the visible browser window
+ *
+ * @param {object} opts
+ * @param {import('playwright').Page} opts.page         The Playwright page object
+ * @param {string} opts.pageUrl       URL of the page showing the challenge (for the Telegram message)
+ * @param {string} opts.agentContext  Short description for Telegram message
+ * @returns {Promise<boolean>}  true if the page is unblocked, false on failure
+ */
+export async function solveTurnstile({ page, pageUrl, agentContext }) {
+  // Step 1: Wait for auto-resolve (non-headless + persistent profile often passes automatically)
+  const autoResolved = await waitForCloudflare(page, 20000);
+  if (autoResolved) return true;
+
+  // Step 2: Telegram relay — board solves in visible browser
+  console.log(`[solve-captcha] Cloudflare Turnstile requires human interaction for ${agentContext}`);
+  try {
+    await promptAndWait(
+      `🔐 *Cloudflare security check* at ${agentContext}\n\n` +
+      `URL: ${pageUrl}\n\n` +
+      `Please look at the browser window and complete the Cloudflare verification challenge, then reply *done* here.`,
+      CAPTCHA_TIMEOUT_MS,
+    );
+    console.log('[solve-captcha] Board confirmed Cloudflare Turnstile solved via Telegram');
+    // Give the page a moment to redirect after solving
+    await waitForCloudflare(page, 10000);
+    return true;
+  } catch (e) {
+    console.warn(`[solve-captcha] Telegram relay timed out or failed: ${e.message}`);
+    console.error(
+      `[solve-captcha] MANUAL ACTION REQUIRED: Open the browser window at ${pageUrl} and complete the Cloudflare check.`,
+    );
+    return false;
+  }
 }
 
 /**

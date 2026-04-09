@@ -59,6 +59,55 @@ export async function closeContext({ context }) {
   await context.close();
 }
 
+/**
+ * Detect a Cloudflare Turnstile/challenge page and wait for it to auto-resolve.
+ * Returns true if the page is clear (no challenge, or challenge resolved automatically).
+ * Returns false if the challenge is still present after the timeout.
+ *
+ * In non-headless mode with a seasoned profile, Turnstile usually auto-resolves within ~10s.
+ *
+ * @param {import('playwright').Page} page
+ * @param {number} timeoutMs  Max time to wait for auto-resolution (default 20s)
+ * @returns {Promise<boolean>}
+ */
+export async function waitForCloudflare(page, timeoutMs = 20000) {
+  const isCFChallenge = await page.evaluate(() => {
+    const title = document.title || '';
+    const bodyText = document.body?.innerText || '';
+    return (
+      title.includes('Just a moment') ||
+      bodyText.includes('Performing security verification') ||
+      bodyText.includes('Checking if the site connection is secure') ||
+      !!document.querySelector('#cf-challenge-running, .cf-browser-verification, #challenge-running')
+    );
+  }).catch(() => false);
+
+  if (!isCFChallenge) return true; // No challenge present
+
+  console.log('[session] Cloudflare Turnstile/challenge detected — waiting for auto-resolve...');
+
+  try {
+    await page.waitForFunction(
+      () => {
+        const title = document.title || '';
+        const bodyText = document.body?.innerText || '';
+        return (
+          !title.includes('Just a moment') &&
+          !bodyText.includes('Performing security verification') &&
+          !bodyText.includes('Checking if the site connection is secure') &&
+          !document.querySelector('#cf-challenge-running, .cf-browser-verification, #challenge-running')
+        );
+      },
+      { timeout: timeoutMs },
+    );
+    console.log('[session] Cloudflare challenge resolved automatically');
+    return true;
+  } catch {
+    console.log('[session] Cloudflare challenge did not auto-resolve within timeout');
+    return false;
+  }
+}
+
 export function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }

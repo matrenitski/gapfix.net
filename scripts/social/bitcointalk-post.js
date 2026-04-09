@@ -15,6 +15,7 @@
  */
 
 import { getContext, closeContext, randomDelay, sleep, humanType } from './session.js';
+import { solveTurnstile } from '../solve-captcha.mjs';
 
 const BOARD_MAP = {
   bitcoin: 1,
@@ -43,16 +44,30 @@ export async function bitcointalkPost(boardKeyOrId, title, body) {
   const boardId = resolveBoardId(boardKeyOrId);
   console.log(`[bitcointalk-post] Posting to board ${boardId}: "${title.substring(0, 60)}..."`);
 
-  const ctx = await getContext('bitcointalk');
+  // Use headless:false — Cloudflare Turnstile blocks headless browsers entirely
+  const ctx = await getContext('bitcointalk', { headless: false });
   const { page } = ctx;
+
+  const postUrl = `https://bitcointalk.org/index.php?action=post;board=${boardId}.0`;
 
   try {
     // Navigate to the board's new topic page
-    await page.goto(`https://bitcointalk.org/index.php?action=post;board=${boardId}.0`, {
+    await page.goto(postUrl, {
       waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
-    await randomDelay(2000, 3000);
+    await randomDelay(1500, 2500);
+
+    // Handle Cloudflare Turnstile — auto-resolves in non-headless mode, falls back to Telegram
+    const cfOk = await solveTurnstile({
+      page,
+      pageUrl: postUrl,
+      agentContext: 'Bitcointalk post',
+    });
+    if (!cfOk) {
+      throw new Error('Cloudflare Turnstile could not be resolved — see browser window or Telegram for instructions');
+    }
+    await randomDelay(500, 1000);
 
     const currentUrl = page.url().toString();
     if (currentUrl.includes('action=login') || currentUrl.includes('action=register')) {
