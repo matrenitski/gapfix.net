@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="Max Matrenitski" />
+  <meta name="theme-color" content="#f7931a" />
+  <meta name="color-scheme" content="dark" />
+  <title>UTXO Recovery: How to Find and Recover Missing Bitcoin | GapFix</title>
+  <meta name="description" content="Learn what Bitcoin UTXOs are, why they go missing from your wallet, and how to recover unspent transaction outputs hidden beyond the gap limit. Technical guide for HD wallet users." />
+  <meta name="keywords" content="UTXO recovery, bitcoin UTXO, unspent transaction output, recover missing bitcoin, bitcoin missing from wallet, UTXO explained, bitcoin wallet recovery, HD wallet UTXO, bitcoin address scanner, find lost bitcoin" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="UTXO Recovery: How to Find and Recover Missing Bitcoin" />
+  <meta property="og:description" content="Learn what Bitcoin UTXOs are, why they go missing from your wallet, and how to recover them." />
+  <meta property="og:url" content="https://gapfix.net/utxo-recovery" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gapfix.net/assets/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="UTXO Recovery: How to Find and Recover Missing Bitcoin" />
+  <meta name="twitter:description" content="What UTXOs are, why they go missing, and how to recover them from HD wallets." />
+  <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://gapfix.net/utxo-recovery" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "UTXO Recovery: How to Find and Recover Missing Bitcoin",
+    "description": "Learn what Bitcoin UTXOs are, why they go missing from your wallet, and how to recover unspent transaction outputs hidden beyond the gap limit.",
+    "url": "https://gapfix.net/utxo-recovery",
+    "datePublished": "2026-04-09",
+    "dateModified": "2026-04-09",
+    "author": {
+      "@type": "Person",
+      "name": "Max Matrenitski",
+      "url": "https://github.com/matrenitski"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GapFix",
+      "url": "https://gapfix.net",
+      "logo": "https://gapfix.net/assets/logo-icon.svg"
+    },
+    "mainEntityOfPage": "https://gapfix.net/utxo-recovery",
+    "image": "https://gapfix.net/assets/og-image.png"
+  }
+  </script>
+
+  <!-- FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a UTXO in Bitcoin?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A UTXO (Unspent Transaction Output) is the fundamental unit of Bitcoin balance. When someone sends you Bitcoin, they create a UTXO locked to your address. Your wallet balance is the sum of all UTXOs it knows about. Unlike bank accounts, Bitcoin doesn't have running balances — it tracks individual outputs that can be spent."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can lost UTXOs be recovered?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If you still have the private keys (or seed phrase) that control the addresses holding the UTXOs, then yes — the Bitcoin is recoverable. UTXOs are never truly lost from the blockchain. The most common issue is that your wallet can't see them due to the gap limit. Scanning your xpub beyond the standard gap limit reveals these hidden UTXOs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I find UTXOs hidden beyond the gap limit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Use a tool like GapFix that scans well beyond the standard 20-address gap limit. Paste your extended public key (xpub, ypub, or zpub) and it will check up to 1,000+ addresses on each chain. Any UTXOs beyond the gap will be identified, along with the empty gap addresses that need to be filled with dust transactions."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+  <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo-icon.png" />
+</head>
+<body>
+
+  <!-- ======== HEADER ======== -->
+  <header>
+    <div class="container">
+      <a href="/" class="logo" style="text-decoration:none">
+        <img src="/assets/logo-icon.svg" width="32" height="32" alt="" aria-hidden="true" />
+        Gap<span class="logo-accent">Fix</span>
+      </a>
+      <nav class="header-links">
+        <a href="/#tool">Scan Wallet</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#faq">FAQ</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <article class="article">
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="/">GapFix</a> <span>/</span> UTXO Recovery
+      </nav>
+
+      <div class="article-badge">Technical Guide</div>
+      <h1>UTXO Recovery: How to Find and Recover Missing Bitcoin</h1>
+      <p class="article-subtitle">
+        Bitcoin doesn't work like a bank account. Your balance is a collection of UTXOs — individual unspent outputs scattered across your addresses. When some go missing, here's what's actually happening and how to get them back.
+      </p>
+
+      <div class="prose">
+
+        <h2>What Is a UTXO?</h2>
+
+        <p>UTXO stands for <strong>Unspent Transaction Output</strong>. It is the fundamental unit of value in the Bitcoin protocol.</p>
+
+        <p>When someone sends you Bitcoin, the network doesn't update an account balance somewhere. Instead, the transaction creates an <strong>output</strong> — a specific amount of Bitcoin locked to your address with a cryptographic script. That output remains "unspent" until you use it in a future transaction.</p>
+
+        <p>Your wallet "balance" is simply the sum of all UTXOs locked to addresses your wallet controls. If your wallet knows about 3 UTXOs:</p>
+
+        <ul>
+          <li>0.05 BTC at address <code>bc1q...abc</code> (index 3)</li>
+          <li>0.12 BTC at address <code>bc1q...def</code> (index 7)</li>
+          <li>0.03 BTC at address <code>bc1q...ghi</code> (index 45)</li>
+        </ul>
+
+        <p>Your balance shows as 0.20 BTC. But if the wallet only scans up to index 20 (the <a href="/what-is-gap-limit">gap limit</a>), it finds the first two UTXOs but misses the third. Your displayed balance: 0.17 BTC. The 0.03 BTC UTXO exists on the blockchain — it's just invisible to the wallet.</p>
+
+        <div class="info-box info-box--orange">
+          <h4>UTXOs vs. Account Balances</h4>
+          <p>Bitcoin uses a UTXO model, not an account model. Ethereum, traditional banks, and most payment systems use accounts with running balances. Bitcoin tracks individual outputs. This distinction matters for recovery because a "missing" balance usually means the wallet hasn't found all your UTXOs — not that Bitcoin has disappeared.</p>
+        </div>
+
+        <h2>How UTXOs Are Created</h2>
+
+        <p>Every Bitcoin transaction has inputs and outputs:</p>
+
+        <ul>
+          <li><strong>Inputs</strong> reference and spend previous UTXOs (proving you own them with a signature)</li>
+          <li><strong>Outputs</strong> create new UTXOs locked to destination addresses</li>
+        </ul>
+
+        <p>When you send 0.1 BTC to someone but your UTXO is worth 0.15 BTC, the transaction creates two outputs:</p>
+
+        <ol>
+          <li><strong>0.1 BTC</strong> to the recipient's address (their new UTXO)</li>
+          <li><strong>~0.0499 BTC</strong> back to your <strong>change address</strong> (your new UTXO, minus the transaction fee)</li>
+        </ol>
+
+        <p>This change mechanism is crucial for understanding UTXO recovery. Change addresses are generated on the <strong>internal chain</strong> (<code>m/1/*</code>) of your HD wallet, and the gap limit applies there too. If many transactions create change at high address indices, those change UTXOs can fall beyond the gap.</p>
+
+        <h2>Why UTXOs Go Missing</h2>
+
+        <p>UTXOs don't actually go missing from the blockchain. They go missing from your <strong>wallet's view</strong>. The most common causes:</p>
+
+        <h3>1. Address Gap Limit</h3>
+        <p>The most frequent cause. Your HD wallet stops scanning after 20 consecutive empty addresses (<a href="/what-is-gap-limit">the gap limit</a>). Any UTXOs at higher indices are invisible. This is the primary problem GapFix solves.</p>
+
+        <h3>2. Change Address Gap</h3>
+        <p>After spending Bitcoin, change is sent to a new change address on the internal chain. If your wallet made many transactions, the change address index can climb high. When restoring the wallet, the gap limit on the internal chain may cut off some change UTXOs.</p>
+
+        <h3>3. Wallet Migration</h3>
+        <p>Switching from Wallet A to Wallet B using the same seed. Wallet B starts scanning from scratch and may not reach all the addresses that Wallet A had used, especially if Wallet A had a higher gap limit or used non-standard derivation.</p>
+
+        <h3>4. Different Derivation Standards</h3>
+        <p>Your seed phrase can derive addresses using different BIP standards:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Standard</th>
+              <th>Path</th>
+              <th>Address Type</th>
+              <th>Prefix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>BIP-44</td>
+              <td><code>m/44'/0'/0'</code></td>
+              <td>Legacy P2PKH</td>
+              <td><code>1...</code></td>
+            </tr>
+            <tr>
+              <td>BIP-49</td>
+              <td><code>m/49'/0'/0'</code></td>
+              <td>Wrapped SegWit P2SH</td>
+              <td><code>3...</code></td>
+            </tr>
+            <tr>
+              <td>BIP-84</td>
+              <td><code>m/84'/0'/0'</code></td>
+              <td>Native SegWit P2WPKH</td>
+              <td><code>bc1q...</code></td>
+            </tr>
+            <tr>
+              <td>BIP-86</td>
+              <td><code>m/86'/0'/0'</code></td>
+              <td>Taproot P2TR</td>
+              <td><code>bc1p...</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>If your old wallet used BIP-44 (legacy addresses) but your new wallet defaults to BIP-84 (native SegWit), the new wallet may only scan the BIP-84 path and miss UTXOs on the BIP-44 path entirely. GapFix scans all four types automatically to catch this.</p>
+
+        <h3>5. Dust UTXOs</h3>
+        <p>Very small UTXOs (below 546 or 294 satoshis depending on address type) are considered "dust" by the Bitcoin network and some wallets hide or refuse to spend them. While not technically missing, they may not appear in your balance.</p>
+
+        <h2>How to Recover Missing UTXOs</h2>
+
+        <h3>Method 1: Scan Beyond the Gap Limit</h3>
+
+        <p>The fastest approach for gap-limit-related UTXO recovery:</p>
+
+        <ol>
+          <li>Get your extended public key (xpub, ypub, or zpub) from your wallet settings</li>
+          <li>Paste it into <a href="/">GapFix</a> — it scans 1,000+ addresses on both external and internal chains, across all four address formats</li>
+          <li>GapFix identifies exactly which UTXOs are beyond the gap and which addresses need dust</li>
+          <li>Send dust (294–546 sats) to each gap address</li>
+          <li>Rescan your wallet — all UTXOs become visible</li>
+        </ol>
+
+        <p>For the full step-by-step process, see: <a href="/how-to-fix-bitcoin-wallet-zero-balance">How to Fix Bitcoin Wallet Showing 0 Balance</a></p>
+
+        <h3>Method 2: Increase Wallet Gap Limit</h3>
+
+        <p>If your wallet supports it, increasing the gap limit directly is another option:</p>
+
+        <ul>
+          <li><strong>Electrum:</strong> Console command <code>wallet.change_gap_limit(100)</code></li>
+          <li><strong>Sparrow:</strong> Preferences &rarr; Gap Limit</li>
+        </ul>
+
+        <p>Downside: this is wallet-specific. If you later switch wallets, you'll need to increase the limit again or use the dust fix.</p>
+
+        <h3>Method 3: Full Node Rescan</h3>
+
+        <p>If you run a Bitcoin full node (Bitcoin Core), you can import your xpub with a high gap limit:</p>
+
+        <pre><code>bitcoin-cli importdescriptors '[{"desc": "wpkh([fingerprint/84h/0h/0h]xpub.../0/*)#checksum", "range": [0, 1000], "timestamp": "now"}]'</code></pre>
+
+        <p>This bypasses the standard gap limit entirely and checks indices 0–1000. It requires running a fully synced Bitcoin Core node.</p>
+
+        <h2>UTXO Management Best Practices</h2>
+
+        <p>Good UTXO management prevents recovery headaches:</p>
+
+        <ul>
+          <li><strong>Consolidate periodically.</strong> If you have many small UTXOs spread across high-index addresses, consolidate them into a single UTXO at a low-index address during low-fee periods. This makes future wallet restores reliable.</li>
+          <li><strong>Avoid excessive address generation.</strong> Only generate new receive addresses as needed. Pre-generating dozens of addresses is the primary cause of gap limit issues.</li>
+          <li><strong>Use consistent wallet software.</strong> Switching between wallets frequently increases the chance of gap issues.</li>
+          <li><strong>Document your setup.</strong> Record which derivation paths your wallet uses (BIP-44, 49, 84, or 86) and whether you've set a custom gap limit. This information is invaluable if you ever need to restore.</li>
+          <li><strong>Verify after restoration.</strong> After restoring a wallet from seed, scan your xpub with <a href="/">GapFix</a> to confirm no UTXOs are hiding beyond the gap.</li>
+        </ul>
+
+        <h2>UTXO Privacy Considerations</h2>
+
+        <p>UTXO management also has privacy implications. Each UTXO is linked to a specific address, and when you spend multiple UTXOs in one transaction, blockchain analysis can link those addresses to the same wallet.</p>
+
+        <p>Tools like <strong>coin control</strong> (available in Electrum, Sparrow, and Wasabi) let you choose exactly which UTXOs to spend, giving you more control over your on-chain privacy. This is worth understanding when doing UTXO recovery — after recovering hidden UTXOs, consider how you consolidate them.</p>
+
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>What is a UTXO in Bitcoin?</h3>
+        <p>A UTXO (Unspent Transaction Output) is the fundamental unit of Bitcoin balance. When someone sends you Bitcoin, they create a UTXO locked to your address. Your wallet balance is the sum of all UTXOs it knows about.</p>
+
+        <h3>Can lost UTXOs be recovered?</h3>
+        <p>If you still have the private keys (or seed phrase) that control the addresses holding the UTXOs, then yes. UTXOs are never lost from the blockchain — they just become invisible to wallets that don't scan far enough. The dust fix or increasing the gap limit makes them visible again.</p>
+
+        <h3>How do I find UTXOs hidden beyond the gap limit?</h3>
+        <p>Use <a href="/">GapFix</a> to scan your extended public key beyond the standard 20-address gap limit. It checks up to 1,000+ addresses on each chain across all four address formats, identifying any hidden UTXOs and the gap addresses that need dust.</p>
+
+        <h3>What's the difference between a UTXO and a Bitcoin address?</h3>
+        <p>An address is where Bitcoin is sent to. A UTXO is the actual Bitcoin value sitting at that address. One address can have multiple UTXOs (if it received Bitcoin multiple times), and an address with a spent UTXO and no new incoming transactions has a zero balance. Your wallet tracks UTXOs, not addresses, when calculating your balance.</p>
+
+        <!-- CTA -->
+        <div class="cta-banner">
+          <h3>Scan for hidden UTXOs</h3>
+          <p>Paste your xpub and find UTXOs hiding beyond your wallet's gap limit. Free, open-source, client-side.</p>
+          <a href="/#tool" class="btn btn-primary btn-lg">Scan My Wallet</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+          <h2>Related Guides</h2>
+          <div class="related-grid">
+            <a href="/what-is-gap-limit" class="related-card">
+              <h3>What Is the Bitcoin Gap Limit?</h3>
+              <p>The BIP-44 scanning rule explained, with gap limits for every major wallet.</p>
+            </a>
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+              <h3>Fix Bitcoin Wallet Showing 0 Balance</h3>
+              <p>Step-by-step dust fix guide to recover hidden Bitcoin after a wallet restore.</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+  </main>
+
+  <!-- ======== FOOTER ======== -->
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/article.css" />
+</body>
+</html>

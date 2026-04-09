@@ -954,6 +954,44 @@ footer .container {
   height: 1px;
 }
 
+/* ---- Guides section ---- */
+
+#guides { padding: 48px 0; }
+
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+
+.guide-card:hover {
+  border-color: var(--orange);
+  text-decoration: none;
+}
+
+.guide-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.guide-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* ---- Responsive ---- */
 
 @media (max-width: 600px) {

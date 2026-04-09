@@ -1,0 +1,301 @@
+/* ============================================================
+   GapFix – Article page styles
+   Extends the base dark theme for long-form content pages
+   ============================================================ */
+
+/* ---- Article layout ---- */
+
+.article {
+  padding: 48px 0 64px;
+}
+
+.article-badge {
+  display: inline-block;
+  background: rgba(247, 147, 26, 0.12);
+  color: var(--orange);
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  border-radius: 100px;
+  padding: 4px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.article h1 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.article-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 640px;
+}
+
+.article-meta {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  margin-bottom: 32px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---- Prose ---- */
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 40px 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.prose h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 32px 0 12px;
+}
+
+.prose p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.prose strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.prose ul, .prose ol {
+  color: var(--text-muted);
+  margin: 0 0 16px 24px;
+  line-height: 1.75;
+}
+
+.prose li {
+  margin-bottom: 8px;
+}
+
+.prose code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.88em;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--orange);
+}
+
+.prose pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--orange);
+  padding: 12px 20px;
+  margin: 0 0 16px;
+  background: rgba(247, 147, 26, 0.04);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.prose blockquote p {
+  margin-bottom: 0;
+  color: var(--text);
+}
+
+.prose a {
+  color: var(--orange);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  color: var(--orange-dim);
+}
+
+/* ---- Info box / callout ---- */
+
+.info-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+
+.info-box h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.info-box p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.info-box--orange {
+  border-color: rgba(247, 147, 26, 0.3);
+  background: rgba(247, 147, 26, 0.04);
+}
+
+.info-box--green {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.04);
+}
+
+/* ---- Comparison table ---- */
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-size: 0.9rem;
+}
+
+.prose th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+
+.prose td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-muted);
+}
+
+.prose tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+/* ---- CTA banner ---- */
+
+.cta-banner {
+  background: var(--surface);
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin: 40px 0;
+  text-align: center;
+}
+
+.cta-banner h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.cta-banner p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* ---- Related articles ---- */
+
+.related-articles {
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+  margin-top: 48px;
+}
+
+.related-articles h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.related-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+
+.related-card:hover {
+  border-color: var(--orange);
+  text-decoration: none;
+}
+
+.related-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.related-card p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ---- Breadcrumb ---- */
+
+.breadcrumb {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  margin-bottom: 24px;
+}
+
+.breadcrumb a {
+  color: var(--text-faint);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--orange);
+}
+
+.breadcrumb span {
+  margin: 0 6px;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .article { padding: 32px 0 48px; }
+  .cta-banner { padding: 24px 16px; }
+  .prose table { font-size: 0.82rem; }
+  .prose th, .prose td { padding: 8px 10px; }
+}

@@ -3,6 +3,9 @@
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
+    { "source": "/what-is-gap-limit", "destination": "/what-is-gap-limit/index.html" },
+    { "source": "/how-to-fix-bitcoin-wallet-zero-balance", "destination": "/how-to-fix-bitcoin-wallet-zero-balance/index.html" },
+    { "source": "/utxo-recovery", "destination": "/utxo-recovery/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

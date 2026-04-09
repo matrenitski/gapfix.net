@@ -37,6 +37,12 @@ GapFix (gapfix.net) solves the Bitcoin address gap limit problem. Bitcoin HD wal
 - All computation is client-side; only public addresses are queried externally
 - Open source: https://github.com/matrenitski/gapfix.net
 
+## Guides
+
+- [What Is the Bitcoin Gap Limit?](https://gapfix.net/what-is-gap-limit) — BIP-44 address gap explained, gap limits by wallet, how to fix it
+- [How to Fix Bitcoin Wallet Showing 0 Balance](https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance) — Step-by-step dust fix guide for Electrum, Ledger, Trezor, Sparrow
+- [UTXO Recovery: Finding Missing Bitcoin](https://gapfix.net/utxo-recovery) — What UTXOs are, why they go missing, and recovery methods
+
 ## Documentation
 
 - [Full tool documentation](https://gapfix.net/llms-full.txt)

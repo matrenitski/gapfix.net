@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="Max Matrenitski" />
+  <meta name="theme-color" content="#f7931a" />
+  <meta name="color-scheme" content="dark" />
+  <title>Fix Bitcoin Wallet Showing 0 Balance After Restore | Step-by-Step Guide | GapFix</title>
+  <meta name="description" content="Bitcoin wallet showing 0 balance after restoring from seed? Step-by-step guide to find and recover missing Bitcoin using the dust fix method. Works with Electrum, Ledger, Trezor, Sparrow." />
+  <meta name="keywords" content="bitcoin wallet shows 0 balance, bitcoin wallet not showing funds, bitcoin wallet zero balance after restore, fix bitcoin wallet balance, bitcoin missing funds, bitcoin wallet recovery, electrum 0 balance, ledger missing balance, trezor wallet recovery, bitcoin dust fix" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Fix Bitcoin Wallet Showing 0 Balance After Restore" />
+  <meta property="og:description" content="Step-by-step guide to find and recover missing Bitcoin when your wallet shows 0 after restoring from a seed phrase." />
+  <meta property="og:url" content="https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gapfix.net/assets/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Fix Bitcoin Wallet Showing 0 Balance After Restore" />
+  <meta name="twitter:description" content="Step-by-step guide to recovering Bitcoin that doesn't appear after wallet restore." />
+  <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How to Fix Bitcoin Wallet Showing 0 Balance After Restore",
+    "description": "Step-by-step guide to find and recover missing Bitcoin using the dust fix method. Works with Electrum, Ledger, Trezor, Sparrow.",
+    "url": "https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance",
+    "datePublished": "2026-04-09",
+    "dateModified": "2026-04-09",
+    "author": {
+      "@type": "Person",
+      "name": "Max Matrenitski",
+      "url": "https://github.com/matrenitski"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GapFix",
+      "url": "https://gapfix.net",
+      "logo": "https://gapfix.net/assets/logo-icon.svg"
+    },
+    "mainEntityOfPage": "https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance",
+    "image": "https://gapfix.net/assets/og-image.png"
+  }
+  </script>
+
+  <!-- HowTo Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Fix Bitcoin Wallet Showing 0 Balance After Restore",
+    "description": "Recover Bitcoin that doesn't appear in your wallet after restoring from a seed phrase. The most common cause is the address gap limit.",
+    "totalTime": "PT15M",
+    "estimatedCost": {
+      "@type": "MonetaryAmount",
+      "currency": "BTC",
+      "value": "0.00005"
+    },
+    "tool": [
+      {"@type": "HowToTool", "name": "GapFix (gapfix.net)"},
+      {"@type": "HowToTool", "name": "Your Bitcoin wallet's xpub, ypub, or zpub key"},
+      {"@type": "HowToTool", "name": "A Bitcoin wallet capable of sending transactions"}
+    ],
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "name": "Confirm the problem is the gap limit",
+        "text": "Check if your wallet shows 0 balance or less than expected after restoring from a seed phrase. If you know Bitcoin was sent to your address but the wallet doesn't show it, the gap limit is the most likely cause."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "name": "Find your extended public key",
+        "text": "Open your wallet settings and locate the extended public key (xpub, ypub, or zpub). In Electrum: Wallet > Information. In Ledger Live: Account > Edit > Advanced. In Trezor Suite: Account > Details."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "name": "Scan with GapFix",
+        "text": "Go to gapfix.net and paste your extended public key. GapFix will scan up to 1,000 external and 1,000 change addresses across all four address types (P2PKH, P2SH, P2WPKH, P2TR)."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 4,
+        "name": "Send dust to gap addresses",
+        "text": "GapFix shows which empty addresses are blocking the scanner. Send 294-546 satoshis to each gap address using your wallet's batch send feature. Use the Copy addresses button for easy formatting."
+      },
+      {
+        "@type": "HowToStep",
+        "position": 5,
+        "name": "Rescan your wallet",
+        "text": "After the dust transactions confirm, rescan your wallet. In Electrum: Wallet > History > Rescan. In Sparrow: Wallet > UTXOs > Rescan Blockchain. Your hidden Bitcoin will now appear."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+  <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo-icon.png" />
+</head>
+<body>
+
+  <!-- ======== HEADER ======== -->
+  <header>
+    <div class="container">
+      <a href="/" class="logo" style="text-decoration:none">
+        <img src="/assets/logo-icon.svg" width="32" height="32" alt="" aria-hidden="true" />
+        Gap<span class="logo-accent">Fix</span>
+      </a>
+      <nav class="header-links">
+        <a href="/#tool">Scan Wallet</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#faq">FAQ</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <article class="article">
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="/">GapFix</a> <span>/</span> Fix Bitcoin Wallet 0 Balance
+      </nav>
+
+      <div class="article-badge">Step-by-Step Guide</div>
+      <h1>How to Fix Bitcoin Wallet Showing 0 Balance After Restore</h1>
+      <p class="article-subtitle">
+        You restored your Bitcoin wallet from a seed phrase and it shows zero. The Bitcoin isn't gone — your wallet just can't see it. Here's how to get it back, step by step.
+      </p>
+
+      <div class="prose">
+
+        <h2>Why Your Wallet Shows 0 Balance</h2>
+
+        <p>When you restore a Bitcoin wallet from a seed phrase, the wallet generates addresses sequentially and checks each one for transactions on the blockchain. But it doesn't check every possible address — it uses a rule called the <a href="/what-is-gap-limit">gap limit</a>.</p>
+
+        <p>The gap limit (usually 20) tells the wallet: "if you see 20 consecutive empty addresses, stop looking." If your Bitcoin sits at an address beyond that gap, the wallet stops before it gets there. Your balance shows as zero.</p>
+
+        <p><strong>This is the single most common reason for a Bitcoin wallet to show 0 balance after a restore.</strong> Other possible causes include:</p>
+
+        <ul>
+          <li><strong>Wrong derivation path</strong> — the wallet uses a different BIP standard than the one your funds are on</li>
+          <li><strong>Wrong seed phrase</strong> — you may have multiple seeds for different wallets</li>
+          <li><strong>Passphrase mismatch</strong> — if you used a BIP-39 passphrase (sometimes called the "25th word"), you need to enter it during restore</li>
+          <li><strong>Blockchain not fully synced</strong> — some wallets need time to download and verify the blockchain</li>
+        </ul>
+
+        <p>This guide focuses on the gap limit cause, which accounts for the vast majority of cases.</p>
+
+        <h2>What You'll Need</h2>
+
+        <ul>
+          <li>Your wallet's <strong>extended public key</strong> (xpub, ypub, or zpub) — this is a public key that cannot spend funds</li>
+          <li>Access to <a href="/">GapFix</a> (or any tool that scans beyond the standard gap limit)</li>
+          <li>A way to send a small amount of Bitcoin (a few hundred satoshis per gap address)</li>
+        </ul>
+
+        <h2>Step 1: Find Your Extended Public Key</h2>
+
+        <p>The extended public key (xpub, ypub, or zpub) is a master public key that lets you derive all your receive addresses without exposing your private keys. Here's where to find it in popular wallets:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>Location</th>
+              <th>Key Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Electrum</strong></td>
+              <td>Wallet &rarr; Information &rarr; Master Public Key</td>
+              <td>zpub (native segwit) or xpub (legacy)</td>
+            </tr>
+            <tr>
+              <td><strong>Ledger Live</strong></td>
+              <td>Account &rarr; Edit &rarr; Advanced &rarr; Extended Public Key</td>
+              <td>xpub</td>
+            </tr>
+            <tr>
+              <td><strong>Trezor Suite</strong></td>
+              <td>Account &rarr; Details &rarr; Show Public Key (XPUB)</td>
+              <td>xpub, ypub, or zpub</td>
+            </tr>
+            <tr>
+              <td><strong>Sparrow</strong></td>
+              <td>Settings &rarr; Keystore &rarr; Master Public Key</td>
+              <td>zpub or xpub</td>
+            </tr>
+            <tr>
+              <td><strong>Coldcard</strong></td>
+              <td>Advanced &rarr; View Identity &rarr; Master XPUB</td>
+              <td>xpub</td>
+            </tr>
+            <tr>
+              <td><strong>BlueWallet</strong></td>
+              <td>Wallet &rarr; Details &rarr; Show XPUB</td>
+              <td>zpub</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box info-box--green">
+          <h4>Is it safe to share my xpub?</h4>
+          <p>An xpub is a <strong>public</strong> key — it can derive your receive addresses but cannot spend your Bitcoin or reveal your private keys. GapFix runs entirely in your browser and never sends your key to a server. That said, anyone with your xpub can see all your addresses and balances, so treat it as private for privacy reasons.</p>
+        </div>
+
+        <h2>Step 2: Scan with GapFix</h2>
+
+        <ol>
+          <li>Open <a href="/">gapfix.net</a></li>
+          <li>Paste your extended public key into the input field</li>
+          <li>Click <strong>"Scan for Gap Issues"</strong></li>
+        </ol>
+
+        <p>GapFix will derive up to 2,000 addresses (1,000 external receive addresses + 1,000 change addresses) and check each one against the blockchain. It scans all four address formats automatically:</p>
+
+        <ul>
+          <li><strong>P2PKH</strong> — Legacy addresses starting with <code>1</code></li>
+          <li><strong>P2SH-P2WPKH</strong> — Wrapped SegWit addresses starting with <code>3</code></li>
+          <li><strong>P2WPKH</strong> — Native SegWit / bech32 starting with <code>bc1q</code></li>
+          <li><strong>P2TR</strong> — Taproot starting with <code>bc1p</code></li>
+        </ul>
+
+        <p>The scan typically takes 2–5 minutes. When complete, GapFix shows you:</p>
+
+        <ul>
+          <li>How many <strong>gap addresses</strong> exist (empty addresses blocking the scanner)</li>
+          <li>The <strong>total hidden balance</strong> sitting beyond the gap</li>
+          <li>A <strong>copy-ready list</strong> of addresses that need dust transactions</li>
+        </ul>
+
+        <h2>Step 3: Send Dust to Gap Addresses</h2>
+
+        <p>"Dust" is a tiny amount of Bitcoin sent to fill the gap. Once each empty gap address has a transaction, your wallet's scanner will continue past it.</p>
+
+        <h3>Minimum dust amounts</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Address Type</th>
+              <th>Prefix</th>
+              <th>Minimum Dust</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Legacy (P2PKH)</td>
+              <td><code>1...</code></td>
+              <td>546 sats</td>
+            </tr>
+            <tr>
+              <td>Wrapped SegWit (P2SH)</td>
+              <td><code>3...</code></td>
+              <td>546 sats</td>
+            </tr>
+            <tr>
+              <td>Native SegWit (P2WPKH)</td>
+              <td><code>bc1q...</code></td>
+              <td>294 sats</td>
+            </tr>
+            <tr>
+              <td>Taproot (P2TR)</td>
+              <td><code>bc1p...</code></td>
+              <td>294 sats</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>How to send dust efficiently</h3>
+
+        <p>The most efficient method is a <strong>batch transaction</strong> — sending to all gap addresses in a single transaction. This saves on fees compared to individual sends.</p>
+
+        <ol>
+          <li>In GapFix, click <strong>"Copy addresses"</strong> — this copies all gap addresses and their dust amounts in tab-separated format</li>
+          <li>In your wallet, use the <strong>batch send</strong> or <strong>"send to many"</strong> feature:
+            <ul>
+              <li><strong>Electrum:</strong> Tools &rarr; Pay to many</li>
+              <li><strong>Sparrow:</strong> Send &rarr; Add output (for each address)</li>
+              <li><strong>Bitcoin CLI:</strong> <code>bitcoin-cli sendmany</code></li>
+            </ul>
+          </li>
+          <li>Paste the address list and send</li>
+        </ol>
+
+        <p>Total cost is typically a few thousand satoshis (a few cents USD) for a handful of gap addresses, plus the standard transaction fee.</p>
+
+        <h2>Step 4: Rescan Your Wallet</h2>
+
+        <p>After the dust transactions have at least <strong>1 confirmation</strong> (about 10 minutes), trigger a rescan in your wallet:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>How to Rescan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Electrum</strong></td>
+              <td>Wallet &rarr; History &rarr; right-click &rarr; Rescan, or close and re-open the wallet</td>
+            </tr>
+            <tr>
+              <td><strong>Ledger Live</strong></td>
+              <td>Close and re-open the account, or use Settings &rarr; Help &rarr; Clear cache</td>
+            </tr>
+            <tr>
+              <td><strong>Trezor Suite</strong></td>
+              <td>Disconnect and reconnect the device, or resync from Settings</td>
+            </tr>
+            <tr>
+              <td><strong>Sparrow</strong></td>
+              <td>Wallet &rarr; UTXOs &rarr; Rescan Blockchain</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>Your wallet will now scan address 0, 1, 2... encounter the dust transactions on the previously-empty gap addresses, continue scanning, and <strong>discover the hidden Bitcoin beyond the gap</strong>. Your full balance should appear.</p>
+
+        <h2>Still Showing 0? Troubleshooting</h2>
+
+        <h3>Wrong derivation path</h3>
+        <p>If GapFix also shows 0 across all address types, the issue may not be the gap limit. Your funds might be on a different derivation path. Common paths:</p>
+        <ul>
+          <li><code>m/44'/0'/0'</code> — BIP-44 legacy (P2PKH)</li>
+          <li><code>m/49'/0'/0'</code> — BIP-49 wrapped SegWit (P2SH-P2WPKH)</li>
+          <li><code>m/84'/0'/0'</code> — BIP-84 native SegWit (P2WPKH)</li>
+          <li><code>m/86'/0'/0'</code> — BIP-86 Taproot (P2TR)</li>
+        </ul>
+        <p>Try importing your seed into a wallet that supports all derivation paths (Sparrow is excellent for this).</p>
+
+        <h3>BIP-39 passphrase</h3>
+        <p>If you originally set up your wallet with a passphrase (sometimes called the "25th word" or "hidden wallet"), you <strong>must</strong> enter the same passphrase when restoring. Without it, the wallet derives a completely different set of addresses.</p>
+
+        <h3>Multiple accounts</h3>
+        <p>Some wallets support multiple accounts under the same seed (BIP-44 account index). If your funds are in account 1 (<code>m/84'/0'/1'</code>) but your wallet only scans account 0, they won't appear. Check if your wallet supports adding additional accounts.</p>
+
+        <h3>Dust not confirmed yet</h3>
+        <p>Wait for at least 1 block confirmation before rescanning. If you sent with a very low fee, the dust transaction may take longer to confirm.</p>
+
+        <h2>Understanding UTXOs and Why This Works</h2>
+
+        <p>Bitcoin doesn't have "accounts" with balances the way a bank does. Instead, your balance is the sum of <a href="/utxo-recovery">Unspent Transaction Outputs (UTXOs)</a> — individual chunks of Bitcoin locked to your addresses.</p>
+
+        <p>When a UTXO exists at address index 50 but your wallet stops scanning at index 20 (the gap limit), it simply doesn't know the UTXO is there. The Bitcoin is perfectly safe on the blockchain — the wallet just can't see it.</p>
+
+        <p>By sending dust to the empty addresses between index 20 and 50, you give each address a transaction. The wallet scanner sees those transactions, thinks "there might be more funds ahead," and keeps scanning until it finds your UTXO at index 50.</p>
+
+        <!-- CTA -->
+        <div class="cta-banner">
+          <h3>Ready to recover your Bitcoin?</h3>
+          <p>Scan your extended public key now. Free, open-source, no private keys needed.</p>
+          <a href="/#tool" class="btn btn-primary btn-lg">Scan My Wallet</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+          <h2>Related Guides</h2>
+          <div class="related-grid">
+            <a href="/what-is-gap-limit" class="related-card">
+              <h3>What Is the Bitcoin Gap Limit?</h3>
+              <p>Deep dive into BIP-44, how HD wallets scan addresses, and gap limits by wallet.</p>
+            </a>
+            <a href="/utxo-recovery" class="related-card">
+              <h3>UTXO Recovery: Finding Missing Bitcoin</h3>
+              <p>What UTXOs are, why they go missing, and technical recovery methods.</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+  </main>
+
+  <!-- ======== FOOTER ======== -->
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/article.css" />
+</body>
+</html>

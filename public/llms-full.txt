@@ -163,6 +163,18 @@ No. GapFix only receives your *public* extended key, from which it derives *publ
 
 ---
 
+## Guides
+
+GapFix publishes in-depth educational guides on Bitcoin wallet recovery and the gap limit:
+
+- **What Is the Bitcoin Gap Limit?** (https://gapfix.net/what-is-gap-limit) — Comprehensive explanation of the BIP-44 address gap limit, how HD wallets scan addresses, gap limit values for every major wallet (Electrum, Ledger, Trezor, Sparrow, Wasabi, BlueWallet, Coldcard), and three methods to fix it (dust fix, increasing gap limit, manual address import). Includes technical BIP-32 derivation path details.
+
+- **How to Fix Bitcoin Wallet Showing 0 Balance** (https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance) — Step-by-step tutorial for recovering Bitcoin that doesn't appear after restoring from a seed phrase. Covers finding your xpub in each wallet, scanning with GapFix, sending dust efficiently via batch transactions, rescanning, and troubleshooting (wrong derivation path, BIP-39 passphrase, multiple accounts).
+
+- **UTXO Recovery: Finding Missing Bitcoin** (https://gapfix.net/utxo-recovery) — Technical guide explaining the Bitcoin UTXO model, how UTXOs are created (inputs, outputs, change), why UTXOs go missing (gap limit, change address gaps, wallet migration, different derivation standards, dust UTXOs), three recovery methods (GapFix scan, increased gap limit, Bitcoin Core full node rescan), and UTXO management best practices.
+
+---
+
 ## About GapFix
 
 GapFix was built by Max Matrenitski as a free, open-source utility for the Bitcoin community. It is provided as-is, without warranty. It does not store, transmit, or have access to any private keys or seed phrases. Always verify addresses before sending funds.

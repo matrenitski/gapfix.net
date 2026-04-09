@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="Max Matrenitski" />
+  <meta name="theme-color" content="#f7931a" />
+  <meta name="color-scheme" content="dark" />
+  <title>What Is the Bitcoin Gap Limit? BIP-44 Address Gap Explained | GapFix</title>
+  <meta name="description" content="The Bitcoin address gap limit is a BIP-44 scanning rule that causes HD wallets to show 0 balance. Learn why it happens, how it affects Electrum, Ledger, Trezor, and how to fix it." />
+  <meta name="keywords" content="bitcoin gap limit, bitcoin address gap limit, BIP-44 gap limit, HD wallet gap limit, bitcoin wallet shows 0 balance, electrum gap limit, ledger gap limit, trezor gap limit, bitcoin address scanning, bitcoin wallet recovery" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="What Is the Bitcoin Gap Limit? Complete BIP-44 Guide" />
+  <meta property="og:description" content="The Bitcoin address gap limit is a BIP-44 scanning rule that causes HD wallets to show 0 balance. Learn why it happens and how to fix it." />
+  <meta property="og:url" content="https://gapfix.net/what-is-gap-limit" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gapfix.net/assets/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="What Is the Bitcoin Gap Limit? Complete BIP-44 Guide" />
+  <meta name="twitter:description" content="The Bitcoin address gap limit causes HD wallets to show 0 balance. Learn why it happens and how to fix it." />
+  <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://gapfix.net/what-is-gap-limit" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "What Is the Bitcoin Gap Limit? BIP-44 Address Gap Explained",
+    "description": "The Bitcoin address gap limit is a BIP-44 scanning rule that causes HD wallets to show 0 balance. Learn why it happens, how it affects Electrum, Ledger, Trezor, and how to fix it.",
+    "url": "https://gapfix.net/what-is-gap-limit",
+    "datePublished": "2026-04-09",
+    "dateModified": "2026-04-09",
+    "author": {
+      "@type": "Person",
+      "name": "Max Matrenitski",
+      "url": "https://github.com/matrenitski"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GapFix",
+      "url": "https://gapfix.net",
+      "logo": "https://gapfix.net/assets/logo-icon.svg"
+    },
+    "mainEntityOfPage": "https://gapfix.net/what-is-gap-limit",
+    "image": "https://gapfix.net/assets/og-image.png"
+  }
+  </script>
+
+  <!-- FAQPage for this article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the default Bitcoin gap limit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The default Bitcoin gap limit is 20 consecutive empty addresses, as defined in BIP-44. Some wallets use different values — Electrum defaults to 5 for its internal scanning, while most hardware wallets like Ledger and Trezor use 20."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I change the gap limit in my wallet?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Some wallets allow you to increase the gap limit. In Electrum, you can run the console command `wallet.change_gap_limit(50)` to increase it to 50. Sparrow Wallet allows setting a custom gap limit in preferences. Most hardware wallet interfaces (Ledger Live, Trezor Suite) do not expose this setting directly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the gap limit affect Bitcoin safety?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The gap limit does not affect the safety or security of your Bitcoin. Your funds exist on the blockchain regardless of whether your wallet can see them. The gap limit only affects wallet visibility — it determines how far the wallet scans when looking for your addresses. Funds beyond the gap are not lost, just hidden from view."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- LLM/AI discovery -->
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo-icon.png" />
+</head>
+<body>
+
+  <!-- ======== HEADER ======== -->
+  <header>
+    <div class="container">
+      <a href="/" class="logo" style="text-decoration:none">
+        <img src="/assets/logo-icon.svg" width="32" height="32" alt="" aria-hidden="true" />
+        Gap<span class="logo-accent">Fix</span>
+      </a>
+      <nav class="header-links">
+        <a href="/#tool">Scan Wallet</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#faq">FAQ</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <article class="article">
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="/">GapFix</a> <span>/</span> What Is the Bitcoin Gap Limit?
+      </nav>
+
+      <div class="article-badge">Guide</div>
+      <h1>What Is the Bitcoin Gap Limit?</h1>
+      <p class="article-subtitle">
+        The BIP-44 address gap limit is the most common reason Bitcoin HD wallets show a zero balance after restoring from a seed phrase. Here's exactly what it is, why it exists, and how to fix it.
+      </p>
+
+      <div class="prose">
+
+        <h2>The Gap Limit in Plain English</h2>
+
+        <p>When you restore a Bitcoin wallet from a seed phrase (or import an extended public key), the wallet needs to figure out which addresses belong to you and whether they hold any Bitcoin. It does this by generating addresses one by one — address 0, address 1, address 2, and so on — and checking each against the blockchain for transaction history.</p>
+
+        <p>But here's the problem: a seed phrase can generate <strong>billions of addresses</strong>. The wallet can't check all of them. So it uses a rule: <strong>if it encounters 20 consecutive addresses with zero transaction history, it stops scanning</strong> and assumes it has found everything.</p>
+
+        <p>That number — <strong>20</strong> — is the <strong>gap limit</strong>. It's defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki" target="_blank" rel="noopener">BIP-44</a> (Bitcoin Improvement Proposal 44), the standard that governs how HD (Hierarchical Deterministic) wallets derive addresses.</p>
+
+        <div class="info-box info-box--orange">
+          <h4>Key Takeaway</h4>
+          <p>The gap limit is a performance optimization, not a security feature. It tells the wallet "stop looking after 20 empty addresses in a row." When your Bitcoin sits beyond that gap, the wallet simply never sees it — but the funds are still safely on-chain.</p>
+        </div>
+
+        <h2>Why Does the Gap Limit Exist?</h2>
+
+        <p>HD wallets (defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki" target="_blank" rel="noopener">BIP-32</a>) can derive an effectively infinite number of addresses from a single seed. Without a stopping rule, a wallet would need to check addresses forever — which is impractical both in terms of time and API rate limits.</p>
+
+        <p>The BIP-44 authors chose 20 as a reasonable default. Under normal use, you rarely generate more than a few addresses without receiving at least one payment. Twenty empty addresses in a row almost always means "there's nothing further." It's a good heuristic — until it isn't.</p>
+
+        <h2>When the Gap Limit Causes Problems</h2>
+
+        <p>The gap limit becomes a real issue in several common scenarios:</p>
+
+        <h3>1. Wallet Migration</h3>
+        <p>You used Wallet A for years and generated dozens of receive addresses. When you import your seed into Wallet B, it starts scanning from index 0. If there's a stretch of 20+ unused addresses anywhere in the middle, Wallet B stops there — even though you have funds at higher indices.</p>
+
+        <h3>2. Pre-Generated Receive Addresses</h3>
+        <p>You created 30 receive addresses in advance (for invoices, donations, a merchant checkout system) but only received funds on address #25. A wallet with a gap limit of 20 stops at index 20 and never checks index 25.</p>
+
+        <h3>3. Exchange Deposits</h3>
+        <p>Some exchanges or payment processors assign deposit addresses non-sequentially, or generate many addresses internally. If Bitcoin lands on an address far ahead in the derivation sequence, it falls beyond the gap.</p>
+
+        <h3>4. Multiple Wallet Software</h3>
+        <p>Different wallet software may track different subsets of addresses. When you consolidate everything under one wallet, some addresses may appear "skipped" from that wallet's perspective, creating a gap.</p>
+
+        <h3>5. Change Addresses</h3>
+        <p>The gap limit applies to both the external chain (receive addresses, <code>m/0/*</code>) and the internal chain (change addresses, <code>m/1/*</code>). Change addresses are created automatically when you spend Bitcoin, and gaps can form there too — especially if you imported a wallet that made many transactions.</p>
+
+        <h2>Gap Limits by Wallet</h2>
+
+        <p>Not every wallet uses the same gap limit. Here's what the most popular wallets default to:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>Default Gap Limit</th>
+              <th>Configurable?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Electrum</strong></td>
+              <td>5 (internal scanning) / 20 (BIP-44 mode)</td>
+              <td>Yes — console command <code>wallet.change_gap_limit(n)</code></td>
+            </tr>
+            <tr>
+              <td><strong>Ledger Live</strong></td>
+              <td>20</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><strong>Trezor Suite</strong></td>
+              <td>20</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><strong>Sparrow Wallet</strong></td>
+              <td>20</td>
+              <td>Yes — Preferences → Gap Limit</td>
+            </tr>
+            <tr>
+              <td><strong>Wasabi Wallet</strong></td>
+              <td>21</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><strong>BlueWallet</strong></td>
+              <td>20</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><strong>Coldcard</strong></td>
+              <td>20 (via connected wallet)</td>
+              <td>Depends on companion software</td>
+            </tr>
+            <tr>
+              <td><strong>Bitcoin Core</strong></td>
+              <td>N/A (uses key pool model)</td>
+              <td>N/A</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box">
+          <h4>Note on Electrum</h4>
+          <p>Electrum's internal scanning gap limit defaults to 5, which is even more aggressive than BIP-44's 20. This means Electrum users are particularly susceptible to the gap limit problem. You can increase it via the console: <code>wallet.change_gap_limit(50)</code>, then restart.</p>
+        </div>
+
+        <h2>How to Detect a Gap Limit Problem</h2>
+
+        <p>You likely have a gap limit issue if:</p>
+
+        <ul>
+          <li>Your wallet shows <strong>0 balance</strong> (or less than expected) after restoring from a seed phrase</li>
+          <li>You know you received Bitcoin but the wallet doesn't show the transaction</li>
+          <li>A blockchain explorer shows funds at an address you own, but your wallet doesn't</li>
+          <li>You migrated from one wallet to another and the balance doesn't match</li>
+          <li>You generated many receive addresses in advance</li>
+        </ul>
+
+        <p>The quickest way to confirm is to scan your extended public key (xpub, ypub, or zpub) with a tool that checks far beyond the standard gap limit — such as <a href="/">GapFix</a>, which scans up to 1,000 addresses on each chain.</p>
+
+        <h2>How to Fix the Gap Limit Problem</h2>
+
+        <p>There are three approaches, from simplest to most technical:</p>
+
+        <h3>Option 1: The Dust Fix (Recommended)</h3>
+
+        <p>The dust fix is the most universal solution. It works with any wallet without requiring configuration changes:</p>
+
+        <ol>
+          <li><strong>Scan your xpub</strong> with <a href="/">GapFix</a> to identify which addresses are in the gap and which have funds beyond it</li>
+          <li><strong>Send dust</strong> (294–546 satoshis per address) to each empty address inside the gap</li>
+          <li><strong>Rescan your wallet</strong> — it will now see transactions on those addresses, continue scanning past them, and discover the hidden funds</li>
+        </ol>
+
+        <p>This approach is wallet-agnostic. Once the gap addresses have transactions, <em>any</em> BIP-44-compliant wallet will scan past them.</p>
+
+        <p>Read the full step-by-step guide: <a href="/how-to-fix-bitcoin-wallet-zero-balance">How to Fix Bitcoin Wallet Showing 0 Balance</a></p>
+
+        <h3>Option 2: Increase the Gap Limit</h3>
+
+        <p>If your wallet supports it, you can increase the gap limit directly:</p>
+
+        <ul>
+          <li><strong>Electrum:</strong> Open the console (View → Console) and run <code>wallet.change_gap_limit(100)</code></li>
+          <li><strong>Sparrow:</strong> Go to Preferences → Gap Limit and set a higher value</li>
+        </ul>
+
+        <p>This approach is faster but wallet-specific. If you switch to a different wallet later, you'll face the same problem again unless that wallet also has an increased limit.</p>
+
+        <h3>Option 3: Manual Address Import</h3>
+
+        <p>Some wallets allow importing individual addresses as watch-only. If you know exactly which addresses have funds (e.g., from a blockchain explorer), you can add them manually. This is cumbersome for more than a few addresses.</p>
+
+        <h2>Technical Deep Dive: BIP-32 Derivation and the Gap</h2>
+
+        <p>For those who want to understand the mechanics:</p>
+
+        <p>BIP-32 defines a tree structure for key derivation. Each HD wallet has a root key, and addresses are derived at specific paths:</p>
+
+        <pre><code>m / purpose' / coin_type' / account' / change / address_index</code></pre>
+
+        <p>For a standard BIP-84 (native segwit) Bitcoin wallet, your first receive address is at:</p>
+
+        <pre><code>m/84'/0'/0'/0/0</code></pre>
+
+        <p>Your second receive address is at <code>m/84'/0'/0'/0/1</code>, and so on. Change addresses live on the <code>m/84'/0'/0'/1/*</code> branch.</p>
+
+        <p>The gap limit applies independently to each chain (external and internal). The wallet scans <code>m/.../0/0</code>, <code>m/.../0/1</code>, <code>m/.../0/2</code>... and stops after 20 consecutive indices with no on-chain activity.</p>
+
+        <p>When GapFix scans your xpub, it derives addresses at indices 0 through 999+ on both chains, checking all four address types (P2PKH, P2SH-P2WPKH, P2WPKH, and P2TR) to ensure nothing is missed regardless of which derivation standard was used.</p>
+
+        <h2>Preventing Gap Limit Issues</h2>
+
+        <p>To avoid running into this problem in the future:</p>
+
+        <ul>
+          <li><strong>Don't pre-generate excessive addresses</strong> — only generate new receive addresses as needed</li>
+          <li><strong>Use the same wallet software consistently</strong> — or at minimum, use wallets that follow the same BIP standards</li>
+          <li><strong>Before migrating wallets</strong>, verify the balance matches by checking your xpub with <a href="/">GapFix</a> or a similar scanner</li>
+          <li><strong>Keep a record of your highest-index used address</strong> so you know what to look for if something goes wrong</li>
+        </ul>
+
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>What is the default Bitcoin gap limit?</h3>
+        <p>The default is 20 consecutive empty addresses, as defined in BIP-44. Some wallets use different values — Electrum defaults to 5 for its internal scanning.</p>
+
+        <h3>Can I change the gap limit in my wallet?</h3>
+        <p>Some wallets allow it. Electrum supports <code>wallet.change_gap_limit(n)</code> in the console. Sparrow has a setting in Preferences. Most hardware wallet interfaces (Ledger Live, Trezor Suite) do not expose this setting.</p>
+
+        <h3>Does the gap limit affect Bitcoin safety?</h3>
+        <p>No. Your funds exist on the blockchain regardless of whether your wallet can see them. The gap limit only affects visibility — it determines how far the wallet scans. Funds beyond the gap are not lost, just hidden from the wallet's view.</p>
+
+        <h3>What is the difference between gap limit and UTXO?</h3>
+        <p>A <a href="/utxo-recovery">UTXO (Unspent Transaction Output)</a> is the fundamental unit of Bitcoin balance — it's the actual Bitcoin sitting at an address. The gap limit is a wallet scanning rule that determines which addresses the wallet checks. When a UTXO exists at an address beyond the gap limit, the wallet doesn't know about it.</p>
+
+        <!-- CTA -->
+        <div class="cta-banner">
+          <h3>Check your wallet for gap limit issues</h3>
+          <p>Paste your xpub, ypub, or zpub and scan up to 1,000+ addresses in seconds. Free, open-source, runs in your browser.</p>
+          <a href="/#tool" class="btn btn-primary btn-lg">Scan My Wallet</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+          <h2>Related Guides</h2>
+          <div class="related-grid">
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+              <h3>How to Fix Bitcoin Wallet Showing 0 Balance</h3>
+              <p>Step-by-step guide to recovering hidden Bitcoin using the dust fix method.</p>
+            </a>
+            <a href="/utxo-recovery" class="related-card">
+              <h3>UTXO Recovery: Finding Missing Bitcoin</h3>
+              <p>What UTXOs are, why they go missing, and how to recover them from HD wallets.</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+  </main>
+
+  <!-- ======== FOOTER ======== -->
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/article.css" />
+</body>
+</html>
