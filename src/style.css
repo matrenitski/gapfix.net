@@ -113,6 +113,41 @@ header .container {
   margin-bottom: 20px;
 }
 
+.trust-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 20px;
+  margin-bottom: 24px;
+}
+
+.trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: rgba(247, 147, 26, 0.08);
+  border: 1px solid rgba(247, 147, 26, 0.2);
+  border-radius: 100px;
+  padding: 6px 14px;
+  white-space: nowrap;
+}
+
+.trust-item svg { color: var(--orange); flex-shrink: 0; }
+
+.trust-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.trust-link:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
 /* ---- Card ---- */
 
 .card {
@@ -996,6 +1031,8 @@ footer .container {
 
 @media (max-width: 600px) {
   .hero { padding: 40px 0 32px; }
+  .trust-bar { gap: 8px 10px; }
+  .trust-item { font-size: 0.78rem; padding: 5px 10px; }
   .input-row { flex-direction: column; }
   .btn { width: 100%; justify-content: center; }
   header .container { flex-direction: column; gap: 12px; }
