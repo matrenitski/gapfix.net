@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="Max Matrenitski" />
+  <meta name="theme-color" content="#f7931a" />
+  <meta name="color-scheme" content="dark" />
+  <title>Bitcoin HD Wallet Glossary: Gap Limit, xpub, UTXO, BIP-44 Explained | GapFix</title>
+  <meta name="description" content="Complete glossary of Bitcoin HD wallet terms: gap limit, xpub, ypub, zpub, UTXO, BIP-32, BIP-44, derivation path, dust, change address, seed phrase, and more." />
+  <meta name="keywords" content="bitcoin glossary, bitcoin HD wallet terms, gap limit definition, xpub definition, UTXO definition, BIP-44 explained, derivation path, bitcoin dust, change address, seed phrase, bitcoin terminology, HD wallet glossary" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Bitcoin HD Wallet Glossary: Gap Limit, xpub, UTXO, BIP-44 Explained" />
+  <meta property="og:description" content="Complete glossary of Bitcoin HD wallet terms including gap limit, xpub, UTXO, BIP-44, derivation path, dust, and more." />
+  <meta property="og:url" content="https://gapfix.net/glossary" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gapfix.net/assets/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bitcoin HD Wallet Glossary" />
+  <meta name="twitter:description" content="Gap limit, xpub, UTXO, BIP-44, derivation path and more — defined in plain English." />
+  <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://gapfix.net/glossary" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Bitcoin HD Wallet Glossary: Gap Limit, xpub, UTXO, BIP-44 Explained",
+    "description": "Complete glossary of Bitcoin HD wallet terms: gap limit, xpub, ypub, zpub, UTXO, BIP-32, BIP-44, derivation path, dust, change address, seed phrase, and more.",
+    "url": "https://gapfix.net/glossary",
+    "datePublished": "2026-04-10",
+    "dateModified": "2026-04-10",
+    "author": {
+      "@type": "Person",
+      "name": "Max Matrenitski",
+      "url": "https://github.com/matrenitski"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GapFix",
+      "url": "https://gapfix.net",
+      "logo": "https://gapfix.net/assets/logo-icon.svg"
+    },
+    "mainEntityOfPage": "https://gapfix.net/glossary",
+    "image": "https://gapfix.net/assets/og-image.png"
+  }
+  </script>
+
+  <!-- FAQPage for glossary terms -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What does gap limit mean in Bitcoin?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The gap limit is the number of consecutive empty (unused) addresses a Bitcoin HD wallet will scan before it stops looking. The BIP-44 standard defines a default of 20. If your Bitcoin sits at an address beyond that gap, the wallet shows a zero balance even though the funds exist on the blockchain."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a derivation path in Bitcoin?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A derivation path is the hierarchical route from a master seed to a specific address in a BIP-32 HD wallet. It looks like m/84'/0'/0'/0/5, where each segment means: m = master key, 84' = BIP-84 (native segwit) purpose, 0' = Bitcoin coin type, 0' = account index 0, 0 = external chain (receive), 5 = address index 5."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Bitcoin dust?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Bitcoin dust is a very small amount of Bitcoin — typically below 546 satoshis for legacy addresses or 294 satoshis for native segwit — that is too small to spend economically (the transaction fee would exceed the value). In the context of the gap limit fix, 'sending dust' means intentionally sending these minimum amounts to empty gap addresses so the wallet scanner recognizes them as used and continues scanning."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a change address in Bitcoin?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A change address is the address where your wallet sends the leftover Bitcoin when you make a transaction. When you spend a UTXO worth more than you're sending, the excess (minus fees) goes to a newly generated change address in your wallet. Change addresses are on the internal chain (m/1/*) and are subject to the same gap limit as receive addresses."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a seed phrase?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A seed phrase (also called a recovery phrase, mnemonic phrase, or backup phrase) is a human-readable representation of your Bitcoin wallet's master private key, typically 12 or 24 words. It allows you to restore your entire wallet — all accounts, addresses, and funds — in any compatible wallet software. Never share your seed phrase with anyone."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+  <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo-icon.png" />
+
+  <style>
+    .glossary-alpha {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 32px;
+    }
+    .glossary-alpha a {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      line-height: 30px;
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .glossary-alpha a:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+    .glossary-term {
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      scroll-margin-top: 80px;
+    }
+    .glossary-term:first-child { border-top: none; }
+    .glossary-term h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .term-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--orange);
+      background: rgba(247,147,26,0.1);
+      border: 1px solid rgba(247,147,26,0.25);
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
+    .glossary-term p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+    .glossary-term .see-also {
+      font-size: 0.82rem;
+      color: var(--text-faint);
+    }
+    .glossary-term .see-also a { color: var(--orange); }
+    .glossary-section-heading {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      margin: 40px 0 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a href="/" class="logo" style="text-decoration:none">
+        <img src="/assets/logo-icon.svg" width="32" height="32" alt="" aria-hidden="true" />
+        Gap<span class="logo-accent">Fix</span>
+      </a>
+      <nav class="header-links">
+        <a href="/#tool">Scan Wallet</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#faq">FAQ</a>
+        <a href="/#guides">Guides</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <article class="article">
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="/">GapFix</a> <span>/</span> Glossary
+      </nav>
+
+      <div class="article-badge">Reference</div>
+      <h1>Bitcoin HD Wallet Glossary</h1>
+      <p class="article-subtitle">
+        Plain-English definitions of every term you'll encounter when dealing with Bitcoin wallet recovery, gap limits, xpubs, UTXOs, and BIP standards.
+      </p>
+
+      <div class="prose">
+
+        <div class="glossary-alpha" aria-label="Jump to letter">
+          <a href="#b">B</a>
+          <a href="#c">C</a>
+          <a href="#d">D</a>
+          <a href="#e">E</a>
+          <a href="#g">G</a>
+          <a href="#h">H</a>
+          <a href="#i">I</a>
+          <a href="#m">M</a>
+          <a href="#p">P</a>
+          <a href="#s">S</a>
+          <a href="#t">T</a>
+          <a href="#u">U</a>
+          <a href="#w">W</a>
+          <a href="#x">X</a>
+          <a href="#z">Z</a>
+        </div>
+
+        <!-- B -->
+        <div class="glossary-section-heading" id="b">B</div>
+
+        <div class="glossary-term" id="bech32">
+          <h3>Bech32 <span class="term-tag">Address Format</span></h3>
+          <p>A human-readable address format for native SegWit (P2WPKH) Bitcoin addresses, always starting with <code>bc1q</code>. Bech32 addresses are more efficient than legacy formats — they're lower-case, error-detecting, and produce smaller transactions with lower fees. Defined in BIP-173. Taproot uses a variant called Bech32m (addresses start with <code>bc1p</code>).</p>
+          <p class="see-also">See also: <a href="#segwit">SegWit</a>, <a href="#taproot">Taproot</a>, <a href="#p2wpkh">P2WPKH</a></p>
+        </div>
+
+        <div class="glossary-term" id="bip">
+          <h3>BIP (Bitcoin Improvement Proposal) <span class="term-tag">Standard</span></h3>
+          <p>A design document proposing new features, processes, or standards for Bitcoin. BIPs relevant to wallet recovery include BIP-32 (HD wallets), BIP-39 (mnemonic seed phrases), BIP-44 (multi-account hierarchy with the 20-address gap limit), BIP-49 (P2SH-P2WPKH), BIP-84 (P2WPKH / native segwit), and BIP-86 (Taproot / P2TR).</p>
+        </div>
+
+        <div class="glossary-term" id="bip32">
+          <h3>BIP-32 <span class="term-tag">Standard</span></h3>
+          <p>The Bitcoin Improvement Proposal that defines Hierarchical Deterministic (HD) wallets. BIP-32 specifies how to derive a tree of key pairs from a single master seed using a chain code and child key derivation function (CKD). This means a single seed phrase can generate billions of addresses, all recoverable from that one seed.</p>
+          <p class="see-also">See also: <a href="#hd-wallet">HD Wallet</a>, <a href="#derivation-path">Derivation Path</a>, <a href="#xpub">xpub</a></p>
+        </div>
+
+        <div class="glossary-term" id="bip39">
+          <h3>BIP-39 <span class="term-tag">Standard</span></h3>
+          <p>The standard defining mnemonic seed phrases — the 12 or 24 human-readable words used to back up Bitcoin wallets. BIP-39 also defines an optional passphrase (sometimes called the "25th word") that combined with the mnemonic produces a completely different master key. Forgetting the passphrase means losing access to those funds entirely.</p>
+          <p class="see-also">See also: <a href="#seed-phrase">Seed Phrase</a>, <a href="#passphrase">Passphrase</a></p>
+        </div>
+
+        <div class="glossary-term" id="bip44">
+          <h3>BIP-44 <span class="term-tag">Standard</span></h3>
+          <p>The Bitcoin Improvement Proposal defining a multi-account hierarchy for HD wallets. BIP-44 specifies the derivation path structure <code>m/purpose'/coin_type'/account'/change/index</code> and — critically — establishes the default <strong>gap limit of 20</strong>. A wallet stops scanning for funds when it encounters 20 consecutive unused addresses. This is the primary cause of "missing" Bitcoin after wallet restores.</p>
+          <p class="see-also">See also: <a href="#gap-limit">Gap Limit</a>, <a href="#derivation-path">Derivation Path</a></p>
+        </div>
+
+        <!-- C -->
+        <div class="glossary-section-heading" id="c">C</div>
+
+        <div class="glossary-term" id="change-address">
+          <h3>Change Address <span class="term-tag">Wallet Concept</span></h3>
+          <p>When you send Bitcoin, your wallet spends an entire UTXO as input. If the UTXO is worth more than the amount you're sending, the difference (minus fees) is sent back to a new address in your own wallet — the change address. Change addresses are generated on the <em>internal chain</em> (<code>m/1/*</code>), separate from receive addresses on the external chain (<code>m/0/*</code>). The gap limit applies to both chains independently, so change address gaps can also hide UTXOs.</p>
+          <p class="see-also">See also: <a href="#utxo">UTXO</a>, <a href="#internal-chain">Internal Chain</a>, <a href="#gap-limit">Gap Limit</a></p>
+        </div>
+
+        <div class="glossary-term" id="child-key">
+          <h3>Child Key <span class="term-tag">Cryptography</span></h3>
+          <p>In BIP-32 HD wallets, a child key is any key derived from a parent key. Derivation takes the parent key, the chain code, and a child index number as inputs, producing a new key pair. Each child key can itself become a parent, creating the key tree structure. Hardened child keys (marked with <code>'</code> in paths) use the private key for derivation and cannot be derived from an xpub alone.</p>
+        </div>
+
+        <div class="glossary-term" id="coin-control">
+          <h3>Coin Control <span class="term-tag">Feature</span></h3>
+          <p>A wallet feature that lets you manually select which UTXOs (specific coins) to spend in a transaction. Available in Electrum, Sparrow, and Wasabi. Useful for privacy (avoiding address linking), fee optimization, and managing dust UTXOs after recovery.</p>
+          <p class="see-also">See also: <a href="#utxo">UTXO</a>, <a href="#dust">Dust</a></p>
+        </div>
+
+        <!-- D -->
+        <div class="glossary-section-heading" id="d">D</div>
+
+        <div class="glossary-term" id="derivation-path">
+          <h3>Derivation Path <span class="term-tag">Technical</span></h3>
+          <p>The hierarchical address in the BIP-32 key tree specifying how to derive a particular key from the master seed. Format: <code>m/purpose'/coin_type'/account'/change/index</code>. Example: <code>m/84'/0'/0'/0/5</code> means BIP-84 (native segwit), Bitcoin mainnet, account 0, external chain, address index 5. The apostrophe (<code>'</code>) indicates hardened derivation. Different BIP standards use different purpose values: 44 (legacy), 49 (wrapped segwit), 84 (native segwit), 86 (taproot).</p>
+          <p class="see-also">See also: <a href="#bip32">BIP-32</a>, <a href="#bip44">BIP-44</a></p>
+        </div>
+
+        <div class="glossary-term" id="dust">
+          <h3>Dust <span class="term-tag">Bitcoin Concept</span></h3>
+          <p>A very small amount of Bitcoin considered "dust" because the transaction fee required to spend it exceeds or approaches its value. The Bitcoin network enforces minimum output amounts: 294 satoshis for native segwit (bech32) and Taproot addresses, 546 satoshis for legacy (P2PKH) and wrapped segwit (P2SH) addresses. In the context of the gap limit fix, "sending dust" means intentionally sending exactly these minimum amounts to empty gap addresses to give them transaction history, allowing the wallet to scan past them.</p>
+          <p class="see-also">See also: <a href="#gap-limit">Gap Limit</a>, <a href="#dust-fix">Dust Fix</a></p>
+        </div>
+
+        <div class="glossary-term" id="dust-fix">
+          <h3>Dust Fix <span class="term-tag">Recovery Method</span></h3>
+          <p>The standard method for recovering Bitcoin hidden beyond the gap limit. It involves sending the minimum non-dust amount (294–546 satoshis) to each empty address inside the gap, giving those addresses transaction history. Once filled, the wallet scanner recognizes them as "used" and continues scanning past them, discovering the funded addresses beyond. GapFix identifies exactly which addresses need dust and exports the list for batch sending.</p>
+          <p class="see-also">See also: <a href="#dust">Dust</a>, <a href="#gap-limit">Gap Limit</a></p>
+        </div>
+
+        <!-- E -->
+        <div class="glossary-section-heading" id="e">E</div>
+
+        <div class="glossary-term" id="external-chain">
+          <h3>External Chain <span class="term-tag">Technical</span></h3>
+          <p>In BIP-32/BIP-44, the external chain (derived at path <code>m/.../0/*</code>) contains the receive addresses you share with others. Each time you request a payment, your wallet gives the payer the next unused address on the external chain. The <a href="#gap-limit">gap limit</a> applies to this chain — most gap limit problems involve the external chain.</p>
+          <p class="see-also">See also: <a href="#internal-chain">Internal Chain</a>, <a href="#gap-limit">Gap Limit</a></p>
+        </div>
+
+        <!-- G -->
+        <div class="glossary-section-heading" id="g">G</div>
+
+        <div class="glossary-term" id="gap-limit">
+          <h3>Gap Limit <span class="term-tag">Core Concept</span></h3>
+          <p>The number of consecutive unused addresses a Bitcoin HD wallet will scan before it stops looking for funds. The <a href="#bip44">BIP-44</a> default is <strong>20</strong>. When a wallet encounters 20 addresses in a row with no transaction history, it assumes there are no more funds and stops. If Bitcoin sits at an address with index greater than the last used index + 20, the wallet shows a zero balance even though the funds are safely on-chain. This is the core problem GapFix solves.</p>
+          <p class="see-also">See also: <a href="/what-is-gap-limit">Full Guide: What Is the Bitcoin Gap Limit?</a></p>
+        </div>
+
+        <!-- H -->
+        <div class="glossary-section-heading" id="h">H</div>
+
+        <div class="glossary-term" id="hd-wallet">
+          <h3>HD Wallet (Hierarchical Deterministic Wallet) <span class="term-tag">Wallet Type</span></h3>
+          <p>A Bitcoin wallet that generates all its keys from a single master seed using the BIP-32 derivation algorithm. HD wallets can restore the entire wallet (all addresses and funds) from a single 12 or 24-word seed phrase. All modern Bitcoin wallets are HD wallets: Ledger, Trezor, Electrum, Sparrow, Coldcard, BlueWallet, etc. The address gap limit is a property of HD wallet scanning.</p>
+          <p class="see-also">See also: <a href="#bip32">BIP-32</a>, <a href="#seed-phrase">Seed Phrase</a>, <a href="#gap-limit">Gap Limit</a></p>
+        </div>
+
+        <div class="glossary-term" id="hardened-derivation">
+          <h3>Hardened Derivation <span class="term-tag">Technical</span></h3>
+          <p>A mode of BIP-32 key derivation that uses the <em>private key</em> (not the public key) as input. Hardened child keys (indicated by <code>'</code> or <code>h</code> in derivation paths) cannot be derived from an xpub — they require the full private key or seed. The purpose, coin_type, and account levels of a BIP-44 path are typically hardened (<code>m/84'/0'/0'</code>), while the change and address_index levels are not.</p>
+        </div>
+
+        <!-- I -->
+        <div class="glossary-section-heading" id="i">I</div>
+
+        <div class="glossary-term" id="internal-chain">
+          <h3>Internal Chain <span class="term-tag">Technical</span></h3>
+          <p>In BIP-32/BIP-44, the internal chain (path <code>m/.../1/*</code>) contains change addresses — addresses used by the wallet to receive change from transactions. These are never shared publicly. The gap limit applies independently to the internal chain. Change address gap issues can occur after many transactions in a wallet.</p>
+          <p class="see-also">See also: <a href="#external-chain">External Chain</a>, <a href="#change-address">Change Address</a></p>
+        </div>
+
+        <!-- M -->
+        <div class="glossary-section-heading" id="m">M</div>
+
+        <div class="glossary-term" id="master-key">
+          <h3>Master Key <span class="term-tag">Cryptography</span></h3>
+          <p>The root key in a BIP-32 HD wallet, derived directly from the seed phrase. The master private key (<code>m</code>) is the starting point for all derivations. The corresponding master public key can be used to derive xpubs at any path. Most wallets expose the <em>account-level</em> xpub (e.g., at <code>m/84'/0'/0'</code>) rather than the true master xpub, which would expose all accounts across all coins.</p>
+        </div>
+
+        <div class="glossary-term" id="mnemonic">
+          <h3>Mnemonic Phrase <span class="term-tag">Synonym</span></h3>
+          <p>Another name for a seed phrase or recovery phrase — the 12 or 24 words used to back up a Bitcoin wallet. The word "mnemonic" means memory aid. Defined in <a href="#bip39">BIP-39</a>.</p>
+          <p class="see-also">See also: <a href="#seed-phrase">Seed Phrase</a></p>
+        </div>
+
+        <div class="glossary-term" id="multisig">
+          <h3>Multisig (Multi-Signature) <span class="term-tag">Wallet Type</span></h3>
+          <p>A Bitcoin wallet requiring M-of-N private key signatures to authorize a transaction (e.g., 2-of-3). Each cosigner has its own xpub. For GapFix scanning, you'd typically scan the individual xpubs; the gap limit issue can affect any of the cosigner keys independently.</p>
+        </div>
+
+        <!-- P -->
+        <div class="glossary-section-heading" id="p">P</div>
+
+        <div class="glossary-term" id="passphrase">
+          <h3>Passphrase (BIP-39 Passphrase / "25th Word") <span class="term-tag">Security</span></h3>
+          <p>An optional extra password added to a BIP-39 seed phrase during wallet setup. It combines with the 12/24 seed words to produce a completely different master key — and therefore a completely different set of addresses. If you used a passphrase and forget it, the funds are inaccessible (even with the seed words). When recovering a wallet, you must use the same passphrase you originally set.</p>
+          <p class="see-also">See also: <a href="#bip39">BIP-39</a>, <a href="#seed-phrase">Seed Phrase</a></p>
+        </div>
+
+        <div class="glossary-term" id="p2pkh">
+          <h3>P2PKH (Pay-to-Public-Key-Hash) <span class="term-tag">Address Type</span></h3>
+          <p>The original ("legacy") Bitcoin address type, generating addresses starting with <code>1</code>. Defined in BIP-44. Higher transaction fees than SegWit or Taproot formats. The corresponding extended public key prefix is <code>xpub</code>.</p>
+        </div>
+
+        <div class="glossary-term" id="p2sh">
+          <h3>P2SH-P2WPKH (Wrapped SegWit) <span class="term-tag">Address Type</span></h3>
+          <p>A Bitcoin address type that wraps a native SegWit script in a P2SH envelope for backward compatibility. Generates addresses starting with <code>3</code>. Defined in BIP-49. More efficient than P2PKH but less so than native segwit. The corresponding xpub prefix is <code>ypub</code>.</p>
+        </div>
+
+        <div class="glossary-term" id="p2wpkh">
+          <h3>P2WPKH (Native SegWit / bech32) <span class="term-tag">Address Type</span></h3>
+          <p>Native SegWit address type generating addresses starting with <code>bc1q</code>. Defined in BIP-84. More transaction-fee-efficient than legacy or wrapped segwit. Minimum dust amount: 294 satoshis. The corresponding xpub prefix is <code>zpub</code>.</p>
+          <p class="see-also">See also: <a href="#bech32">Bech32</a>, <a href="#segwit">SegWit</a></p>
+        </div>
+
+        <div class="glossary-term" id="p2tr">
+          <h3>P2TR (Taproot) <span class="term-tag">Address Type</span></h3>
+          <p>The newest Bitcoin address type, generating addresses starting with <code>bc1p</code>. Defined in BIP-86. Uses Schnorr signatures for improved privacy and efficiency. Minimum dust amount: 294 satoshis. GapFix scans Taproot addresses automatically alongside the other three formats.</p>
+          <p class="see-also">See also: <a href="#taproot">Taproot</a></p>
+        </div>
+
+        <div class="glossary-term" id="psbt">
+          <h3>PSBT (Partially Signed Bitcoin Transaction) <span class="term-tag">Protocol</span></h3>
+          <p>A Bitcoin transaction format (BIP-174) that allows multiple parties to collaboratively sign a transaction without sharing private keys directly. Essential for hardware wallet workflows — the transaction is constructed by software, exported as a PSBT, signed on the hardware device (like Coldcard or Ledger), and then broadcast. Sparrow Wallet has excellent PSBT support for recovery scenarios.</p>
+        </div>
+
+        <!-- S -->
+        <div class="glossary-section-heading" id="s">S</div>
+
+        <div class="glossary-term" id="satoshi">
+          <h3>Satoshi (sat) <span class="term-tag">Unit</span></h3>
+          <p>The smallest unit of Bitcoin: 1 BTC = 100,000,000 satoshis (1 sat = 0.00000001 BTC). Dust amounts for the gap limit fix are expressed in satoshis: 294 sats for native segwit/taproot, 546 sats for legacy/wrapped segwit.</p>
+        </div>
+
+        <div class="glossary-term" id="seed-phrase">
+          <h3>Seed Phrase (Recovery Phrase) <span class="term-tag">Security</span></h3>
+          <p>The 12 or 24 human-readable words (from the BIP-39 wordlist) used to back up and restore a Bitcoin wallet. Your seed phrase is derived from entropy, encoded as words, and can regenerate your entire wallet's key tree. <strong>Never share your seed phrase with anyone.</strong> Tools like GapFix only require your xpub (public key) — never your seed phrase.</p>
+          <p class="see-also">See also: <a href="#bip39">BIP-39</a>, <a href="#passphrase">Passphrase</a>, <a href="#xpub">xpub</a></p>
+        </div>
+
+        <div class="glossary-term" id="segwit">
+          <h3>SegWit (Segregated Witness) <span class="term-tag">Protocol Upgrade</span></h3>
+          <p>A 2017 Bitcoin protocol upgrade that separated ("segregated") the transaction signature data ("witness") from the transaction body. SegWit addresses are more space-efficient, resulting in lower fees. Includes two variants: wrapped SegWit (P2SH-P2WPKH, addresses starting with <code>3</code>) and native SegWit (P2WPKH / bech32, addresses starting with <code>bc1q</code>).</p>
+        </div>
+
+        <!-- T -->
+        <div class="glossary-section-heading" id="t">T</div>
+
+        <div class="glossary-term" id="taproot">
+          <h3>Taproot <span class="term-tag">Protocol Upgrade</span></h3>
+          <p>A 2021 Bitcoin protocol upgrade (BIP-340/341/342) enabling Schnorr signatures and Merkelized Script Trees. Taproot addresses start with <code>bc1p</code> (Bech32m format). Minimum dust: 294 satoshis. GapFix derives and scans Taproot (P2TR, BIP-86) addresses automatically alongside legacy, wrapped segwit, and native segwit.</p>
+          <p class="see-also">See also: <a href="#p2tr">P2TR</a>, <a href="#bech32">Bech32</a></p>
+        </div>
+
+        <!-- U -->
+        <div class="glossary-section-heading" id="u">U</div>
+
+        <div class="glossary-term" id="utxo">
+          <h3>UTXO (Unspent Transaction Output) <span class="term-tag">Core Concept</span></h3>
+          <p>The fundamental unit of Bitcoin balance. Every time someone sends you Bitcoin, the transaction creates an output locked to your address — an Unspent Transaction Output. Your wallet's displayed balance is the sum of all UTXOs locked to addresses it controls. When UTXOs sit at addresses beyond the <a href="#gap-limit">gap limit</a>, the wallet can't see them, resulting in a lower-than-expected balance. The Bitcoin is safe on-chain — the wallet just hasn't found it.</p>
+          <p class="see-also">See also: <a href="/utxo-recovery">Full Guide: UTXO Recovery</a></p>
+        </div>
+
+        <!-- W -->
+        <div class="glossary-section-heading" id="w">W</div>
+
+        <div class="glossary-term" id="watch-only">
+          <h3>Watch-Only Wallet <span class="term-tag">Wallet Type</span></h3>
+          <p>A wallet that tracks balances and transactions for a set of addresses without holding the private keys. Useful for monitoring a hardware wallet's balance from a desktop app. You can import an xpub into Electrum or Sparrow as a watch-only wallet to scan addresses without having the device connected.</p>
+          <p class="see-also">See also: <a href="#xpub">xpub</a></p>
+        </div>
+
+        <!-- X -->
+        <div class="glossary-section-heading" id="x">X</div>
+
+        <div class="glossary-term" id="xpub">
+          <h3>xpub (Extended Public Key) <span class="term-tag">Core Concept</span></h3>
+          <p>A BIP-32 extended public key that can derive an entire sequence of public keys (and therefore Bitcoin addresses) without exposing any private key. The prefix <code>xpub</code> specifically denotes legacy P2PKH addresses (BIP-44). For wrapped segwit wallets the prefix is <code>ypub</code>; for native segwit it's <code>zpub</code>. Pasting your xpub into GapFix is safe — the key cannot spend funds.</p>
+          <p class="see-also">See also: <a href="/xpub-explained">Full Guide: xpub Explained</a>, <a href="#ypub">ypub</a>, <a href="#zpub">zpub</a></p>
+        </div>
+
+        <div class="glossary-term" id="ypub">
+          <h3>ypub <span class="term-tag">Key Type</span></h3>
+          <p>An extended public key for wrapped SegWit (P2SH-P2WPKH, BIP-49) wallets. Derives addresses starting with <code>3</code>. Used by some wallets (notably Ledger) as the default account key type. GapFix accepts ypub and scans all four address formats automatically.</p>
+          <p class="see-also">See also: <a href="#xpub">xpub</a>, <a href="#zpub">zpub</a></p>
+        </div>
+
+        <!-- Z -->
+        <div class="glossary-section-heading" id="z">Z</div>
+
+        <div class="glossary-term" id="zpub">
+          <h3>zpub <span class="term-tag">Key Type</span></h3>
+          <p>An extended public key for native SegWit (P2WPKH / bech32, BIP-84) wallets. Derives addresses starting with <code>bc1q</code>. The most common modern wallet format. Electrum, Sparrow, and BlueWallet typically expose a zpub for native segwit accounts. GapFix accepts zpub and scans all four address formats automatically.</p>
+          <p class="see-also">See also: <a href="#xpub">xpub</a>, <a href="#ypub">ypub</a></p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-banner">
+          <h3>Scan for hidden Bitcoin</h3>
+          <p>Paste your xpub, ypub, or zpub to find UTXOs hiding beyond your wallet's gap limit.</p>
+          <a href="/#tool" class="btn btn-primary btn-lg">Scan My Wallet</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+          <h2>Related Guides</h2>
+          <div class="related-grid">
+            <a href="/what-is-gap-limit" class="related-card">
+              <h3>What Is the Bitcoin Gap Limit?</h3>
+              <p>Deep dive into BIP-44, gap limits by wallet, and fix methods.</p>
+            </a>
+            <a href="/xpub-explained" class="related-card">
+              <h3>xpub Explained</h3>
+              <p>Extended public keys: what they are, where to find them, and privacy implications.</p>
+            </a>
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+              <h3>Fix Bitcoin Wallet Showing 0 Balance</h3>
+              <p>Step-by-step guide to recovering Bitcoin with the dust fix method.</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/article.css" />
+</body>
+</html>

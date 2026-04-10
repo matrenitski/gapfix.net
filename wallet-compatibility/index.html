@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="Max Matrenitski" />
+  <meta name="theme-color" content="#f7931a" />
+  <meta name="color-scheme" content="dark" />
+  <title>Bitcoin Wallet Gap Limit Guide: Ledger, Trezor, Electrum, Sparrow | GapFix</title>
+  <meta name="description" content="Wallet-specific gap limit guides for Ledger, Trezor, Electrum, Sparrow, Coldcard, BlueWallet, and Wasabi. Fix missing Bitcoin on every major Bitcoin wallet." />
+  <meta name="keywords" content="ledger gap limit, trezor gap limit, electrum gap limit, sparrow wallet gap limit, bitcoin wallet compatibility, wallet recovery guide, ledger missing balance, trezor missing bitcoin, electrum wallet recovery, sparrow wallet recovery, coldcard gap limit" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Bitcoin Wallet Gap Limit Guide: Ledger, Trezor, Electrum, Sparrow" />
+  <meta property="og:description" content="Wallet-specific gap limit guides for every major Bitcoin wallet. Fix missing Bitcoin on Ledger, Trezor, Electrum, Sparrow, and more." />
+  <meta property="og:url" content="https://gapfix.net/wallet-compatibility" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gapfix.net/assets/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bitcoin Wallet Gap Limit Guide: Ledger, Trezor, Electrum, Sparrow" />
+  <meta name="twitter:description" content="Wallet-specific gap limit guides for every major Bitcoin wallet." />
+  <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://gapfix.net/wallet-compatibility" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Bitcoin Wallet Gap Limit Guide: Ledger, Trezor, Electrum, Sparrow",
+    "description": "Wallet-specific gap limit guides for Ledger, Trezor, Electrum, Sparrow, Coldcard, BlueWallet, and Wasabi. Fix missing Bitcoin on every major Bitcoin wallet.",
+    "url": "https://gapfix.net/wallet-compatibility",
+    "datePublished": "2026-04-10",
+    "dateModified": "2026-04-10",
+    "author": {
+      "@type": "Person",
+      "name": "Max Matrenitski",
+      "url": "https://github.com/matrenitski"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GapFix",
+      "url": "https://gapfix.net",
+      "logo": "https://gapfix.net/assets/logo-icon.svg"
+    },
+    "mainEntityOfPage": "https://gapfix.net/wallet-compatibility",
+    "image": "https://gapfix.net/assets/og-image.png"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+  <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo-icon.png" />
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a href="/" class="logo" style="text-decoration:none">
+        <img src="/assets/logo-icon.svg" width="32" height="32" alt="" aria-hidden="true" />
+        Gap<span class="logo-accent">Fix</span>
+      </a>
+      <nav class="header-links">
+        <a href="/#tool">Scan Wallet</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#faq">FAQ</a>
+        <a href="/#guides">Guides</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <article class="article">
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="/">GapFix</a> <span>/</span> Wallet Compatibility Guide
+      </nav>
+
+      <div class="article-badge">Wallet Guide</div>
+      <h1>Bitcoin Wallet Gap Limit: Complete Compatibility Guide</h1>
+      <p class="article-subtitle">
+        Every major Bitcoin wallet handles the gap limit differently. This guide covers how to find your xpub, adjust the gap limit (where possible), and recover hidden Bitcoin in Ledger, Trezor, Electrum, Sparrow, Coldcard, BlueWallet, and Wasabi.
+      </p>
+
+      <div class="prose">
+
+        <h2>Quick Reference: Gap Limits by Wallet</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>Type</th>
+              <th>Gap Limit</th>
+              <th>Configurable?</th>
+              <th>xpub Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Electrum</strong></td>
+              <td>Software</td>
+              <td>5 / 20</td>
+              <td>Yes — console</td>
+              <td>Wallet → Information</td>
+            </tr>
+            <tr>
+              <td><strong>Ledger Live</strong></td>
+              <td>Hardware</td>
+              <td>20</td>
+              <td>No</td>
+              <td>Account → Edit → Advanced</td>
+            </tr>
+            <tr>
+              <td><strong>Trezor Suite</strong></td>
+              <td>Hardware</td>
+              <td>20</td>
+              <td>No</td>
+              <td>Account → Details → Show XPUB</td>
+            </tr>
+            <tr>
+              <td><strong>Sparrow</strong></td>
+              <td>Software</td>
+              <td>20</td>
+              <td>Yes — Preferences</td>
+              <td>Settings → Keystore</td>
+            </tr>
+            <tr>
+              <td><strong>Coldcard</strong></td>
+              <td>Hardware</td>
+              <td>20 (via companion)</td>
+              <td>Depends on companion</td>
+              <td>Advanced → View Identity</td>
+            </tr>
+            <tr>
+              <td><strong>BlueWallet</strong></td>
+              <td>Mobile</td>
+              <td>20</td>
+              <td>No</td>
+              <td>Wallet Details → Show XPUB</td>
+            </tr>
+            <tr>
+              <td><strong>Wasabi</strong></td>
+              <td>Software</td>
+              <td>21</td>
+              <td>No</td>
+              <td>Settings (advanced)</td>
+            </tr>
+            <tr>
+              <td><strong>Bitcoin Core</strong></td>
+              <td>Full Node</td>
+              <td>N/A (keypool)</td>
+              <td>Via descriptors</td>
+              <td>RPC: <code>getdescriptorinfo</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Electrum</h2>
+
+        <p>Electrum is the most commonly used software wallet and has <strong>the lowest default gap limit of any major wallet — just 5</strong>. This means Electrum users are disproportionately affected by gap limit issues when migrating from other wallets or after generating many addresses.</p>
+
+        <h3>Fixing the gap limit in Electrum</h3>
+
+        <p><strong>Option 1: Increase the gap limit (recommended)</strong></p>
+        <ol>
+          <li>Open Electrum and your wallet</li>
+          <li>Go to <strong>View → Show Console</strong></li>
+          <li>Run: <code>wallet.change_gap_limit(100)</code></li>
+          <li>Close and reopen Electrum to trigger a rescan</li>
+        </ol>
+
+        <p>You can set it to any value. For wallets with many addresses, 100 or even 200 is reasonable.</p>
+
+        <p><strong>Option 2: Use GapFix + dust fix</strong></p>
+        <ol>
+          <li>Find your xpub: <strong>Wallet → Information → Master Public Key</strong></li>
+          <li>Paste it into <a href="/">GapFix</a></li>
+          <li>Send dust to the identified gap addresses</li>
+          <li>Restart Electrum — it will rescan and find the hidden funds</li>
+        </ol>
+
+        <h3>Electrum-specific notes</h3>
+        <ul>
+          <li>Electrum uses <strong>zpub</strong> for native segwit wallets and <strong>xpub</strong> for legacy</li>
+          <li>The gap limit applies separately to external and internal chains</li>
+          <li>If recovering a very old pre-2016 wallet, ensure you're using the correct script type (legacy P2PKH)</li>
+          <li>For 2FA wallets, you'll need the <code>x2/</code> cosigner xpub as well — standard GapFix scanning covers the main key only</li>
+        </ul>
+
+        <h2>Ledger (Ledger Live)</h2>
+
+        <p>Ledger devices use a gap limit of 20 and <strong>Ledger Live does not allow changing this value</strong>. If your Ledger shows missing funds after a recovery, the dust fix via GapFix is the primary solution.</p>
+
+        <h3>Finding your Ledger xpub</h3>
+        <ol>
+          <li>Open <strong>Ledger Live</strong></li>
+          <li>Go to your Bitcoin account</li>
+          <li>Click the <strong>Edit</strong> (pencil) icon</li>
+          <li>Expand <strong>Advanced</strong></li>
+          <li>Copy the <strong>Extended public key</strong></li>
+        </ol>
+
+        <h3>Common Ledger gap limit scenarios</h3>
+
+        <p><strong>Migrating from another wallet to Ledger:</strong> If your previous wallet used higher address indices (e.g., from generating many invoices), Ledger Live may not scan far enough. Use GapFix with the Ledger xpub to find the gap.</p>
+
+        <p><strong>Restoring a Ledger to a new device:</strong> The gap limit applies fresh on the new device. If your old Ledger had addresses at high indices, use GapFix first to confirm all funds are visible before the restore.</p>
+
+        <p><strong>Multiple Ledger accounts:</strong> Ledger Live creates accounts per coin type. If you have funds in account 0 and account 1 (different BIP-44 account indices), make sure you've added both accounts in Ledger Live.</p>
+
+        <h3>Sending dust from Ledger Live</h3>
+        <p>Ledger Live doesn't natively support "send to many." To send dust to multiple gap addresses from your Ledger, use Ledger Live in conjunction with a desktop wallet (Electrum or Sparrow) connected to your Ledger device.</p>
+
+        <h2>Trezor (Trezor Suite)</h2>
+
+        <p>Trezor Suite uses a standard 20-address gap limit with no user-configurable option. Trezor is compatible with all major companion wallets (Sparrow, Electrum, Wasabi) which can be used to recover funds with higher gap limit settings.</p>
+
+        <h3>Finding your Trezor xpub</h3>
+        <ol>
+          <li>Open <strong>Trezor Suite</strong></li>
+          <li>Select your Bitcoin account</li>
+          <li>Click the three-dot menu (•••) next to the account</li>
+          <li>Select <strong>Show public key (XPUB)</strong></li>
+          <li>Confirm on the device when prompted</li>
+        </ol>
+
+        <h3>Recovering missing funds on Trezor</h3>
+
+        <p>If Trezor Suite shows a lower balance than expected:</p>
+
+        <ol>
+          <li>Get the xpub from Trezor Suite (steps above)</li>
+          <li>Scan with <a href="/">GapFix</a> to identify the gap</li>
+          <li>Use Sparrow Wallet connected to your Trezor to send the batch dust transaction (Sparrow supports "send to many")</li>
+          <li>Resync Trezor Suite</li>
+        </ol>
+
+        <h3>Trezor + Electrum workaround</h3>
+        <p>Import your Trezor xpub into Electrum as a watch-only wallet, increase the gap limit there, and use it for scanning/recovery. Connect your Trezor to Electrum for signing transactions when sending the dust.</p>
+
+        <h2>Sparrow Wallet</h2>
+
+        <p>Sparrow is the most powerful Bitcoin software wallet for gap limit recovery. It supports <strong>configurable gap limits</strong>, batch send, full UTXO control, and all BIP derivation paths.</p>
+
+        <h3>Changing the gap limit in Sparrow</h3>
+        <ol>
+          <li>Go to <strong>Preferences → Gap Limit</strong></li>
+          <li>Increase to 100+ for recovery scenarios</li>
+          <li>Click <strong>Reload Wallets</strong></li>
+        </ol>
+
+        <h3>Finding your xpub in Sparrow</h3>
+        <ol>
+          <li>Go to <strong>Settings → Keystore</strong></li>
+          <li>The <strong>Master Public Key</strong> field shows your xpub</li>
+          <li>For hardware wallets, it shows the device's xpub exported at setup</li>
+        </ol>
+
+        <h3>Sending dust in Sparrow</h3>
+        <p>Sparrow supports batch transactions natively:</p>
+        <ol>
+          <li>Go to <strong>Send</strong></li>
+          <li>Click <strong>Add output</strong> for each gap address</li>
+          <li>Enter the address and dust amount (294 or 546 sats)</li>
+          <li>Set fee, sign, and broadcast</li>
+        </ol>
+
+        <p>Sparrow also supports PSBT (Partially Signed Bitcoin Transactions) for hardware wallet signing, making it the ideal tool for Ledger and Trezor users doing the dust fix.</p>
+
+        <h2>Coldcard</h2>
+
+        <p>Coldcard is an air-gapped hardware wallet that doesn't use a companion app for balance display — it works with external software wallets (Sparrow, Electrum, Specter) for that functionality. Gap limit settings depend on the companion software used.</p>
+
+        <h3>Finding your Coldcard xpub</h3>
+        <ol>
+          <li>On the device, go to <strong>Advanced → View Identity</strong></li>
+          <li>Select <strong>Master XPUB</strong></li>
+          <li>The xpub is displayed (and can be exported via SD card as a text file)</li>
+        </ol>
+
+        <h3>Recommended companion software for Coldcard recovery</h3>
+        <p>Use <strong>Sparrow Wallet</strong> with your Coldcard xpub. Import the xpub as a watch-only wallet, increase the gap limit in Sparrow preferences, rescan, identify the gap, and then use the PSBT workflow to sign the dust transaction on the Coldcard device.</p>
+
+        <h2>BlueWallet</h2>
+
+        <p>BlueWallet is a mobile-first Bitcoin wallet. It has a gap limit of 20 with no configurable option. For gap limit recovery, export the xpub and use a desktop wallet (Sparrow or Electrum) for the recovery process.</p>
+
+        <h3>Finding your BlueWallet xpub</h3>
+        <ol>
+          <li>Long-press the wallet you want to export</li>
+          <li>Tap <strong>Wallet Details</strong></li>
+          <li>Tap <strong>Show XPUB</strong> — the key is shown as a QR code and text</li>
+        </ol>
+
+        <h3>BlueWallet recovery tip</h3>
+        <p>Since BlueWallet is mobile-only, the most practical recovery path is to import the seed phrase (not just the xpub) into Sparrow on desktop, increase the gap limit there, and rescan. Or use GapFix with the xpub and send dust from another wallet.</p>
+
+        <h2>Wasabi Wallet</h2>
+
+        <p>Wasabi Wallet is a privacy-focused Bitcoin wallet with CoinJoin functionality. It uses a gap limit of 21 and doesn't expose a user-facing way to change it.</p>
+
+        <h3>Finding your Wasabi xpub</h3>
+        <p>Wasabi exposes the extended public key in <strong>Settings → Advanced</strong> under the wallet section. The exact path varies by Wasabi version (1.x vs 2.x).</p>
+
+        <h3>Wasabi recovery note</h3>
+        <p>Wasabi uses BIP-84 (native segwit) derivation by default. If you're migrating funds from a Wasabi wallet to another wallet, use the zpub exposed by Wasabi in GapFix to scan for any hidden UTXOs before migrating.</p>
+
+        <h2>Migration Scenarios: Wallet A → Wallet B</h2>
+
+        <p>The gap limit problem most commonly surfaces during wallet migrations. Here are the most frequent combinations:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>To</th>
+              <th>Risk</th>
+              <th>Recommended Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Any wallet</td>
+              <td>Electrum (fresh)</td>
+              <td>High — Electrum gap limit is only 5</td>
+              <td>Run <code>wallet.change_gap_limit(100)</code> immediately after import</td>
+            </tr>
+            <tr>
+              <td>Electrum</td>
+              <td>Ledger Live</td>
+              <td>Medium — if Electrum address indices &gt;20</td>
+              <td>Scan xpub with GapFix before migrating</td>
+            </tr>
+            <tr>
+              <td>Any wallet</td>
+              <td>Sparrow</td>
+              <td>Low — Sparrow has configurable gap limit</td>
+              <td>Increase gap limit in Preferences as a precaution</td>
+            </tr>
+            <tr>
+              <td>Old wallet</td>
+              <td>Any modern wallet</td>
+              <td>High — legacy P2PKH may not be scanned</td>
+              <td>Use GapFix to scan all 4 address types</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Universal Recovery Checklist</h2>
+
+        <p>Regardless of which wallet you're using, follow this checklist when your balance looks wrong:</p>
+
+        <ol>
+          <li><strong>Verify the seed phrase is correct</strong> — restore into any wallet and check the first few addresses match what you expect</li>
+          <li><strong>Check for a BIP-39 passphrase</strong> — if you used a passphrase, you need the same one</li>
+          <li><strong>Scan all derivation paths</strong> — GapFix handles this automatically; alternatively, use Sparrow with all script types enabled</li>
+          <li><strong>Scan beyond the gap</strong> — use GapFix to scan 1,000+ addresses per chain</li>
+          <li><strong>Check multiple accounts</strong> — BIP-44 supports multiple accounts (account 0, 1, 2…); some funds may be in account 1</li>
+          <li><strong>Check change addresses</strong> — the internal chain (<code>m/1/*</code>) can also have gap issues</li>
+        </ol>
+
+        <!-- CTA -->
+        <div class="cta-banner">
+          <h3>Scan beyond your wallet's gap limit</h3>
+          <p>GapFix works with all wallets — paste your xpub to find hidden Bitcoin in seconds.</p>
+          <a href="/#tool" class="btn btn-primary btn-lg">Scan My Wallet</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+          <h2>Related Guides</h2>
+          <div class="related-grid">
+            <a href="/what-is-gap-limit" class="related-card">
+              <h3>What Is the Bitcoin Gap Limit?</h3>
+              <p>The BIP-44 gap limit explained with technical details and fix options.</p>
+            </a>
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+              <h3>Fix Bitcoin Wallet Showing 0 Balance</h3>
+              <p>Step-by-step dust fix guide for any wallet.</p>
+            </a>
+            <a href="/xpub-explained" class="related-card">
+              <h3>xpub Explained</h3>
+              <p>What extended public keys are, where to find them, and what they reveal.</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/article.css" />
+</body>
+</html>

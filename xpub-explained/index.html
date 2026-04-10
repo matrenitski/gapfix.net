@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="author" content="Max Matrenitski" />
+  <meta name="theme-color" content="#f7931a" />
+  <meta name="color-scheme" content="dark" />
+  <title>xpub Explained: What Is an Extended Public Key in Bitcoin? | GapFix</title>
+  <meta name="description" content="What is an xpub, ypub, or zpub? Learn how Bitcoin extended public keys work, where to find yours, what they can and cannot reveal, and how to use them safely for wallet recovery." />
+  <meta name="keywords" content="xpub explained, what is xpub, bitcoin extended public key, xpub ypub zpub, xpub safety, xpub privacy, bip32 extended key, where to find xpub, ledger xpub, trezor xpub, electrum xpub, bitcoin public key recovery" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="xpub Explained: What Is an Extended Public Key in Bitcoin?" />
+  <meta property="og:description" content="What is an xpub, ypub, or zpub? Learn how extended public keys work, where to find yours, and how to use them safely." />
+  <meta property="og:url" content="https://gapfix.net/xpub-explained" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="GapFix" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://gapfix.net/assets/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="xpub Explained: What Is an Extended Public Key in Bitcoin?" />
+  <meta name="twitter:description" content="What is an xpub, ypub, or zpub? How extended public keys work, where to find yours, and how to use them safely." />
+  <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://gapfix.net/xpub-explained" />
+
+  <!-- JSON-LD Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "xpub Explained: What Is an Extended Public Key in Bitcoin?",
+    "description": "What is an xpub, ypub, or zpub? Learn how Bitcoin extended public keys work, where to find yours, what they can and cannot reveal, and how to use them safely.",
+    "url": "https://gapfix.net/xpub-explained",
+    "datePublished": "2026-04-10",
+    "dateModified": "2026-04-10",
+    "author": {
+      "@type": "Person",
+      "name": "Max Matrenitski",
+      "url": "https://github.com/matrenitski"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "GapFix",
+      "url": "https://gapfix.net",
+      "logo": "https://gapfix.net/assets/logo-icon.svg"
+    },
+    "mainEntityOfPage": "https://gapfix.net/xpub-explained",
+    "image": "https://gapfix.net/assets/og-image.png"
+  }
+  </script>
+
+  <!-- FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is an xpub in Bitcoin?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "An xpub (extended public key) is a special public key defined in BIP-32 that can derive a sequence of child public keys and Bitcoin addresses without ever exposing the corresponding private keys. It starts with 'xpub' (legacy), 'ypub' (segwit-wrapped), or 'zpub' (native segwit). An xpub lets you generate all your receive addresses from a single key — useful for watch-only wallets, address scanning tools like GapFix, and hardware wallet integrations."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is it safe to share my xpub?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Your xpub cannot spend Bitcoin or expose your private keys. However, sharing it reveals all your addresses and transaction history, which has privacy implications. For tools like GapFix that run entirely in your browser without transmitting the key, using your xpub is safe. Avoid sharing your xpub with untrusted third-party web services."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between xpub, ypub, and zpub?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "xpub, ypub, and zpub are extended public keys for different Bitcoin address types. xpub (BIP-44) derives legacy P2PKH addresses starting with '1'. ypub (BIP-49) derives wrapped SegWit P2SH-P2WPKH addresses starting with '3'. zpub (BIP-84) derives native SegWit P2WPKH bech32 addresses starting with 'bc1q'. All three can also be used to derive Taproot (P2TR / bc1p) addresses when using BIP-86 derivation. GapFix accepts any of these and automatically scans all four address formats."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="alternate" type="text/plain" title="LLMs.txt" href="/llms.txt" />
+  <link rel="icon" href="/assets/logo-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/logo-icon.png" />
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a href="/" class="logo" style="text-decoration:none">
+        <img src="/assets/logo-icon.svg" width="32" height="32" alt="" aria-hidden="true" />
+        Gap<span class="logo-accent">Fix</span>
+      </a>
+      <nav class="header-links">
+        <a href="/#tool">Scan Wallet</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#faq">FAQ</a>
+        <a href="/#guides">Guides</a>
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <article class="article">
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="/">GapFix</a> <span>/</span> xpub Explained
+      </nav>
+
+      <div class="article-badge">Security Guide</div>
+      <h1>xpub Explained: What Is an Extended Public Key?</h1>
+      <p class="article-subtitle">
+        To use GapFix — or any Bitcoin address scanner — you need your xpub, ypub, or zpub. Here's exactly what those keys are, what information they reveal, and how to find them in every major wallet.
+      </p>
+
+      <div class="prose">
+
+        <h2>What Is an xpub?</h2>
+
+        <p>An <strong>xpub</strong> (extended public key) is a special type of public key defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki" target="_blank" rel="noopener">BIP-32</a>. It encodes two pieces of information:</p>
+
+        <ol>
+          <li>A <strong>public key</strong> at a specific point in a key derivation tree</li>
+          <li>A <strong>chain code</strong> that acts as additional entropy, enabling deterministic derivation of child keys</li>
+        </ol>
+
+        <p>Together, these allow any software to derive all the Bitcoin addresses in your wallet — starting from address index 0, continuing through index 1, 2, 3, and so on — without ever needing your private key or seed phrase.</p>
+
+        <p>This is what makes it safe to paste your xpub into tools like <a href="/">GapFix</a>: it contains no spending capability whatsoever.</p>
+
+        <div class="info-box info-box--orange">
+          <h4>xpub vs. private key vs. seed phrase</h4>
+          <p><strong>Seed phrase (24 words):</strong> Full control. Can derive all private keys. Never share.<br/>
+          <strong>xpub (extended public key):</strong> Derives addresses only. Cannot spend. Safe for scanning tools.<br/>
+          <strong>Private key:</strong> Signs transactions for one address. Never share.</p>
+        </div>
+
+        <h2>xpub, ypub, zpub — What's the Difference?</h2>
+
+        <p>The prefix tells you which address type the key is associated with:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Key Type</th>
+              <th>BIP Standard</th>
+              <th>Address Type</th>
+              <th>Address Prefix</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>xpub</code></td>
+              <td>BIP-44</td>
+              <td>Legacy P2PKH</td>
+              <td><code>1...</code></td>
+              <td>1A1zP1eP5QGef...</td>
+            </tr>
+            <tr>
+              <td><code>ypub</code></td>
+              <td>BIP-49</td>
+              <td>Wrapped SegWit P2SH-P2WPKH</td>
+              <td><code>3...</code></td>
+              <td>3J98t1WpEZ73C...</td>
+            </tr>
+            <tr>
+              <td><code>zpub</code></td>
+              <td>BIP-84</td>
+              <td>Native SegWit P2WPKH</td>
+              <td><code>bc1q...</code></td>
+              <td>bc1qxy2kgdygj...</td>
+            </tr>
+            <tr>
+              <td>Any of the above</td>
+              <td>BIP-86</td>
+              <td>Taproot P2TR</td>
+              <td><code>bc1p...</code></td>
+              <td>bc1p5d7rjq926...</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>All three key types use the same underlying BIP-32 derivation mechanism — the prefix is just a convention that signals which derivation path and address format to expect. GapFix automatically detects the prefix and scans all four address formats regardless of which type you paste.</p>
+
+        <p>For testnet wallets, the equivalents are <code>tpub</code> (legacy), <code>upub</code> (wrapped segwit), and <code>vpub</code> (native segwit). GapFix supports these too.</p>
+
+        <h2>The Technical Structure of an xpub</h2>
+
+        <p>An xpub is a 78-byte serialized structure containing:</p>
+
+        <ul>
+          <li><strong>Version bytes</strong> — 4 bytes indicating the network (mainnet/testnet) and key type (xpub vs xprv)</li>
+          <li><strong>Depth</strong> — 1 byte showing how deep in the derivation tree this key is</li>
+          <li><strong>Parent fingerprint</strong> — 4 bytes from the parent key (allows wallets to verify the key's position)</li>
+          <li><strong>Child index</strong> — 4 bytes identifying which child of the parent this key is</li>
+          <li><strong>Chain code</strong> — 32 bytes of entropy for deterministic derivation</li>
+          <li><strong>Key data</strong> — 33 bytes (the compressed public key)</li>
+        </ul>
+
+        <p>This is then Base58Check-encoded into the familiar 111-character string starting with <code>xpub</code>.</p>
+
+        <p>Example xpub:</p>
+        <pre><code>xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKrhko4egpiMZbpiaQL2jkwSB1icqYh2cfDfVxdx4df189oLKnC5fSwqPfgyP3hooxujYzAu3fDVmz</code></pre>
+
+        <h2>Account-Level vs. Master xpub</h2>
+
+        <p>There are two types of xpub you might encounter:</p>
+
+        <h3>Master xpub (root key)</h3>
+        <p>Derived directly from your seed phrase at path <code>m</code>. This can derive <em>every</em> address across <em>every</em> account and <em>every</em> coin type. Sharing this gives maximum visibility. Most wallets don't expose this directly.</p>
+
+        <h3>Account-level xpub (recommended for scanning)</h3>
+        <p>Derived at a specific account path, e.g. <code>m/84'/0'/0'</code> for a native segwit BTC account. This can only derive addresses within that specific account. <strong>This is what you should use with GapFix.</strong></p>
+
+        <p>When wallets expose an "xpub" or "extended public key" in their UI, they almost always show the account-level key — which is exactly what you need.</p>
+
+        <h2>Where to Find Your xpub</h2>
+
+        <p>Every major Bitcoin wallet exposes the account-level xpub somewhere in its settings. Here's where to look:</p>
+
+        <h3>Electrum</h3>
+        <ol>
+          <li>Open your wallet</li>
+          <li>Go to <strong>Wallet → Information</strong></li>
+          <li>The "Master Public Key" shown is your account xpub (starts with <code>xpub</code>, <code>ypub</code>, or <code>zpub</code> depending on wallet type)</li>
+        </ol>
+
+        <h3>Ledger Live</h3>
+        <ol>
+          <li>Open your Bitcoin account</li>
+          <li>Click <strong>Edit account</strong> (pencil icon)</li>
+          <li>Open <strong>Advanced</strong></li>
+          <li>The "Extended public key" shown is your xpub</li>
+        </ol>
+
+        <h3>Trezor Suite</h3>
+        <ol>
+          <li>Select your Bitcoin account</li>
+          <li>Click <strong>Details</strong> (three dots)</li>
+          <li>Click <strong>Show public key (XPUB)</strong></li>
+          <li>Confirm on the device</li>
+        </ol>
+
+        <h3>Sparrow Wallet</h3>
+        <ol>
+          <li>Go to <strong>Settings → Keystore</strong></li>
+          <li>The "Master Public Key" field contains your xpub</li>
+          <li>For multisig wallets, each cosigner has its own xpub</li>
+        </ol>
+
+        <h3>Coldcard</h3>
+        <ol>
+          <li>From the main menu, go to <strong>Advanced → View Identity</strong></li>
+          <li>Select <strong>Master XPUB</strong></li>
+          <li>The key is shown on-device (you can also export it via SD card)</li>
+        </ol>
+
+        <h3>BlueWallet</h3>
+        <ol>
+          <li>Long-press on the wallet</li>
+          <li>Select <strong>Wallet details</strong></li>
+          <li>Tap <strong>Show XPUB</strong></li>
+        </ol>
+
+        <h3>Wasabi Wallet</h3>
+        <ol>
+          <li>Go to <strong>Settings</strong></li>
+          <li>Under the wallet, look for the <strong>Extended Account Public Key</strong></li>
+        </ol>
+
+        <h2>What an xpub Can and Cannot Reveal</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th>xpub</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Derive all receive addresses</td>
+              <td>✅ Yes</td>
+            </tr>
+            <tr>
+              <td>Derive all change addresses</td>
+              <td>✅ Yes</td>
+            </tr>
+            <tr>
+              <td>View current balances</td>
+              <td>✅ Yes (via blockchain API)</td>
+            </tr>
+            <tr>
+              <td>View transaction history</td>
+              <td>✅ Yes (via blockchain API)</td>
+            </tr>
+            <tr>
+              <td>Sign transactions</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td>Spend Bitcoin</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td>Reveal private keys</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td>Reveal seed phrase</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td>Derive sibling or parent keys</td>
+              <td>❌ No (for hardened derivation)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>xpub Privacy Considerations</h2>
+
+        <p>While your xpub cannot be used to steal Bitcoin, it does have privacy implications:</p>
+
+        <p><strong>Full address visibility.</strong> Anyone with your xpub can derive every address in your wallet and check them on the blockchain. This reveals your entire transaction history, current holdings, and spending patterns.</p>
+
+        <p><strong>Linkability.</strong> An adversary with your xpub could track every payment you receive, identify which addresses belong to you, and potentially link your on-chain activity to your real-world identity if any address is connected to KYC data.</p>
+
+        <h3>Best practices for xpub privacy</h3>
+
+        <ul>
+          <li><strong>Only use client-side tools</strong> — tools like GapFix process your xpub entirely in the browser without sending it to a server</li>
+          <li><strong>Run GapFix locally</strong> — clone the <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">source code</a> and run it offline for maximum privacy</li>
+          <li><strong>Don't share your xpub with custodial services</strong> without understanding their data retention policies</li>
+          <li><strong>Use a different account per purpose</strong> — separate accounts under the same seed have different xpubs</li>
+        </ul>
+
+        <h2>How GapFix Uses Your xpub</h2>
+
+        <p>When you paste your xpub into GapFix:</p>
+
+        <ol>
+          <li>The key is parsed in your browser using the <code>bitcoinjs-lib</code> library</li>
+          <li>Child public keys are derived locally at indices 0 through 999+ on both chains (<code>m/0/*</code> external, <code>m/1/*</code> internal)</li>
+          <li>The derived Bitcoin addresses (not the xpub itself) are sent to <a href="https://blockstream.info" target="_blank" rel="noopener">Blockstream's public API</a> for balance lookups</li>
+          <li>The xpub never leaves your browser</li>
+        </ol>
+
+        <p>The only data that leaves your machine is a set of Bitcoin addresses — which are already public information on the blockchain.</p>
+
+        <!-- CTA -->
+        <div class="cta-banner">
+          <h3>Ready to scan your wallet?</h3>
+          <p>Paste your xpub, ypub, or zpub to find Bitcoin hidden beyond the gap limit. Free, open-source, client-side.</p>
+          <a href="/#tool" class="btn btn-primary btn-lg">Scan My Wallet</a>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+          <h2>Related Guides</h2>
+          <div class="related-grid">
+            <a href="/what-is-gap-limit" class="related-card">
+              <h3>What Is the Bitcoin Gap Limit?</h3>
+              <p>Why HD wallets stop scanning at 20 addresses and what to do about it.</p>
+            </a>
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+              <h3>Fix Bitcoin Wallet Showing 0 Balance</h3>
+              <p>Step-by-step guide to recovering Bitcoin after a wallet restore.</p>
+            </a>
+            <a href="/utxo-recovery" class="related-card">
+              <h3>UTXO Recovery</h3>
+              <p>Understanding UTXOs and how to find missing Bitcoin on-chain.</p>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p class="footer-made-by">
+        Built by <a href="https://github.com/matrenitski" target="_blank" rel="noopener">Max Matrenitski</a>
+        — free, open-source, forever.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/matrenitski/gapfix.net" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/LICENSE">MIT License</a>
+        <a href="https://github.com/matrenitski/gapfix.net/blob/main/CONTRIBUTING.md">Contribute</a>
+      </div>
+      <p class="footer-disclaimer">
+        GapFix is provided as-is, without warranty. It does not store, transmit, or have access
+        to any private keys or seed phrases. Always verify addresses before sending funds.
+      </p>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/article.css" />
+</body>
+</html>

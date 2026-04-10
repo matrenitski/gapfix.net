@@ -6,6 +6,9 @@
     { "source": "/what-is-gap-limit", "destination": "/what-is-gap-limit/index.html" },
     { "source": "/how-to-fix-bitcoin-wallet-zero-balance", "destination": "/how-to-fix-bitcoin-wallet-zero-balance/index.html" },
     { "source": "/utxo-recovery", "destination": "/utxo-recovery/index.html" },
+    { "source": "/xpub-explained", "destination": "/xpub-explained/index.html" },
+    { "source": "/wallet-compatibility", "destination": "/wallet-compatibility/index.html" },
+    { "source": "/glossary", "destination": "/glossary/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
