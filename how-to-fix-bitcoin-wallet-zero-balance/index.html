@@ -14,7 +14,7 @@
   <!-- Open Graph -->
   <meta property="og:title" content="Fix Bitcoin Wallet Showing 0 Balance After Restore" />
   <meta property="og:description" content="Step-by-step guide to find and recover missing Bitcoin when your wallet shows 0 after restoring from a seed phrase." />
-  <meta property="og:url" content="https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance" />
+  <meta property="og:url" content="https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance/" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="GapFix" />
   <meta property="og:locale" content="en_US" />
@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance" />
+  <link rel="canonical" href="https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance/" />
 
   <!-- JSON-LD Article -->
   <script type="application/ld+json">
@@ -36,7 +36,7 @@
     "@type": "Article",
     "headline": "How to Fix Bitcoin Wallet Showing 0 Balance After Restore",
     "description": "Step-by-step guide to find and recover missing Bitcoin using the dust fix method. Works with Electrum, Ledger, Trezor, Sparrow.",
-    "url": "https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance",
+    "url": "https://gapfix.net/how-to-fix-bitcoin-wallet-zero-balance/",
     "datePublished": "2026-04-09",
     "dateModified": "2026-04-09",
     "author": {
@@ -153,7 +153,7 @@
 
         <h2>Why Your Wallet Shows 0 Balance</h2>
 
-        <p>When you restore a Bitcoin wallet from a seed phrase, the wallet generates addresses sequentially and checks each one for transactions on the blockchain. But it doesn't check every possible address — it uses a rule called the <a href="/what-is-gap-limit">gap limit</a>.</p>
+        <p>When you restore a Bitcoin wallet from a seed phrase, the wallet generates addresses sequentially and checks each one for transactions on the blockchain. But it doesn't check every possible address — it uses a rule called the <a href="/what-is-gap-limit/">gap limit</a>.</p>
 
         <p>The gap limit (usually 20) tells the wallet: "if you see 20 consecutive empty addresses, stop looking." If your Bitcoin sits at an address beyond that gap, the wallet stops before it gets there. Your balance shows as zero.</p>
 
@@ -364,7 +364,7 @@
 
         <h2>Understanding UTXOs and Why This Works</h2>
 
-        <p>Bitcoin doesn't have "accounts" with balances the way a bank does. Instead, your balance is the sum of <a href="/utxo-recovery">Unspent Transaction Outputs (UTXOs)</a> — individual chunks of Bitcoin locked to your addresses.</p>
+        <p>Bitcoin doesn't have "accounts" with balances the way a bank does. Instead, your balance is the sum of <a href="/utxo-recovery/">Unspent Transaction Outputs (UTXOs)</a> — individual chunks of Bitcoin locked to your addresses.</p>
 
         <p>When a UTXO exists at address index 50 but your wallet stops scanning at index 20 (the gap limit), it simply doesn't know the UTXO is there. The Bitcoin is perfectly safe on the blockchain — the wallet just can't see it.</p>
 
@@ -381,11 +381,11 @@
         <div class="related-articles">
           <h2>Related Guides</h2>
           <div class="related-grid">
-            <a href="/what-is-gap-limit" class="related-card">
+            <a href="/what-is-gap-limit/" class="related-card">
               <h3>What Is the Bitcoin Gap Limit?</h3>
               <p>Deep dive into BIP-44, how HD wallets scan addresses, and gap limits by wallet.</p>
             </a>
-            <a href="/utxo-recovery" class="related-card">
+            <a href="/utxo-recovery/" class="related-card">
               <h3>UTXO Recovery: Finding Missing Bitcoin</h3>
               <p>What UTXOs are, why they go missing, and technical recovery methods.</p>
             </a>

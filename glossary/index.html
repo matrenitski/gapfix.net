@@ -14,7 +14,7 @@
   <!-- Open Graph -->
   <meta property="og:title" content="Bitcoin HD Wallet Glossary: Gap Limit, xpub, UTXO, BIP-44 Explained" />
   <meta property="og:description" content="Complete glossary of Bitcoin HD wallet terms including gap limit, xpub, UTXO, BIP-44, derivation path, dust, and more." />
-  <meta property="og:url" content="https://gapfix.net/glossary" />
+  <meta property="og:url" content="https://gapfix.net/glossary/" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="GapFix" />
   <meta property="og:locale" content="en_US" />
@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://gapfix.net/glossary" />
+  <link rel="canonical" href="https://gapfix.net/glossary/" />
 
   <!-- JSON-LD Article -->
   <script type="application/ld+json">
@@ -36,7 +36,7 @@
     "@type": "Article",
     "headline": "Bitcoin HD Wallet Glossary: Gap Limit, xpub, UTXO, BIP-44 Explained",
     "description": "Complete glossary of Bitcoin HD wallet terms: gap limit, xpub, ypub, zpub, UTXO, BIP-32, BIP-44, derivation path, dust, change address, seed phrase, and more.",
-    "url": "https://gapfix.net/glossary",
+    "url": "https://gapfix.net/glossary/",
     "datePublished": "2026-04-10",
     "dateModified": "2026-04-10",
     "author": {
@@ -327,7 +327,7 @@
         <div class="glossary-term" id="gap-limit">
           <h3>Gap Limit <span class="term-tag">Core Concept</span></h3>
           <p>The number of consecutive unused addresses a Bitcoin HD wallet will scan before it stops looking for funds. The <a href="#bip44">BIP-44</a> default is <strong>20</strong>. When a wallet encounters 20 addresses in a row with no transaction history, it assumes there are no more funds and stops. If Bitcoin sits at an address with index greater than the last used index + 20, the wallet shows a zero balance even though the funds are safely on-chain. This is the core problem GapFix solves.</p>
-          <p class="see-also">See also: <a href="/what-is-gap-limit">Full Guide: What Is the Bitcoin Gap Limit?</a></p>
+          <p class="see-also">See also: <a href="/what-is-gap-limit/">Full Guide: What Is the Bitcoin Gap Limit?</a></p>
         </div>
 
         <!-- H -->
@@ -442,7 +442,7 @@
         <div class="glossary-term" id="utxo">
           <h3>UTXO (Unspent Transaction Output) <span class="term-tag">Core Concept</span></h3>
           <p>The fundamental unit of Bitcoin balance. Every time someone sends you Bitcoin, the transaction creates an output locked to your address — an Unspent Transaction Output. Your wallet's displayed balance is the sum of all UTXOs locked to addresses it controls. When UTXOs sit at addresses beyond the <a href="#gap-limit">gap limit</a>, the wallet can't see them, resulting in a lower-than-expected balance. The Bitcoin is safe on-chain — the wallet just hasn't found it.</p>
-          <p class="see-also">See also: <a href="/utxo-recovery">Full Guide: UTXO Recovery</a></p>
+          <p class="see-also">See also: <a href="/utxo-recovery/">Full Guide: UTXO Recovery</a></p>
         </div>
 
         <!-- W -->
@@ -460,7 +460,7 @@
         <div class="glossary-term" id="xpub">
           <h3>xpub (Extended Public Key) <span class="term-tag">Core Concept</span></h3>
           <p>A BIP-32 extended public key that can derive an entire sequence of public keys (and therefore Bitcoin addresses) without exposing any private key. The prefix <code>xpub</code> specifically denotes legacy P2PKH addresses (BIP-44). For wrapped segwit wallets the prefix is <code>ypub</code>; for native segwit it's <code>zpub</code>. Pasting your xpub into GapFix is safe — the key cannot spend funds.</p>
-          <p class="see-also">See also: <a href="/xpub-explained">Full Guide: xpub Explained</a>, <a href="#ypub">ypub</a>, <a href="#zpub">zpub</a></p>
+          <p class="see-also">See also: <a href="/xpub-explained/">Full Guide: xpub Explained</a>, <a href="#ypub">ypub</a>, <a href="#zpub">zpub</a></p>
         </div>
 
         <div class="glossary-term" id="ypub">
@@ -489,15 +489,15 @@
         <div class="related-articles">
           <h2>Related Guides</h2>
           <div class="related-grid">
-            <a href="/what-is-gap-limit" class="related-card">
+            <a href="/what-is-gap-limit/" class="related-card">
               <h3>What Is the Bitcoin Gap Limit?</h3>
               <p>Deep dive into BIP-44, gap limits by wallet, and fix methods.</p>
             </a>
-            <a href="/xpub-explained" class="related-card">
+            <a href="/xpub-explained/" class="related-card">
               <h3>xpub Explained</h3>
               <p>Extended public keys: what they are, where to find them, and privacy implications.</p>
             </a>
-            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance/" class="related-card">
               <h3>Fix Bitcoin Wallet Showing 0 Balance</h3>
               <p>Step-by-step guide to recovering Bitcoin with the dust fix method.</p>
             </a>

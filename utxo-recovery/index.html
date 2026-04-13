@@ -14,7 +14,7 @@
   <!-- Open Graph -->
   <meta property="og:title" content="UTXO Recovery: How to Find and Recover Missing Bitcoin" />
   <meta property="og:description" content="Learn what Bitcoin UTXOs are, why they go missing from your wallet, and how to recover them." />
-  <meta property="og:url" content="https://gapfix.net/utxo-recovery" />
+  <meta property="og:url" content="https://gapfix.net/utxo-recovery/" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="GapFix" />
   <meta property="og:locale" content="en_US" />
@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://gapfix.net/assets/twitter-card.png" />
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://gapfix.net/utxo-recovery" />
+  <link rel="canonical" href="https://gapfix.net/utxo-recovery/" />
 
   <!-- JSON-LD Article -->
   <script type="application/ld+json">
@@ -36,7 +36,7 @@
     "@type": "Article",
     "headline": "UTXO Recovery: How to Find and Recover Missing Bitcoin",
     "description": "Learn what Bitcoin UTXOs are, why they go missing from your wallet, and how to recover unspent transaction outputs hidden beyond the gap limit.",
-    "url": "https://gapfix.net/utxo-recovery",
+    "url": "https://gapfix.net/utxo-recovery/",
     "datePublished": "2026-04-09",
     "dateModified": "2026-04-09",
     "author": {
@@ -146,7 +146,7 @@
           <li>0.03 BTC at address <code>bc1q...ghi</code> (index 45)</li>
         </ul>
 
-        <p>Your balance shows as 0.20 BTC. But if the wallet only scans up to index 20 (the <a href="/what-is-gap-limit">gap limit</a>), it finds the first two UTXOs but misses the third. Your displayed balance: 0.17 BTC. The 0.03 BTC UTXO exists on the blockchain — it's just invisible to the wallet.</p>
+        <p>Your balance shows as 0.20 BTC. But if the wallet only scans up to index 20 (the <a href="/what-is-gap-limit/">gap limit</a>), it finds the first two UTXOs but misses the third. Your displayed balance: 0.17 BTC. The 0.03 BTC UTXO exists on the blockchain — it's just invisible to the wallet.</p>
 
         <div class="info-box info-box--orange">
           <h4>UTXOs vs. Account Balances</h4>
@@ -176,7 +176,7 @@
         <p>UTXOs don't actually go missing from the blockchain. They go missing from your <strong>wallet's view</strong>. The most common causes:</p>
 
         <h3>1. Address Gap Limit</h3>
-        <p>The most frequent cause. Your HD wallet stops scanning after 20 consecutive empty addresses (<a href="/what-is-gap-limit">the gap limit</a>). Any UTXOs at higher indices are invisible. This is the primary problem GapFix solves.</p>
+        <p>The most frequent cause. Your HD wallet stops scanning after 20 consecutive empty addresses (<a href="/what-is-gap-limit/">the gap limit</a>). Any UTXOs at higher indices are invisible. This is the primary problem GapFix solves.</p>
 
         <h3>2. Change Address Gap</h3>
         <p>After spending Bitcoin, change is sent to a new change address on the internal chain. If your wallet made many transactions, the change address index can climb high. When restoring the wallet, the gap limit on the internal chain may cut off some change UTXOs.</p>
@@ -243,7 +243,7 @@
           <li>Rescan your wallet — all UTXOs become visible</li>
         </ol>
 
-        <p>For the full step-by-step process, see: <a href="/how-to-fix-bitcoin-wallet-zero-balance">How to Fix Bitcoin Wallet Showing 0 Balance</a></p>
+        <p>For the full step-by-step process, see: <a href="/how-to-fix-bitcoin-wallet-zero-balance/">How to Fix Bitcoin Wallet Showing 0 Balance</a></p>
 
         <h3>Method 2: Increase Wallet Gap Limit</h3>
 
@@ -307,11 +307,11 @@
         <div class="related-articles">
           <h2>Related Guides</h2>
           <div class="related-grid">
-            <a href="/what-is-gap-limit" class="related-card">
+            <a href="/what-is-gap-limit/" class="related-card">
               <h3>What Is the Bitcoin Gap Limit?</h3>
               <p>The BIP-44 scanning rule explained, with gap limits for every major wallet.</p>
             </a>
-            <a href="/how-to-fix-bitcoin-wallet-zero-balance" class="related-card">
+            <a href="/how-to-fix-bitcoin-wallet-zero-balance/" class="related-card">
               <h3>Fix Bitcoin Wallet Showing 0 Balance</h3>
               <p>Step-by-step dust fix guide to recover hidden Bitcoin after a wallet restore.</p>
             </a>
